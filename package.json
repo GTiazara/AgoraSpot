@@ -19,9 +19,12 @@
     "@capacitor/status-bar": "6.0.2",
     "@ionic/vue": "^8.0.0",
     "@ionic/vue-router": "^8.0.0",
+    "@mdi/font": "^7.4.47",
     "ionicons": "^7.0.0",
+    "leaflet": "^1.9.4",
     "vue": "^3.3.0",
-    "vue-router": "^4.2.0"
+    "vue-router": "^4.2.0",
+    "vuetify": "^3.7.6"
   },
   "devDependencies": {
     "@capacitor/cli": "6.2.0",

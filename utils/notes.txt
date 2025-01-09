@@ -1,0 +1,12 @@
+npm i --save vuetify
+npm install @mdi/font
+
+import '@mdi/font/css/materialdesignicons.css'
+
+
+
+npm install leaflet
+
+
+
+https://www.flaticon.com/free-animated-icon/pin-point_10606407
