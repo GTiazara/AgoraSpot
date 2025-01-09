@@ -1,0 +1,7 @@
+{
+  "name": "agoraspot",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
