@@ -47,10 +47,10 @@ export default defineComponent({
 
                 window.leafletMap = map
 
-                L.marker([51.505, -0.09])
-                    .addTo(map)
-                    .bindPopup('A sample popup!')
-                    .openPopup();
+                // L.marker([51.505, -0.09])
+                //     .addTo(map)
+                //     .bindPopup('A sample popup!')
+                //     .openPopup();
 
             } else {
                 console.error('Map container not found.');

@@ -60,28 +60,49 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
-      <p>Select Event Start and End Dates</p>
+
+      <ion-item :button="true" :detail="false" id="select-catégorie" @click="setOpenModalCatégorie(true)">
+        <ion-button aria-label="Show/hide password">
+          <p>Select event tag: </p> {{ selectedCategorieEventText }}
+          <ion-icon slot="icon-only" :icon="add" aria-hidden="true"></ion-icon>
+        </ion-button>
+        <!-- <ion-select label-placement="floating" fill="outline" label="Select catégories" placeholder="Select catégories">
+        </ion-select> -->
+      </ion-item>
+
+      <ion-modal :is-open="isOpenModalCatégorie" ref="modalSelectEventCategorie">
+        <app-typeahead title="Event tag" :items="eventCategories" :selectedItems="selectedCategorieEvent"
+          @selection-change="categorieSelectionChanged($event)"
+          @selection-cancel="setOpenModalCatégorie(false)"></app-typeahead>
+      </ion-modal>
+
+
 
       <!-- Single Calendar for Date Range -->
       <ion-item>
         <!-- <ion-label>Select Dates</ion-label> -->
         <ion-datetime locale="fr-FR" presentation="date" :multiple="true" :value="selectedDates"
-          @ionChange="handleDateSelection"></ion-datetime>
+          @ionChange="handleDateSelection">
+          <span slot="title">
+            <!-- Display Selected Dates -->
+            <div class="date-display">
+              <p>Select Event Start and End Dates</p>
+              <p>
+                Start Date: <strong>{{ startDate ? formatDate(startDate) : "Not selected" }}</strong>
+              </p>
+              <p>
+                End Date: <strong>{{ endDate ? formatDate(endDate) : "Not selected" }}</strong>
+              </p>
+            </div>
+          </span>
+        </ion-datetime>
 
 
 
       </ion-item>
 
 
-      <!-- Display Selected Dates -->
-      <div class="date-display">
-        <p>
-          Start Date: <strong>{{ startDate ? formatDate(startDate) : "Not selected" }}</strong>
-        </p>
-        <p>
-          End Date: <strong>{{ endDate ? formatDate(endDate) : "Not selected" }}</strong>
-        </p>
-      </div>
+
 
       <ion-item>
         <v-row>
@@ -104,14 +125,20 @@
 
 
 
+
+
+
+
 </template>
 <script setup lang="js">
-import { IonDatetime, IonContent, IonActionSheet, IonTab, IonHeader, IonModal, IonItem, IonButton, IonButtons, IonToolbar, IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonLabel, IonIcon } from '@ionic/vue';
+import { IonDatetime, IonSelect, IonContent, IonActionSheet, IonTab, IonHeader, IonModal, IonItem, IonButton, IonButtons, IonToolbar, IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonLabel, IonIcon } from '@ionic/vue';
 import { playCircle, radio, library, search, close } from 'ionicons/icons';
+import AppTypeahead from './AppTypeahead.vue';
+import { eye, add } from 'ionicons/icons';
 </script>
 
 <script lang="js">
-import { inject } from 'vue';
+import { inject, ref } from 'vue';
 export default {
 
   data() {
@@ -125,6 +152,8 @@ export default {
 
       startTime: "", // Start date
       endTime: "", // End date
+
+
 
       fist_click: true,
       actionSheetButtons: [
@@ -142,7 +171,48 @@ export default {
             action: 'cancel',
           },
         },
+      ],
+      // Create a custom Leaflet marker using the CSS styles
+      customIcon: L.divIcon({
+        className: 'leaflet-marker-icon',
+        html: '<span>📍</span>', // Can use text or a small HTML icon for the marker
+        iconSize: [40, 40], // Size of the custom icon
+        iconAnchor: [20, 40], // Position the icon on the map
+        popupAnchor: [0, -40] // Position the popup when the marker is clicked
+      }),
+      modalSelectEventCategorie: ref(),
+      selectedCategorieEvent: [],
+      isOpenModalCatégorie: false,
+
+      eventCategories: [
+        { text: 'Sport', value: 'sport' },
+        { text: 'Cyclist', value: 'cyclist' },
+        { text: 'Party', value: 'party' },
+        { text: 'Concert', value: 'concert' },
+        { text: 'Theater', value: 'theater' },
+        { text: 'Festival', value: 'festival' },
+        { text: 'Food & Drink', value: 'food-drink' },
+        { text: 'Art Exhibition', value: 'art-exhibition' },
+        { text: 'Workshop', value: 'workshop' },
+        { text: 'Networking Event', value: 'networking-event' },
+        { text: 'Conference', value: 'conference' },
+        { text: 'Charity', value: 'charity' },
+        { text: 'Concert', value: 'concert' },
+        { text: 'Outdoor Adventure', value: 'outdoor-adventure' },
+        { text: 'Technology', value: 'technology' },
+        { text: 'Dance', value: 'dance' },
+        { text: 'Live Show', value: 'live-show' },
+        { text: 'Comedy', value: 'comedy' },
+        { text: 'Business', value: 'business' },
+        { text: 'Networking', value: 'networking' },
+        { text: 'Wellness', value: 'wellness' },
+        { text: 'Market', value: 'market' },
+        { text: 'Yoga', value: 'yoga' },
+        { text: 'Education', value: 'education' },
+        { text: 'Fitness', value: 'fitness' },
+        { text: 'Race', value: 'race' },
       ]
+
     };
   },
 
@@ -151,6 +221,26 @@ export default {
   },
 
   methods: {
+    setOpenModalCatégorie(open) { console.log(this.modalSelectEventCategorie); this.isOpenModalCatégorie = open },
+
+    categorieSelectionChanged(fruits) {
+      this.selectedCategorieEvent = fruits;
+      this.selectedCategorieEventText = this.formatDataCategorieSearch(this.selectedCategorieEvent);
+      // this.modalSelectEventCategorie.$el.dismiss();
+      console.log(this.selectedCategorieEvent)
+
+      this.setOpenModalCatégorie(false)
+    },
+
+    formatDataCategorieSearch(data) {
+      if (data.length === 1) {
+        const fruit = this.eventCategories.find((fruit) => fruit.value === data[0]);
+        return fruit.text;
+      }
+
+      return `${data.length} items`;
+    },
+
 
     handleDateSelection(event) {
       // Parse the selected dates (start and end) from the event
@@ -234,7 +324,7 @@ export default {
           this.marker.setLatLng([lat, lng]).update();
         } else {
           // Create a new marker if none exists
-          this.marker = L.marker([lat, lng], { draggable: true }).addTo(window.leafletMap);
+          this.marker = L.marker([lat, lng], { draggable: true, icon: this.customIcon }).addTo(window.leafletMap);
 
           // Optionally bind a popup to the marker
           // this.marker.bindPopup('You clicked here!').openPopup();
@@ -332,7 +422,7 @@ ion-tab-button:active {
 }
 
 .tab-modal ion-content {
-  --background: rgba(255, 255, 255, 0.8);
+  --background: rgba(255, 255, 255, 0);
   /* Frosted white background */
   border-radius: 20px;
   /* Rounded edges */
@@ -374,5 +464,59 @@ ion-action-sheet.my-custom-class .action-sheet-button.ion-focused {
 
 ion-action-sheet.my-custom-class ion-backdrop {
   opacity: 0.6;
+}
+
+/* Style the icon container */
+#map {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* Define the CSS icon */
+.leaflet-marker-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #ff7043;
+  /* Bright orange */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  /* Subtle shadow for depth */
+  border: 2px solid #ff5722;
+  /* Darker orange for a refined border */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.leaflet-marker-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.4);
+  /* Increase the shadow on hover */
+}
+
+/* Inner icon (such as an event location pin) */
+.leaflet-marker-icon::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  display: block;
+  position: absolute;
+  background: url('/path/to/your/icon.png') no-repeat center center;
+  background-size: cover;
+  /* Adjust to fit your icon */
+  z-index: 2;
+}
+
+.leaflet-marker-icon span {
+  position: absolute;
+  font-size: 18px;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 </style>

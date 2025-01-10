@@ -18,13 +18,20 @@ const client = new MongoClient(connectionString, {
 });
 
 let conn;
-const get_db = async () => {
+const get_connected_client = async () => {
     try {
         console.log("try connect")
         conn = await client.connect();
         console.log("Connection established:", conn);
-        const db = conn.db("sample_training");
-        return db;
+
+
+        databasesList = await conn.db().admin().listDatabases();
+
+        console.log("Databases:");
+        databasesList.databases.forEach(db => console.log(` - ${db.name}`));
+
+
+        return conn;
     } catch (e) {
         console.error("Connection error:", e);
     }
@@ -32,5 +39,5 @@ const get_db = async () => {
 
 
 };
-const db = get_db()
-module.exports = db;
+conn = get_connected_client()
+module.exports = conn;
