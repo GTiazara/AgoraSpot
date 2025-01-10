@@ -3,6 +3,9 @@
 
   <v-row>
     <v-col align="center">
+
+
+
       <ion-tabs style="z-index: 10000; width:90%;">
         <!-- <ion-router-outlet></ion-router-outlet> -->
 
@@ -39,21 +42,14 @@
     </v-col>
   </v-row>
 
-  <ion-action-sheet :is-open="isOpenLocationActionSheet" class="my-custom-class" header="Add event here"
-    :buttons="actionSheetButtons" @didDismiss="actionOnCloseAddLocationSheet($event)"></ion-action-sheet>
+
 
   <ion-modal :is-open="isOpen" id="add-event" class="tab-modal">
     <ion-header>
       <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button shape="round" size="large" expand="block"
-            style="background-color: orange;border-style: solid; border-radius: 15px;margin-left: 15px;">
-            add event
-          </ion-button>
-        </ion-buttons>
-
+        <div>Add Event</div>
         <ion-buttons slot="end">
-          <ion-button @click="setOpen(false)" style="background-color: red;border-style: solid;border-radius: 15px">
+          <ion-button @click="setOpen(false)">
             <ion-icon :icon="close" />
           </ion-button>
         </ion-buttons>
@@ -67,11 +63,7 @@
         <!-- <ion-label>Select Dates</ion-label> -->
         <ion-datetime locale="fr-FR" presentation="date" :multiple="true" :value="selectedDates"
           @ionChange="handleDateSelection"></ion-datetime>
-
-
-
       </ion-item>
-
 
       <!-- Display Selected Dates -->
       <div class="date-display">
@@ -83,21 +75,6 @@
         </p>
       </div>
 
-      <ion-item>
-        <v-row>
-          <v-col align="left">
-            <ion-datetime presentation="time" locale="en-GB-u-hc-h24" @ionChange="handleTimeStartSelection"> <span
-                slot="title">Début:{{ startTime }}</span></ion-datetime>
-          </v-col align="right">
-          <v-col>
-            <ion-datetime presentation="time" locale="en-GB-u-hc-h24" @ionChange="handleTimeEndSelection"><span
-                slot="title">Fin:{{ endTime }}</span></ion-datetime>
-          </v-col>
-        </v-row>
-      </ion-item>
-
-
-
     </ion-content>
   </ion-modal>
 
@@ -106,7 +83,7 @@
 
 </template>
 <script setup lang="js">
-import { IonDatetime, IonContent, IonActionSheet, IonTab, IonHeader, IonModal, IonItem, IonButton, IonButtons, IonToolbar, IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonLabel, IonIcon } from '@ionic/vue';
+import { IonDatetime, IonContent, IonTab, IonHeader, IonModal, IonItem, IonButton, IonButtons, IonToolbar, IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonLabel, IonIcon } from '@ionic/vue';
 import { playCircle, radio, library, search, close } from 'ionicons/icons';
 </script>
 
@@ -117,32 +94,11 @@ export default {
   data() {
     return {
       isOpen: false,
-      isOpenLocationActionSheet: false,
       marker: null,
       selectedDates: "", // Holds the selected dates as a range or individual
       startDate: "", // Start date
       endDate: "", // End date
-
-      startTime: "", // Start date
-      endTime: "", // End date
-
-      fist_click: true,
-      actionSheetButtons: [
-
-        {
-          text: 'Yes',
-          data: {
-            action: 'add_event',
-          },
-        },
-        {
-          text: 'No',
-          role: 'cancel',
-          data: {
-            action: 'cancel',
-          },
-        },
-      ]
+      fist_click: true
     };
   },
 
@@ -156,8 +112,7 @@ export default {
       // Parse the selected dates (start and end) from the event
       console.log(this.selectedDates)
       const dateValue = event.detail.value;
-      if (dateValue.length === 2) {
-        console.log("change date")
+      if (Array.isArray(dateValue) && dateValue.length === 2) {
         this.startDate = dateValue[0]; // First date as start
         this.endDate = dateValue[1]; // Second date as end
       } else if (Array.isArray(dateValue) && dateValue.length > 2) {
@@ -165,21 +120,6 @@ export default {
         console.log("Please select both a start and end date.");
       }
     },
-
-    handleTimeStartSelection(event) {
-      console.log(event.detail)
-      let time_with_sec = event.detail.value.slice(-8)
-      this.startTime = time_with_sec.substring(0, 5);
-
-    },
-
-    handleTimeEndSelection(event) {
-      console.log(event.detail)
-      let time_with_sec = event.detail.value.slice(-8)
-      this.endTime = time_with_sec.substring(0, 5);
-
-    },
-
     formatDate(date) {
       // Format date for display (e.g., DD/MM/YYYY)
       return new Date(date).toLocaleDateString("fr-FR", {
@@ -191,20 +131,6 @@ export default {
     },
     setOpen(open) {
       this.isOpen = open
-    },
-    setOpenLocationActionSheet(open) {
-      this.isOpenLocationActionSheet = open
-
-    },
-    actionOnCloseAddLocationSheet(event) {
-      console.log(JSON.stringify(event.detail, null, 2));
-      console.log(event.detail.data.action)
-
-      this.setOpenLocationActionSheet(false)
-
-      if (event.detail.data.action == "add_event") {
-        this.setOpen(true)
-      }
     },
     toggleActive() {
       this.isActive = !this.isActive; // Toggle the state
@@ -222,7 +148,6 @@ export default {
         window.leafletMap.off("click", this.addMarker); // Disable map click
         this.marker = null
         this.fist_click = true
-        this.setOpenLocationActionSheet(false)
       }
     },
 
@@ -240,9 +165,7 @@ export default {
           // this.marker.bindPopup('You clicked here!').openPopup();
         }
 
-        this.setOpenLocationActionSheet(true)
-
-        // this.setOpen(true)
+        this.setOpen(true)
       } else { this.fist_click = false }
     },
 
@@ -256,7 +179,7 @@ export default {
   margin-bottom: 30px;
   margin-left: 5%;
   border-radius: 20px;
-  background: rgba(0, 253, 99, 0.57);
+  background: rgba(240, 240, 240, 0.8);
   /* Neutral background */
   backdrop-filter: blur(8px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -277,7 +200,7 @@ ion-tab-button {
   border-radius: 30px;
   /* Fully rounded buttons */
   background: linear-gradient(135deg, #e8e8e8, #fafafa);
-  border: 2px solid #e97223;
+  border: 2px solid rgb(71, 230, 222);
   border-image-slice: 1;
   /* border-image-source: linear-gradient(135deg, #42a5f5, #64b5f6); */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -297,14 +220,14 @@ ion-tab-button:hover {
 }
 
 ion-tab-button.active {
-  background: linear-gradient(135deg, #e97223, #e98441);
+  background: linear-gradient(135deg, #42a5f5, #64b5f6);
   box-shadow: 0 4px 12px rgba(66, 165, 245, 0.5);
 }
 
-/* ion-tab-button.active { */
-/* border-image-source: linear-gradient(135deg, #2196f3, #90caf9, #2196f3); */
-/* Gradient for active state */
-/* } */
+ion-tab-button.active {
+  /* border-image-source: linear-gradient(135deg, #2196f3, #90caf9, #2196f3); */
+  /* Gradient for active state */
+}
 
 ion-tab-button img {
   width: 55px;
@@ -323,56 +246,5 @@ ion-tab-button img:hover {
 ion-tab-button:active {
   transform: scale(1);
   box-shadow: 0 4px 10px rgba(50, 50, 50, 0.2);
-}
-
-
-.tab-modal {
-  --background: transparent;
-  /* Fully transparent modal background */
-}
-
-.tab-modal ion-content {
-  --background: rgba(255, 255, 255, 0.8);
-  /* Frosted white background */
-  border-radius: 20px;
-  /* Rounded edges */
-}
-
-.tab-modal ion-header {
-  --background: rgba(0, 0, 0, 0.7);
-  /* Dark transparent header */
-  color: white;
-  /* White text for header */
-}
-</style>
-
-
-
-<style>
-ion-action-sheet.my-custom-class .action-sheet-group {
-  background: #f58840;
-}
-
-ion-action-sheet.my-custom-class .action-sheet-title {
-  color: #fff;
-}
-
-ion-action-sheet.my-custom-class .action-sheet-cancel::after {
-  background: #e97223;
-}
-
-ion-action-sheet.my-custom-class .action-sheet-button,
-ion-action-sheet.my-custom-class .action-sheet-button.ion-focused {
-  color: #000000;
-}
-
-@media (any-hover: hover) {
-  ion-action-sheet.my-custom-class .action-sheet-button:hover {
-    color: #000000;
-  }
-}
-
-ion-action-sheet.my-custom-class ion-backdrop {
-  opacity: 0.6;
 }
 </style>

@@ -27,7 +27,7 @@ export default defineComponent({
 </script>
 <style scoped>
 .toolabar-perso-style {
-    z-index: 10000;
+    z-index: 20000;
     width: 90%;
     height: 60px;
     margin: 20px;
