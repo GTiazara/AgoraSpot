@@ -1,7 +1,7 @@
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const config = require("dotenv").config();
 
-const connectionString = config.parsed.ATLAS_URI;
+const connectionString = process.env.ATLAS_URI || config.parsed.ATLAS_URI;
 console.log("connectionString:", connectionString);
 
 const client = new MongoClient(connectionString, {
