@@ -1,12 +1,7 @@
 <template>
-
-    <div id="map" style="height: 100vh; width: 100%;">
-
-        <slot></slot>
-
-
-    </div>
-
+  <div id="map" style="height: 100vh; width: 100%">
+    <slot></slot>
+  </div>
 </template>
 
 <script lang="js">
@@ -65,7 +60,7 @@ export default defineComponent({
         // Fetch events from the backend API
         async fetchEvents() {
             try {
-                const response = await fetch('http://localhost:3000/agoraback/api/get_events'); // Adjust URL as needed
+                const response = await fetch(`${this.$backBaseUrl}/agoraback/api/get_events`); // Adjust URL as needed
                 console.log(response)
                 let events = await response.json();
                 console.log(events)
@@ -101,43 +96,43 @@ export default defineComponent({
 
 <style>
 ion-textarea {
-    font-size: 16px;
-    /* padding: 8px; */
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  font-size: 16px;
+  /* padding: 8px; */
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 ion-action-sheet.my-custom-class .action-sheet-group {
-    background: #f58840;
+  background: #f58840;
 }
 
 ion-action-sheet.my-custom-class .action-sheet-title {
-    color: #fff;
+  color: #fff;
 }
 
 ion-action-sheet.my-custom-class .action-sheet-cancel::after {
-    background: #e97223;
+  background: #e97223;
 }
 
 ion-action-sheet.my-custom-class .action-sheet-button,
 ion-action-sheet.my-custom-class .action-sheet-button.ion-focused {
-    color: #000000;
+  color: #000000;
 }
 
 @media (any-hover: hover) {
-    ion-action-sheet.my-custom-class .action-sheet-button:hover {
-        color: #000000;
-    }
+  ion-action-sheet.my-custom-class .action-sheet-button:hover {
+    color: #000000;
+  }
 }
 
 ion-action-sheet.my-custom-class ion-backdrop {
-    opacity: 0.6;
+  opacity: 0.6;
 }
 
 /* Style the icon container */
 #map {
-    height: 100vh;
-    width: 100%;
-    position: relative;
+  height: 100vh;
+  width: 100%;
+  position: relative;
 }
 </style>
