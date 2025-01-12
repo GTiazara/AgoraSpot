@@ -1,0 +1,16 @@
+npm i --save vuetify
+npm install @mdi/font
+
+import '@mdi/font/css/materialdesignicons.css'
+
+
+
+npm install leaflet
+
+
+
+https://www.flaticon.com/free-animated-icon/pin-point_10606407
+
+
+webpack 
+https://stackoverflow.com/questions/54622621/what-does-the-shims-tsx-d-ts-file-do-in-a-vue-typescript-project
