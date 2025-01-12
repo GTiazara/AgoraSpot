@@ -55,6 +55,7 @@ const app = createApp(App)
   .use(router)
   .use(vuetify);
 
+app.config.globalProperties.$backBaseUrl = "https://agora-spot.vercel.app"
 
 app.config.globalProperties.$customIconhtml = {
   className: 'leaflet-marker-icon',

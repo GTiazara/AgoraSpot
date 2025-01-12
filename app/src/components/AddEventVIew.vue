@@ -200,7 +200,7 @@ export default {
             console.log(eventData)
 
             try {
-                const response = await fetch('http://localhost:3000/agoraback/api/add_event', {
+                const response = await fetch(`${this.$backBaseUrl}/agoraback/api/add_event`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
