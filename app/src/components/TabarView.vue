@@ -142,8 +142,8 @@ export default {
 <style scoped>
 .footer-perso-style {
   z-index: 10000;
-  position: absolute;
-  bottom: 10px;
+  position: fixed;
+  bottom: 25px;
   border-style: dotted;
   width: 80%;
   margin-left: auto;
