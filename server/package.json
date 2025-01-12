@@ -17,5 +17,8 @@
     "morgan": "~1.9.1",
     "nodemon": "^3.1.9",
     "tunnel": "^0.0.6"
+  },
+  "devDependencies": {
+    "uglify-js": "^3.19.3"
   }
 }
