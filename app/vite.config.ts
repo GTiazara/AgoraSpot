@@ -9,7 +9,10 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [
     vue(),
-    legacy()
+    legacy({
+      targets: ['defaults', 'not IE 11'], // Limit legacy support, target modern browsers only
+      modernPolyfills: true,               // Allow polyfills where needed
+    })
   ],
   resolve: {
     alias: {
@@ -19,5 +22,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom'
+  },
+  build: {
+    target: 'esnext', // Ensure the output is compatible with modern browsers
+    minify: 'esbuild',  // Minification via esbuild (faster and cleaner)
   }
 })
