@@ -27,13 +27,13 @@ app.use(cors());
 // app.use('/', getEventRouter);
 
 // Serve Vue static files from 'public/vue-dist'
-app.use(express.static(path.join(__dirname, 'public/dist')));
+// app.use(express.static(path.join(__dirname, 'public/dist')));
 
-// Catch all other routes and serve your index.html for the Vue app
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/dist', 'index.html'));
-});
-
+// // Catch all other routes and serve your index.html for the Vue app
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public/dist', 'index.html'));
+// });
+app.use('/', getEventRouter);
 app.use('/agoraback/api/add_event', addEventRouter);
 app.use('/agoraback/api/get_events', getEventRouter);
 
