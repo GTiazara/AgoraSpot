@@ -43,6 +43,8 @@ import * as directives from 'vuetify/directives'
 // mdi icon with vue
 import '@mdi/font/css/materialdesignicons.css'
 
+
+
 const vuetify = createVuetify({
   components,
   directives,
@@ -54,8 +56,49 @@ const app = createApp(App)
   .use(vuetify);
 
 
-app.config.globalProperties.$map = "test";
+app.config.globalProperties.$customIconhtml = {
+  className: 'leaflet-marker-icon',
+  html: `
+      <div style="
+          width: 60px; 
+          height: 60px; 
+          background: radial-gradient(circle at center, #ffa726, #fb8c00, #e65100);
+          border-radius: 50%; 
+          display: flex; 
+          justify-content: center; 
+          align-items: center; 
+          box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3); 
+          animation: pulse-animation 1.5s infinite ease-in-out;
+      ">
+          <img src="/img/group.gif" alt="home icon" style="width: 36px; height: 36px; border-radius: 50%;" />
+      </div>
+    `,
+  iconSize: [60, 60], // Size of the custom icon
+  iconAnchor: [30, 60], // Position the icon on the map
+  popupAnchor: [0, -60], // Position the popup when the marker is clicked
+};
 
+// Apply styles globally using CSS animation for pulsing effect
+const styleElement = document.createElement("style");
+styleElement.innerHTML = `
+    @keyframes pulse-animation {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 16px rgba(255, 102, 0, 0.6);
+      }
+      50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 24px rgba(255, 102, 0, 0.8);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 16px rgba(255, 102, 0, 0.6);
+      }
+    }
+  `;
+document.head.appendChild(styleElement);
+
+// Mount the Vue application after the router is ready
 router.isReady().then(() => {
   app.mount('#app');
 });

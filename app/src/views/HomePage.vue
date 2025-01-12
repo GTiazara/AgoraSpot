@@ -10,14 +10,16 @@
     <ion-content>
       <MapVIew>
         <ToolbarView></ToolbarView>
-        <TabarView></TabarView>
 
+        <TabarView></TabarView>
 
       </MapVIew>
 
 
 
     </ion-content>
+
+
 
 
   </ion-page>

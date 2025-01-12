@@ -8,6 +8,14 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var add_event_api_routes = require('./routes/add_event_api');
+var get_event_api_routes = require('./routes/get_all_events');
+
+const cors = require('cors');
+const bodyParser = require("body-parser");
+
+
+
 
 var app = express();
 
@@ -21,8 +29,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// app.use(morgan('combined'));
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/agoraback/api/add_event', add_event_api_routes);
+app.use('/agoraback/api/get_events', get_event_api_routes);
 
 
 // catch 404 and forward to error handler
