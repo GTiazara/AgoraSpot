@@ -1,35 +1,39 @@
 <template>
-
   <ion-toolbar class="footer-perso-style">
-    <v-row style="margin-bottom:10;">
-      <v-col align="center" style="padding-left:1px; padding-right: 1px;">
-        <ion-button fill="solid" size="small" color="dark" class="footer-button">
-          <img src="/img/edit.gif" alt="home icon" style="width: 50px; height: 50px;" />
-        </ion-button>
+    <v-row style="margin-bottom: 10">
+      <v-col align="center" style="padding-left: 1px; padding-right: 1px">
+        <v-btn icon="" @click="toggleActive">
+          <img src="/assets/img/edit_orange.png" alt="home icon" />
+        </v-btn>
       </v-col>
-      <v-col align="center" style="padding-left:1px; padding-right: 1px;">
-
-        <ion-button fill="solid" size="small" color="dark" @click="toggleActive" id="locationButton">
+      <v-col align="center" style="padding-left: 1px; padding-right: 1px">
+        <!-- <ion-button fill="solid" size="small" color="dark" @click="toggleActive" id="locationButton">
           <img src="/img/location.gif" alt="home icon" style="width: 50px; height: 50px;" />
-        </ion-button>
+        </ion-button> -->
+        <!-- <v-badge color="info" content="+" class="custom-badge" style="position:relative;top:15px;"> -->
+        <v-btn icon="" id="locationButton" @click="toggleActive">
+          <img src="/assets/img/orange-marker.png" alt="home icon" />
+        </v-btn>
+        <!-- </v-badge> -->
       </v-col>
-      <v-col align="center" style="padding-left:1px; padding-right: 1px;">
-
-        <ion-button fill="solid" size="small" color="dark" @click="setOpen(true)">
-          <img src="/img/add-user.gif" alt="home icon" style="width: 50px; height: 50px;" />
-        </ion-button>
+      <v-col align="center" style="padding-left: 1px; padding-right: 1px">
+        <v-btn icon="" id="JoinEventButton" @click="toggleActiveJointEvent">
+          <img src="/assets/img/add-user.png" alt="home icon" />
+        </v-btn>
       </v-col>
     </v-row>
     <AddEventVIew :isOpenLocationActionSheet="isOpenLocationActionSheet2" :location="location"
       @update:isOpenLocationActionSheet="isOpenLocationActionSheet2 = $event"></AddEventVIew>
+
+    <EditEventView :isOpenJoinEventNoEvent="isOpenJoinEventNoEvent"
+      @update:isOpenJoinEventNoEvent="setOpenJoinEventNoEvent($event)"></EditEventView>
   </ion-toolbar>
-
-
 </template>
 <script setup lang="js">
 import { IonButton, IonToolbar, } from '@ionic/vue';
 
 import AddEventVIew from './AddEventVIew.vue';
+import EditEventView from './EditEventView.vue';
 </script>
 
 <script lang="js">
@@ -39,6 +43,7 @@ export default {
   data() {
     return {
       isOpenLocationActionSheet2: false,
+      isOpenJoinEventNoEvent: false,
       marker: null,
       // Create a custom Leaflet marker using the CSS styles
       customIcon: L.divIcon(this.$customIconhtml),
@@ -59,6 +64,19 @@ export default {
       this.isOpenLocationActionSheet2 = open
 
     },
+    setOpenJoinEventNoEvent(open) {
+      this.isOpenJoinEventNoEvent = open
+      const button = document.getElementById('JoinEventButton');
+      this.isActive = false;
+
+      if (this.isOpenJoinEventNoEvent) {
+        button.classList.add('active'); // Add the 'active' class
+
+
+      } else {
+        button.classList.remove('active'); // Remove the 'active' class
+      }
+    },
     toggleActive() {
       this.isActive = !this.isActive; // Toggle the state
       const button = document.getElementById('locationButton');
@@ -77,6 +95,23 @@ export default {
         this.fist_click = true
         this.setOpenLocationActionSheet2(false)
       }
+    },
+    toggleActiveJointEvent() {
+      this.isOpenJoinEventNoEvent = true
+      this.isActive = !this.isActive; // Toggle the state
+      const button = document.getElementById('JoinEventButton');
+
+      if (this.isActive) {
+        button.classList.add('active'); // Add the 'active' class
+
+
+      } else {
+        button.classList.remove('active'); // Remove the 'active' class
+        this.marker = null
+        this.fist_click = true
+        this.isOpenJoinEventNoEvent = false
+      }
+
     },
 
     addMarker(event) {
@@ -103,15 +138,13 @@ export default {
 
   }
 };
-
 </script>
 <style scoped>
 .footer-perso-style {
-
   z-index: 10000;
   position: absolute;
   bottom: 10px;
-  border-style: dashed;
+  border-style: dotted;
   width: 80%;
   margin-left: auto;
   margin-right: auto;
@@ -121,7 +154,6 @@ export default {
   border-radius: 20px;
   border-color: rgba(255, 102, 0, 0.8);
   border-width: 2px;
-
 }
 
 button {
@@ -131,10 +163,12 @@ button {
   align-items: center;
   width: 60px;
   height: 60px;
-  border-radius: 15px;
+  border-radius: 10px;
   /* Fully rounded buttons */
-  background: #f28645;
-  border: 2px solid #e97223;
+  /* background: #f28645; */
+  border-color: #e97223;
+  border-width: 5px;
+  border-radius: 30px;
   border-image-slice: 1;
   /* border-image-source: linear-gradient(135deg, #42a5f5, #64b5f6); */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -145,9 +179,8 @@ button {
   /* Ensures proper containment of child elements */
 }
 
-
-ion-button:hover {
-  transform: scale(1.05);
+#locationButton:hover {
+  transform: scale(1.2);
   box-shadow: 0 6px 16px rgba(42, 98, 215, 0.3);
   /* Glow to enhance border effect */
 }
@@ -156,7 +189,7 @@ ion-button:hover {
   border-style: solid;
   border-color: green;
   border-width: 5px;
-  border-radius: 5px;
+  border-radius: 30px;
   animation: pulse-animation 1.5s infinite ease-in-out;
   /* box-shadow: 0 4px 12px rgba(66, 165, 245, 0.5); */
 }

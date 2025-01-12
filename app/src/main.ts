@@ -70,7 +70,7 @@ app.config.globalProperties.$customIconhtml = {
           box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3); 
           animation: pulse-animation 1.5s infinite ease-in-out;
       ">
-          <img src="/img/group.gif" alt="home icon" style="width: 36px; height: 36px; border-radius: 50%;" />
+          <img src="/assets/img/group.gif" alt=" icon" style="width: 36px; height: 36px; border-radius: 50%;" />
       </div>
     `,
   iconSize: [60, 60], // Size of the custom icon
