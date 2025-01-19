@@ -6,17 +6,12 @@
     <ion-modal :is-open="isOpen" id="add-event" class="tab-modal">
         <ion-header>
             <ion-toolbar>
-                <ion-buttons slot="start">
-                    <ion-button shape="round" size="large" @click="handleAddEvent" expand="block"
-                        style="background-color: orange;border-style: solid; border-radius: 15px;margin-left: 15px;">
-                        add event
-                    </ion-button>
-                </ion-buttons>
+
 
                 <ion-buttons slot="end">
                     <ion-button @click="setOpen(false)"
                         style="background-color: red;border-style: solid;border-radius: 15px">
-                        <ion-icon :icon="close" />
+                        cancel <ion-icon :icon="close" />
                     </ion-button>
                 </ion-buttons>
             </ion-toolbar>
@@ -33,7 +28,7 @@
             </ion-item>
             <ion-item>
                 <ion-textarea rows="2" maxlength="200" minlenght="4" @ionInput="getDescription" :auto-grow="true"
-                    placeholder="Saisir un déscription de l'événement">
+                    placeholder="Enter event description">
                 </ion-textarea>
             </ion-item>
 
@@ -54,7 +49,7 @@
                     <span slot="title">
                         <!-- Display Selected Dates -->
                         <div class="date-display">
-                            <p>Select Event Start and End Dates</p>
+                            <p>Select dates</p>
                             <p>
                                 Start Date: <strong>{{ startDate ? formatDate(startDate) : "Not selected" }}</strong>
                             </p>
@@ -80,6 +75,11 @@
                     </v-col>
                 </v-row>
             </ion-item>
+
+            <ion-button shape="round" size="large" color @click="handleAddEvent" expand="block">
+                ok, I post event
+            </ion-button>
+
 
         </ion-content>
     </ion-modal>
@@ -119,7 +119,7 @@ export default {
 
             selectedCategorieEventText: "",
             eventDescription: "",
-            fist_click: true,
+            first_click: true,
             actionSheetButtons: [
 
                 {
@@ -249,13 +249,22 @@ export default {
             // Parse the selected dates (start and end) from the event
             console.log(this.selectedDates)
             const dateValue = event.detail.value;
-            if (dateValue.length === 2) {
+            if (Array.isArray(dateValue) && dateValue.length === 2) {
                 console.log("change date")
                 this.startDate = dateValue[0]; // First date as start
                 this.endDate = dateValue[1]; // Second date as end
+                this.selectedDates = [dateValue[0], dateValue[1]]
             } else if (Array.isArray(dateValue) && dateValue.length > 2) {
                 this.selectedDates = [dateValue[0], dateValue[2]]
-                console.log("Please select both a start and end date.");
+                this.startDate = dateValue[0]; // First date as start
+                this.endDate = dateValue[2]; // Second date as end
+
+            }
+            else if (Array.isArray(dateValue) && dateValue.length == 1) {
+                this.selectedDates = [dateValue[0]]
+                this.startDate = dateValue[0]; // First date as start
+                this.endDate = dateValue[0]; // Second date as end
+
             }
         },
 

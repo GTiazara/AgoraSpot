@@ -1,6 +1,5 @@
 <template>
   <ion-page>
-
     <ion-header>
       <!-- <ion-toolbar> -->
       <!-- <ion-title>Blank</ion-title> -->
@@ -13,15 +12,9 @@
 
         <TabarView></TabarView>
 
+        <TranslationView></TranslationView>
       </MapVIew>
-
-
-
     </ion-content>
-
-
-
-
   </ion-page>
 </template>
 
@@ -34,9 +27,15 @@ import { playCircle, radio, library, search } from 'ionicons/icons';
 import ToolbarView from '@/components/ToolbarView.vue';
 import MapVIew from '@/components/MapVIew.vue';
 import TabarView from '@/components/TabarView.vue';
+import TranslationView from '@/components/TranslationView.vue';
 
 export default {
-
+  components: {
+    ToolbarView,
+    MapVIew,
+    TabarView,
+    TranslationView,
+  },
   data() {
     return {
       playCircle,

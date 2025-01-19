@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
         const events = await db.collection("events")
             .find({}) // You can also use filters if needed
             .toArray();
-
+        console.log(events)
         // Respond with events as GeoJSON features
         const geoJSON = {
             type: "FeatureCollection",
@@ -19,6 +19,7 @@ router.get("/", async (req, res) => {
                 type: "Feature",
                 geometry: event.geometry, // GeoJSON point data
                 properties: event.properties, // Additional event data like description, dates, etc.
+                id: event._id
             }))
         };
 

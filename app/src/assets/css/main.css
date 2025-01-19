@@ -4,3 +4,17 @@ body,
     height: 100%;
     width: 100vw;
 }
+
+
+/* Prevent the page from being pushed down */
+.skiptranslate iframe {
+
+    display: none !important;
+    z-index: 0;
+}
+
+body {
+    position: fixed;
+    top: 0 !important;
+
+}
