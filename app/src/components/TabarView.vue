@@ -1,10 +1,11 @@
 <template>
   <ion-toolbar class="footer-perso-style">
-    <v-row style="margin-bottom: 10">
+    <v-row style="margin-bottom: 10; background: #0ff; padding-top: 4px">
       <v-col align="center" style="padding-left: 1px; padding-right: 1px">
-        <v-btn icon="" @click="toggleActive">
+        <v-btn icon="" @click="">
           <img src="/assets/img/edit_orange.png" alt="home icon" />
         </v-btn>
+        edit
       </v-col>
       <v-col align="center" style="padding-left: 1px; padding-right: 1px">
         <!-- <ion-button fill="solid" size="small" color="dark" @click="toggleActive" id="locationButton">
@@ -14,12 +15,14 @@
         <v-btn icon="" id="locationButton" @click="toggleActive">
           <img src="/assets/img/orange-marker.png" alt="home icon" />
         </v-btn>
+        add
         <!-- </v-badge> -->
       </v-col>
       <v-col align="center" style="padding-left: 1px; padding-right: 1px">
         <v-btn icon="" id="JoinEventButton" @click="toggleActiveJointEvent">
           <img src="/assets/img/add-user.png" alt="home icon" />
         </v-btn>
+        join
       </v-col>
     </v-row>
     <AddEventVIew :isOpenLocationActionSheet="isOpenLocationActionSheet2" :location="location"
@@ -49,6 +52,7 @@ export default {
       customIcon: L.divIcon(this.$customIconhtml),
       location: {},
       isActive: false,
+      first_click: true
 
     };
   },
@@ -92,7 +96,7 @@ export default {
         button.classList.remove('active'); // Remove the 'active' class
         window.leafletMap.off("click", this.addMarker); // Disable map click
         this.marker = null
-        this.fist_click = true
+        this.first_click = true
         this.setOpenLocationActionSheet2(false)
       }
     },
@@ -108,7 +112,7 @@ export default {
       } else {
         button.classList.remove('active'); // Remove the 'active' class
         this.marker = null
-        this.fist_click = true
+        this.first_click = true
         this.isOpenJoinEventNoEvent = false
       }
 
@@ -116,7 +120,7 @@ export default {
 
     addMarker(event) {
       const { lat, lng } = event.latlng; // Get the latitude and longitude from the map click event
-      if (!this.fist_click) {
+      if (!this.first_click) {
         if (this.marker) {
           // Update marker location if it already exists
           this.marker.setLatLng([lat, lng]).update();
@@ -133,7 +137,7 @@ export default {
         this.setOpenLocationActionSheet2(true)
 
         // this.setOpen(true)
-      } else { this.fist_click = false }
+      } else { this.first_click = false }
     },
 
   }
@@ -144,7 +148,7 @@ export default {
   z-index: 10000;
   position: fixed;
   bottom: 25px;
-  border-style: dotted;
+  /* border-style: dotted; */
   width: 80%;
   margin-left: auto;
   margin-right: auto;
@@ -152,7 +156,7 @@ export default {
   height: 80px;
   align-content: center;
   border-radius: 20px;
-  border-color: rgba(255, 102, 0, 0.8);
+  /* border-color: rgba(255, 102, 0, 0.8); */
   border-width: 2px;
 }
 
