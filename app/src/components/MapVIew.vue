@@ -70,8 +70,16 @@ export default defineComponent({
 
         this.tileLayers.dark = L.tileLayer(
           // "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-          "https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg",
-          { maxZoom: maxZoom, attribution: "© stadiamaps" }
+          // "https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg",
+          // { maxZoom: maxZoom, attribution: "© stadiamaps" }
+          "https://data.geopf.fr/wmts?layer=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y}",
+          {
+            attribution: "© IGN - GeoPF",
+            tileSize: 256,
+            minZoom: 0,
+            maxZoom: 18,
+            noWrap: true,
+          }
         );
 
         this.tileLayers.satellite = L.tileLayer(
