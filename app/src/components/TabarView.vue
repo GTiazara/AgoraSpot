@@ -25,11 +25,16 @@
         join
       </v-col>
     </v-row>
-    <AddEventVIew :isOpenLocationActionSheet="isOpenLocationActionSheet2" :location="location"
-      @update:isOpenLocationActionSheet="isOpenLocationActionSheet2 = $event"></AddEventVIew>
+    <AddEventVIew
+      :isOpenLocationActionSheet="isOpenLocationActionSheet2"
+      :location="location"
+      @update:isOpenLocationActionSheet="isOpenLocationActionSheet2 = $event"
+    ></AddEventVIew>
 
-    <EditEventView :isOpenJoinEventNoEvent="isOpenJoinEventNoEvent"
-      @update:isOpenJoinEventNoEvent="setOpenJoinEventNoEvent($event)"></EditEventView>
+    <EditEventView
+      :isOpenJoinEventNoEvent="isOpenJoinEventNoEvent"
+      @update:isOpenJoinEventNoEvent="setOpenJoinEventNoEvent($event)"
+    ></EditEventView>
   </ion-toolbar>
 </template>
 <script setup lang="js">
@@ -95,6 +100,10 @@ export default {
       } else {
         button.classList.remove('active'); // Remove the 'active' class
         window.leafletMap.off("click", this.addMarker); // Disable map click
+             // Remove the marker from the map if it exists
+      if (this.marker) {
+        window.leafletMap.removeLayer(this.marker);
+      }
         this.marker = null
         this.first_click = true
         this.setOpenLocationActionSheet2(false)

@@ -217,7 +217,11 @@ export default {
 
                 const result = await response.json();
                 console.log('Event added successfully:', result);
-                alert('Event added successfully!');
+                // alert('Event added successfully!'); 
+                this.setOpen(false);
+                // Emit the event to notify the parent component
+                this.$emit('event-added');
+
             } catch (error) {
                 console.error('Error sending event data:', error);
                 alert('Error adding the event. Please check your connection or server.');

@@ -28,7 +28,7 @@ import ToolbarView from '@/components/ToolbarView.vue';
 import MapVIew from '@/components/MapVIew.vue';
 import TabarView from '@/components/TabarView.vue';
 import TranslationView from '@/components/TranslationView.vue';
-
+import { state } from '@/assets/js/state.js';
 export default {
   components: {
     ToolbarView,
