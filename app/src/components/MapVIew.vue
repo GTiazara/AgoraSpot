@@ -121,8 +121,8 @@ export default defineComponent({
 
                 // Set default layer
 
-                this.tileLayers.dark.addTo(map);
-                this.currentLayer = this.tileLayers.dark;
+                this.tileLayers.street.addTo(map);
+                this.currentLayer = this.tileLayers.street;
 
 
                 // Attach zoom event
@@ -177,7 +177,7 @@ export default defineComponent({
             // Determine which tile layer to display
             let newLayer;
             if (zoom <= 3) {
-                newLayer = this.tileLayers.dark; // Dark for low zoom
+                newLayer = this.tileLayers.street; // Dark for low zoom
             } else if (zoom <= 17) {
                 newLayer = this.tileLayers.street; // Satellite for medium zoom
             } else {
@@ -202,23 +202,68 @@ export default defineComponent({
                 let events = await response.json();
                 console.log(events)
 
+                this.map.on("popupclose", function(e) {
+                    console.log("Popup closed!", e);
+                    document.getElementById("row-header-search").style.visibility = "visible"
+
+                    if (e.popup._source instanceof L.Marker) {
+                        console.log("The popup was attached to a marker.");
+                    }
+                });
+
+
+
                 // Loop over the events and create markers
                 events.events.forEach((event) => {
                     console.log(event)
                     const { coordinates } = event.geometry; // GeoJSON format
                     const [longitude, latitude] = coordinates; // Fetch coordinates in (lng, lat)
 
-                    const marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtml) }).addTo(this.map); // Add marker to map
+                    let custonIcon = this.$customIconhtml
+                    if (event.properties.tags.includes("race")) {
+                        custonIcon = this.$customIconhtmlCar
+                    }
+                    else if (event.properties.tags.includes("cycling")  || event.properties.tags.includes("cyclist")) {
+                        custonIcon = this.$customIconhtmlCycling
+                    }
+                    else if (event.properties.tags.includes("party") ) {
+                        custonIcon = this.$customIconhtmlParty
+                    }
+                    else if (event.properties.tags.includes("concert") ) {
+                        custonIcon = this.$customIconhtmlConcert
+                    }
+                    else if (event.properties.tags.includes("market") ) {
+                        custonIcon = this.$customIconhtmlMarket
+                    }
+                    // else if (event.properties.tags.includes("food")) {
+                    //     custonIcon = this.$customIconhtmlFood
+                    // } else if (event.properties.tags.includes("art")) {
+                    //     custonIcon = this.$customIconhtmlArt
+                    // } else if (event.properties.tags.includes("tech")) {
+                    //     custonIcon = this.$customIconhtmlTech
+                    // } else if (event.properties.tags.includes("education")) {
+                    //     custonIcon = this.$customIconhtmlEducation
+                    // } else if (event.properties.tags.includes("business")) {
+                    //     custonIcon = this.$customIconhtmlBusiness
+                    // } else if (event.properties.tags.includes("health")) {
+                    //     custonIcon = this.$customIconhtmlHealth
+                    // } else if (event.properties.tags.includes("social")) {
+                    //     custonIcon = this.$customIconhtmlSocial
+                    // } else if (event.properties.tags.includes("other")) {
+                    //     custonIcon = this.$customIconhtmlOther
+                    // }
+
+                    const marker = L.marker([latitude, longitude], { icon: L.divIcon(custonIcon) }).addTo(this.map); // Add marker to map
 
 
                     const eventJson = encodeURIComponent(JSON.stringify({
-  description: event.properties.description,
-  startDate: event.properties.startDate,
-  endDate: event.properties.endDate,
-  startTime: event.properties.startTime,
-  endTime: event.properties.endTime,
-  tags: event.properties.tags
-}));
+                        description: event.properties.description,
+                        startDate: event.properties.startDate,
+                        endDate: event.properties.endDate,
+                        startTime: event.properties.startTime,
+                        endTime: event.properties.endTime,
+                        tags: event.properties.tags
+                    }));
 
                     // Create a popup content
                     // Create a popup content
@@ -326,7 +371,7 @@ export default defineComponent({
 
                     // Store event details globally for the "Join" button click
                     window.openEditModal = (selectedEventId, selectedEventData) => {
-                        console.log("Edit event:", selectedEventId, decodeURIComponent(selectedEventData),  selectedEventData);
+                        console.log("Edit event:", selectedEventId, decodeURIComponent(selectedEventData), selectedEventData);
                         this.objectToEdit = JSON.parse(decodeURIComponent(selectedEventData));
                         console.log(this.objectToEdit, "this.objectToEdit");
                         this.isOpenEditEventEvent = true;
@@ -338,6 +383,7 @@ export default defineComponent({
                     //
                     marker.on("click", () => {
                         // Fly to the marker's location
+                        document.getElementById("row-header-search").style.visibility = "hidden"
                         this.map.flyTo([latitude, longitude], 15, {
                             animate: true,
                             duration: 1.2, // Smooth animation duration in seconds
@@ -372,6 +418,8 @@ export default defineComponent({
                         });
 
                     });
+
+
 
                 });
             } catch (error) {

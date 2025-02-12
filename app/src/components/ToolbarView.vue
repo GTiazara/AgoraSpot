@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row id="row-header-search">
     <v-col align="center">
       <v-toolbar floating class="toolabar-perso-style">
         <!-- prepend-icon="mdi-magnify" -->
@@ -10,7 +10,12 @@
         <!--<v-text-field hide-details single-line density="compact"></v-text-field> -->
         <ion-searchbar></ion-searchbar>
 
-        <v-btn id="translate" color="orange" @click="toggleTranslate" icon="mdi-translate"></v-btn>
+        <v-btn
+          id="translate"
+          color="orange"
+          @click="toggleTranslate"
+          icon="mdi-translate"
+        ></v-btn>
 
         <v-btn icon>
           <v-icon>mdi-dots-vertical</v-icon>

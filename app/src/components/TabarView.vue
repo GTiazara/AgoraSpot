@@ -1,12 +1,19 @@
 <template>
   <ion-toolbar class="footer-perso-style">
-    <v-row style="margin-bottom: 10; background: #0ff; padding-top: 4px">
-      <v-col align="center" style="padding-left: 1px; padding-right: 1px">
+    <v-row
+      style="
+        margin-bottom: 10;
+        background: #0ff;
+        padding-top: 4px;
+        background-image: linear-gradient(blue 0, rgba(255, 255, 255, 0) 100%);
+      "
+    >
+      <!-- <v-col align="center" style="padding-left: 1px; padding-right: 1px">
         <v-btn icon="" @click="">
           <img src="/assets/img/edit_orange.png" alt="home icon" />
         </v-btn>
         edit
-      </v-col>
+      </v-col> -->
       <v-col align="center" style="padding-left: 1px; padding-right: 1px">
         <!-- <ion-button fill="solid" size="small" color="dark" @click="toggleActive" id="locationButton">
           <img src="/img/location.gif" alt="home icon" style="width: 50px; height: 50px;" />
@@ -18,12 +25,12 @@
         add
         <!-- </v-badge> -->
       </v-col>
-      <v-col align="center" style="padding-left: 1px; padding-right: 1px">
+      <!-- <v-col align="center" style="padding-left: 1px; padding-right: 1px">
         <v-btn icon="" id="JoinEventButton" @click="toggleActiveJointEvent">
           <img src="/assets/img/add-user.png" alt="home icon" />
         </v-btn>
         join
-      </v-col>
+      </v-col> -->
     </v-row>
     <AddEventVIew
       :isOpenLocationActionSheet="isOpenLocationActionSheet2"
@@ -158,10 +165,10 @@ export default {
   position: fixed;
   bottom: 25px;
   /* border-style: dotted; */
-  width: 80%;
+  width: 95%;
   margin-left: auto;
   margin-right: auto;
-  margin-left: 10%;
+  margin-left: 2.5%;
   height: 80px;
   align-content: center;
   border-radius: 20px;
