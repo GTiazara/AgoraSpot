@@ -24,6 +24,10 @@ import JoinEventVIew from './JoinEventVIew.vue';
 import { reload } from 'ionicons/icons';
 import { state } from '@/assets/js/state.js';
 import EditEventView from './EditEventView.vue';
+
+import 'leaflet-search/dist/leaflet-search.min.css'
+import 'leaflet-search'
+
 export default defineComponent({
 
     name: "MapVIew",
@@ -138,32 +142,11 @@ export default defineComponent({
 
                 window.leafletMap = map
                 this.map = map
+                window.markerObjects = new L.LayerGroup();
 
                 // Set view to user's location
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition((position) => {
-                        const { latitude, longitude } = position.coords;
-                        this.map.setView([latitude, longitude], 3); // Adjust zoom level as needed
+                this.map.setView([46.603354, 1.888334], 2)
 
-                        // Add a marker for the user's location using HTML and CSS
-                        const userLocationMarker = L.divIcon({
-                            className: 'user-location-marker',
-                            html: '<div class="user-location-marker-inner"></div>',
-                            iconSize: [20, 20],
-                            iconAnchor: [10, 10]
-                        });
-                        // L.marker([latitude, longitude], { icon: userLocationMarker }).addTo(this.map)
-                        // .bindPopup('You are here!')
-                        // .openPopup();
-
-                    }, (error) => {
-                        console.log("Error getting user's location:", error);
-                        this.map.setView([46.603354, 1.888334], 2)
-                    });
-                } else {
-                    console.log("Geolocation is not supported by this browser.");
-                    this.map.setView([latitude, longitude], 1)
-                }
 
             } else {
                 console.error('Map container not found.');
@@ -222,17 +205,13 @@ export default defineComponent({
                     let custonIcon = this.$customIconhtml
                     if (event.properties.tags.includes("race")) {
                         custonIcon = this.$customIconhtmlCar
-                    }
-                    else if (event.properties.tags.includes("cycling")  || event.properties.tags.includes("cyclist")) {
+                    } else if (event.properties.tags.includes("cycling") || event.properties.tags.includes("cyclist")) {
                         custonIcon = this.$customIconhtmlCycling
-                    }
-                    else if (event.properties.tags.includes("party") ) {
+                    } else if (event.properties.tags.includes("party")) {
                         custonIcon = this.$customIconhtmlParty
-                    }
-                    else if (event.properties.tags.includes("concert") ) {
+                    } else if (event.properties.tags.includes("concert")) {
                         custonIcon = this.$customIconhtmlConcert
-                    }
-                    else if (event.properties.tags.includes("market") ) {
+                    } else if (event.properties.tags.includes("market")) {
                         custonIcon = this.$customIconhtmlMarket
                     }
                     // else if (event.properties.tags.includes("food")) {
@@ -253,8 +232,11 @@ export default defineComponent({
                     //     custonIcon = this.$customIconhtmlOther
                     // }
 
-                    const marker = L.marker([latitude, longitude], { icon: L.divIcon(custonIcon) }).addTo(this.map); // Add marker to map
+                    const marker = L.marker([latitude, longitude], { icon: L.divIcon(custonIcon), title: `${event.properties.description} ${event.properties.tags}` }) // Add marker to map
 
+                    window.markerObjects.addLayer(marker)
+
+                    marker.addTo(this.map);
 
                     const eventJson = encodeURIComponent(JSON.stringify({
                         description: event.properties.description,
@@ -422,6 +404,75 @@ export default defineComponent({
 
 
                 });
+
+                let searchControl = new L.Control.Search({
+                    layer: window.markerObjects, // Use stored markers
+                    // propertyName: "title",  // Search in popup content
+                    marker: false,
+                    container: "seach_in_map",
+                    textPlaceholder: "Search",
+                    collapsed: false,
+                    moveToLocation: (latlng, title, map) => {
+                        map.flyTo(latlng, 12, { animate: true, duration: 1.2 });
+                    },
+                    filterData: function(text, records) {
+                        console.log("Search text:", text);
+                        console.log("Original records:", records);
+
+                        // Convert search text to lowercase for case-insensitive search
+                        let searchText = text.toLowerCase();
+
+                        // Filter the dictionary: Keep only entries where the key includes the search text
+                        let filteredRecords = Object.fromEntries(
+                            Object.entries(records).filter(([key, value]) => key.toLowerCase().includes(searchText))
+                        );
+
+                        console.log("Filtered records:", filteredRecords);
+                        return filteredRecords;
+                    }
+                });
+
+                this.map.addControl(searchControl);
+
+                document.querySelector(".leaflet-control-search").style.marginTop = "0px";
+                document.querySelector(".leaflet-control-search").style.marginLeft = "0px";
+                document.querySelector(".leaflet-control-search").style.width = "100%";
+                document.querySelector(".leaflet-control-search").style.display = "flex";
+                document.querySelector(".leaflet-control-search").style.flexDirection = "row";
+                document.querySelector(".leaflet-control-search").style.justifyContent = "space-around";
+
+                document.querySelector(".search-tooltip").style.position = "fixed";
+                document.querySelector(".search-tooltip").style.top = "10%";
+                document.querySelector(".search-tooltip").style.left = "10%";
+
+
+
+
+                function adjustSearchWidth() {
+                    let searchBox = document.querySelector("#searchtext6");
+                    // searchBox.style.width = "85%";
+                    if (!searchBox) return;
+
+
+                    if (window.innerWidth < 290) {
+                        // Mobile devices
+                        searchBox.style.width = "30%";
+                    } else {
+                        // Desktop or larger screens
+                        searchBox.style.width = "85%";
+                    }
+
+
+
+                }
+                // Run on page load
+                adjustSearchWidth();
+
+                // Update on window resize
+                window.addEventListener("resize", adjustSearchWidth);
+
+
+
             } catch (error) {
                 console.error("Error fetching events:", error);
             }
@@ -433,7 +484,13 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
+/* .leaflet-control-search {
+  margin-top: 0px;
+  margin-left: 0px;
+  width: 100%;
+} */
+
 ion-textarea {
   font-size: 16px;
   /* padding: 8px; */

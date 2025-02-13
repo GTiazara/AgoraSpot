@@ -3,12 +3,16 @@
     <v-col align="center">
       <v-toolbar floating class="toolabar-perso-style">
         <!-- prepend-icon="mdi-magnify" -->
-        <v-btn icon density="compact" color="orange">
+        <v-btn icon density="compact" color="orange" @click="geUserNavigatorLocation">
           <v-icon>mdi-crosshairs-gps</v-icon>
         </v-btn>
 
         <!--<v-text-field hide-details single-line density="compact"></v-text-field> -->
-        <ion-searchbar></ion-searchbar>
+        <!-- <ion-searchbar @ionInput="searchMarkers($event)"></ion-searchbar> -->
+        <div
+          id="seach_in_map"
+          style="width: 100%; background-color: white; height: 50%"
+        ></div>
 
         <v-btn
           id="translate"
@@ -46,7 +50,55 @@ export default defineComponent({
         document.getElementById('google_translate_element').style.visibility = 'hidden';
       }
 
-    }
+    },
+
+    // Function to search and zoom to marker
+     searchMarkers(event) {
+        console.log(event);
+        let searchText = event.detail.value.toLowerCase();
+        console.log(searchText);
+        console.log(window.markerObjects)
+
+        markerObjects.forEach(marker => {
+          console.log(marker)
+          console.log(Object.getPrototypeOf(Object.getPrototypeOf(marker)))
+          console.log(Object.getPrototypeOf(Object.getPrototypeOf(marker)).getPopup.call(marker))
+            let popupContent = marker.getPopup().getContent().toLowerCase();
+            if (popupContent.includes(searchText) && searchText !== "") {
+                // map.setView(marker.getLatLng(), 15); // Zoom to marker
+                // marker.openPopup(); // Open popup
+                console.log(popupContent)
+            }
+        });
+    },
+    geUserNavigatorLocation() {
+             // Set view to user's location
+             if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        const { latitude, longitude } = position.coords;
+                        window.leafletMap.setView([latitude, longitude],10); // Adjust zoom level as needed
+
+                        // Add a marker for the user's location using HTML and CSS
+                        const userLocationMarker = L.divIcon({
+                            className: 'user-location-marker',
+                            html: '<div class="user-location-marker-inner"></div>',
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10]
+                        });
+                        L.marker([latitude, longitude], { icon: userLocationMarker }).addTo( window.leafletMap)
+                        .bindPopup('You are here!')
+                        .openPopup();
+
+                    }, (error) => {
+                        console.log("Error getting user's location:", error);
+                        // this.map.setView([46.603354, 1.888334], 2)
+                    });
+                } else {
+                    console.log("Geolocation is not supported by this browser.");
+                    this.map.setView([latitude, longitude], 1)
+                }
+
+    },
   }
 
 });

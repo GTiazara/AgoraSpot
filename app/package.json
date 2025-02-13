@@ -23,6 +23,7 @@
     "@mdi/font": "^7.4.47",
     "ionicons": "^7.0.0",
     "leaflet": "^1.9.4",
+    "leaflet-search": "^4.0.0",
     "vue": "^3.3.0",
     "vue-router": "^4.2.0",
     "vuetify": "^3.7.6"

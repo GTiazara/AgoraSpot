@@ -44,6 +44,23 @@ export default {
       search,
     };
   },
+
+  // created() {
+  //   const url = "https://chatgpt.com/?q=test"; // Change this to your target website
+  //           const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+
+  //           try {
+  //               fetch(proxy).then(res => res.json()).then(data => {
+
+  //                 console.log(data)
+
+  //               });
+
+
+  //           } catch (error) {
+  //               console.error("Error fetching preview:", error);
+  //           }
+  // },
 };
 </script>
 
