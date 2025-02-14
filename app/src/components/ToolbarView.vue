@@ -1,51 +1,174 @@
 <template>
-  <v-row>
+  <v-row id="row-header-search">
     <v-col align="center">
       <v-toolbar floating class="toolabar-perso-style">
         <!-- prepend-icon="mdi-magnify" -->
-        <v-btn icon density="compact" color="orange">
+
+        <v-btn icon="" color="white" @click="geUserNavigatorLocation">
           <v-icon>mdi-crosshairs-gps</v-icon>
+        </v-btn>
+        <v-btn icon="" color="white" @click="setOpenInfoModal(true)">
+          <v-icon>mdi-information-variant-circle-outline</v-icon>
         </v-btn>
 
         <!--<v-text-field hide-details single-line density="compact"></v-text-field> -->
-        <ion-searchbar></ion-searchbar>
+        <!-- <ion-searchbar @ionInput="searchMarkers($event)"></ion-searchbar> -->
+        <div
+          id="seach_in_map"
+          style="
+            width: 100%;
+            background-color: transparent;
+            height: 50%;
+            margin-bottom: 1%;
+          "
+        ></div>
 
-        <v-btn id="translate" color="orange" @click="toggleTranslate" icon="mdi-translate"></v-btn>
+        <v-btn
+          id="translate"
+          color="white"
+          @click="toggleTranslate"
+          icon="mdi-translate"
+        ></v-btn>
 
-        <v-btn icon>
-          <v-icon>mdi-dots-vertical</v-icon>
+        <v-btn icon color="white" density="compact" @click="reloadPage()">
+          <v-icon>mdi-reload</v-icon>
         </v-btn>
       </v-toolbar>
     </v-col>
   </v-row>
+
+  <ion-modal
+    :is-open="isInfoOpenModal"
+    :initial-breakpoint="0.5"
+    :breakpoints="[0, 0.25, 0.5, 0.75]"
+    @didDismiss="setOpenInfoModal(false)"
+  >
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Agora Spot</ion-title>
+        <ion-buttons slot="end">
+          <ion-button @click="setOpenInfoModal(false)">Close</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding" style="overflow: scroll">
+      <div style="text-align: center; font-weight: bold">
+        Create or joint events, activities anywhere.
+      </div>
+
+      <p>
+        This app aims to encorage people to go out and meet new people or just organise
+        activities with your friends.
+      </p>
+
+      <p>
+        This app let you create and joing fleeting event. The event will be delete
+        automaticaly when the end date is reached
+      </p>
+    </ion-content>
+  </ion-modal>
 </template>
+
 <script lang="js">
-import { IonSearchbar } from "@ionic/vue";
+import { IonSearchbar, alertController, IonTitle, IonButton, IonModal, IonButtons, IonHeader, IonToolbar, IonContent} from "@ionic/vue";
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  components: { IonSearchbar },
+    components: { IonSearchbar , alertController, IonTitle, IonButton, IonModal, IonButtons, IonHeader, IonToolbar, IonContent},
 
-  data() {
-    return {
-      isTranslateActive: false
+    data() {
+        return {
+            isTranslateActive: false,
+            isInfoOpenModal: false,
+        }
+    },
+
+    methods: {
+        toggleTranslate() {
+            this.isTranslateActive = !this.isTranslateActive;
+            const translate_button = document.getElementById('translate');
+            if (this.isTranslateActive) {
+                document.getElementById('google_translate_element').style.visibility = 'visible';
+                translate_button.classList.add('active');
+            } else {
+                document.getElementById('google_translate_element').style.visibility = 'hidden';
+                translate_button.classList.remove('active');
+            }
+
+        },
+
+        reloadPage() {
+            window.location.reload();
+        },
+
+        setOpenInfoModal(open) {
+            this.isInfoOpenModal = open;
+
+        },
+
+        presentAlert: async () => {
+            const alert = await alertController.create({
+                header: `Agora spot`,
+                subHeader: 'Créez ou rejoignez des sortie, evenements, activités, ...',
+                message: `Objectif: `,
+                buttons: ['Close'],
+            })
+
+            await alert.present();
+        },
+
+        // Function to search and zoom to marker
+        searchMarkers(event) {
+            console.log(event);
+            let searchText = event.detail.value.toLowerCase();
+            console.log(searchText);
+            console.log(window.markerObjects)
+
+            markerObjects.forEach(marker => {
+                console.log(marker)
+                console.log(Object.getPrototypeOf(Object.getPrototypeOf(marker)))
+                console.log(Object.getPrototypeOf(Object.getPrototypeOf(marker)).getPopup.call(marker))
+                let popupContent = marker.getPopup().getContent().toLowerCase();
+                if (popupContent.includes(searchText) && searchText !== "") {
+                    // map.setView(marker.getLatLng(), 15); // Zoom to marker
+                    // marker.openPopup(); // Open popup
+                    console.log(popupContent)
+                }
+            });
+        },
+        geUserNavigatorLocation() {
+            // Set view to user's location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const { latitude, longitude } = position.coords;
+                    window.leafletMap.setView([latitude, longitude], 10); // Adjust zoom level as needed
+
+                    // Add a marker for the user's location using HTML and CSS
+                    const userLocationMarker = L.divIcon({
+                        className: 'user-location-marker',
+                        html: '<div class="user-location-marker-inner"></div>',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    });
+                    L.marker([latitude, longitude], { icon: userLocationMarker }).addTo(window.leafletMap)
+                        .bindPopup('You are here!')
+                        .openPopup();
+
+                }, (error) => {
+                    console.log("Error getting user's location:", error);
+                    // this.map.setView([46.603354, 1.888334], 2)
+                });
+            } else {
+                console.log("Geolocation is not supported by this browser.");
+                this.map.setView([latitude, longitude], 1)
+            }
+
+        },
     }
-  },
-
-  methods: {
-    toggleTranslate() {
-      this.isTranslateActive = !this.isTranslateActive;
-      if (this.isTranslateActive) {
-        document.getElementById('google_translate_element').style.visibility = 'visible';
-      } else {
-        document.getElementById('google_translate_element').style.visibility = 'hidden';
-      }
-
-    }
-  }
 
 });
 </script>
+
 <style scoped>
 .toolabar-perso-style {
   z-index: 20000;
@@ -53,8 +176,19 @@ export default defineComponent({
   height: 60px;
   margin: 20px;
   border-style: solid;
-  border-width: 1px;
-  border-color: rgb(0, 0, 0);
+  /* border-width: 1px; */
+  /* border-color: rgb(0, 0, 0); */
   border-radius: 35px;
+  background-color: #0ff;
+  background-image: linear-gradient(blue, rgba(42, 247, 247, 0));
+}
+
+.active {
+  border-style: solid;
+  border-color: green;
+  border-width: 1px;
+  border-radius: 40px;
+  animation: pulse-animation 1.5s infinite ease-in-out;
+  /* box-shadow: 0 4px 12px rgba(66, 165, 245, 0.5); */
 }
 </style>

@@ -28,7 +28,7 @@ import ToolbarView from '@/components/ToolbarView.vue';
 import MapVIew from '@/components/MapVIew.vue';
 import TabarView from '@/components/TabarView.vue';
 import TranslationView from '@/components/TranslationView.vue';
-
+import { state } from '@/assets/js/state.js';
 export default {
   components: {
     ToolbarView,
@@ -44,6 +44,23 @@ export default {
       search,
     };
   },
+
+  // created() {
+  //   const url = "https://chatgpt.com/?q=test"; // Change this to your target website
+  //           const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+
+  //           try {
+  //               fetch(proxy).then(res => res.json()).then(data => {
+
+  //                 console.log(data)
+
+  //               });
+
+
+  //           } catch (error) {
+  //               console.error("Error fetching preview:", error);
+  //           }
+  // },
 };
 </script>
 

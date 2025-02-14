@@ -1,35 +1,48 @@
 <template>
   <ion-toolbar class="footer-perso-style">
-    <v-row style="margin-bottom: 10; background: #0ff; padding-top: 4px">
-      <v-col align="center" style="padding-left: 1px; padding-right: 1px">
+    <v-row
+      style="
+        margin-bottom: 10;
+        background: #0ff;
+        padding-top: 4px;
+        background-image: linear-gradient(blue 0, rgba(255, 255, 255, 0) 100%);
+      "
+    >
+      <!-- <v-col align="center" style="padding-left: 1px; padding-right: 1px">
         <v-btn icon="" @click="">
           <img src="/assets/img/edit_orange.png" alt="home icon" />
         </v-btn>
         edit
-      </v-col>
+      </v-col> -->
       <v-col align="center" style="padding-left: 1px; padding-right: 1px">
         <!-- <ion-button fill="solid" size="small" color="dark" @click="toggleActive" id="locationButton">
           <img src="/img/location.gif" alt="home icon" style="width: 50px; height: 50px;" />
         </ion-button> -->
         <!-- <v-badge color="info" content="+" class="custom-badge" style="position:relative;top:15px;"> -->
         <v-btn icon="" id="locationButton" @click="toggleActive">
-          <img src="/assets/img/orange-marker.png" alt="home icon" />
+          <img src="/assets/img/add-location.png" alt="home icon" width="85%" />
         </v-btn>
-        add
+        Add event
         <!-- </v-badge> -->
       </v-col>
-      <v-col align="center" style="padding-left: 1px; padding-right: 1px">
+      <!-- <v-col align="center" style="padding-left: 1px; padding-right: 1px">
         <v-btn icon="" id="JoinEventButton" @click="toggleActiveJointEvent">
           <img src="/assets/img/add-user.png" alt="home icon" />
         </v-btn>
         join
-      </v-col>
+      </v-col> -->
     </v-row>
-    <AddEventVIew :isOpenLocationActionSheet="isOpenLocationActionSheet2" :location="location"
-      @update:isOpenLocationActionSheet="isOpenLocationActionSheet2 = $event"></AddEventVIew>
+    <AddEventVIew
+      :isOpenLocationActionSheet="isOpenLocationActionSheet2"
+      :location="location"
+      :marker="marker"
+      @update:isOpenLocationActionSheet="isOpenLocationActionSheet2 = $event"
+    ></AddEventVIew>
 
-    <EditEventView :isOpenJoinEventNoEvent="isOpenJoinEventNoEvent"
-      @update:isOpenJoinEventNoEvent="setOpenJoinEventNoEvent($event)"></EditEventView>
+    <EditEventView
+      :isOpenJoinEventNoEvent="isOpenJoinEventNoEvent"
+      @update:isOpenJoinEventNoEvent="setOpenJoinEventNoEvent($event)"
+    ></EditEventView>
   </ion-toolbar>
 </template>
 <script setup lang="js">
@@ -49,7 +62,7 @@ export default {
       isOpenJoinEventNoEvent: false,
       marker: null,
       // Create a custom Leaflet marker using the CSS styles
-      customIcon: L.divIcon(this.$customIconhtml),
+      customIcon: L.divIcon(this.$customIconhtmlAddLocation),
       location: {},
       isActive: false,
       first_click: true
@@ -95,9 +108,14 @@ export default {
       } else {
         button.classList.remove('active'); // Remove the 'active' class
         window.leafletMap.off("click", this.addMarker); // Disable map click
-        this.marker = null
-        this.first_click = true
-        this.setOpenLocationActionSheet2(false)
+             // Remove the marker from the map if it exists
+        if (this.marker) {
+          window.leafletMap.removeLayer(this.marker);
+          this.marker = null
+          this.first_click = true
+          this.setOpenLocationActionSheet2(false)
+        }
+
       }
     },
     toggleActiveJointEvent() {
@@ -149,10 +167,10 @@ export default {
   position: fixed;
   bottom: 25px;
   /* border-style: dotted; */
-  width: 80%;
+  width: 95%;
   margin-left: auto;
   margin-right: auto;
-  margin-left: 10%;
+  margin-left: 2.5%;
   height: 80px;
   align-content: center;
   border-radius: 20px;
