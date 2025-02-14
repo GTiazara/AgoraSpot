@@ -248,6 +248,10 @@ export default defineComponent({
 
                     marker.addTo(this.map);
 
+                    if (!event.properties.participants){
+                      event.properties.participants = {}
+                    }
+
                     const eventJson = encodeURIComponent(JSON.stringify({
                         description: event.properties.description,
                         startDate: event.properties.startDate,
