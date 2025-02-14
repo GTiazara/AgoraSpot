@@ -1,6 +1,11 @@
 <template>
-    <ion-alert :is-open="isOpen" header="Participant" :inputs="alertInputs" :buttons="alertButtons"
-        @didDismiss="setOpen(false)"></ion-alert>
+  <ion-alert
+    :is-open="isOpen"
+    header="Participant"
+    :inputs="alertInputs"
+    :buttons="alertButtons"
+    @didDismiss="setOpen(false)"
+  ></ion-alert>
 </template>
 
 <script lang="js">
@@ -36,7 +41,10 @@ export default {
                 text: 'Join',
                 role: 'confirm',
                 handler: (event) => {
-                    this.updateParticipant(event.name);
+                    if(event.comments == null || event.comments == ""){
+                        event.comments = "No comment";
+                    }
+                    this.updateParticipant(event.name, event.comments);
                 },
             },],
             alertInputs: [
@@ -44,7 +52,19 @@ export default {
                     name: 'name',
                     type: 'text',
                     placeholder: 'Name',
+                    attributes: {
+                        maxlength: 15,
+                    },
                 },
+                {
+                    name:"comments",
+                    type: 'textarea',
+                    placeholder: 'Comments',
+                    attributes: {
+                        maxlength: 100,
+                    },
+                },
+
                 // {
                 //     placeholder: 'Nickname (max 8 characters)',
                 //     attributes: {
@@ -79,7 +99,7 @@ export default {
 
         },
 
-        updateParticipant(name) {
+        updateParticipant(name, comments) {
             this.setOpen(false);
             fetch(`${this.$backBaseUrl}/agoraback/api/add_participant`, {
                 method: 'POST',
@@ -88,7 +108,8 @@ export default {
                 },
                 body: JSON.stringify({
                     "eventId": this.targetEvent,
-                    "participantName": name
+                    "participantName": name,
+                    "participantAnnotation": {"comments": comments},
                 }),
             })
                 .then((response) => response.json())

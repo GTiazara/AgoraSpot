@@ -8,9 +8,9 @@ router.post("/", async (req, res) => {
     console.log(req.body);
     try {
         // Destructure eventId and participantName from the request body
-        const { eventId, participantName } = req.body;
+        const { eventId, participantName, participantAnnotation } = req.body;
 
-        console.log({ eventId, participantName })
+        console.log({ eventId, participantName, participantAnnotation })
 
         // Validate the input
         if (!eventId || !participantName) {
@@ -29,7 +29,8 @@ router.post("/", async (req, res) => {
         // Add the participant name to the event's "participants" array
         const result = await db.collection("events").updateOne(
             filter, // Find event by ID
-            { $addToSet: { "properties.participants": participantName } }   // Add to 'participants' array, avoiding duplicates
+            // { $addToSet: { "properties.participants": { "name": participantName, "comments": participantComments } } }   // Add to 'participants' array, avoiding duplicates
+            { $set: { [`properties.participants.${participantName}`]: participantAnnotation } }
         );
 
         // Check if the event was found and updated
