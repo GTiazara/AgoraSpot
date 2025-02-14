@@ -145,7 +145,7 @@ export default defineComponent({
                 window.markerObjects = new L.LayerGroup();
 
                 // Set view to user's location
-                this.map.setView([46.603354, 1.888334], 2)
+                this.map.setView([46.603354, 1.888334], 3)
 
 
             } else {
@@ -175,6 +175,16 @@ export default defineComponent({
                 this.map.addLayer(newLayer);
                 this.currentLayer = newLayer;
             }
+        },
+
+        formatLocalDate(dateString, locale = navigator.language) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString(locale, {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
         },
 
         // Fetch events from the backend API
@@ -279,21 +289,7 @@ export default defineComponent({
         Join Now
       </button>
 
-      <button
-        onclick="window.openEditModal('${event.id}', '${eventJson}')"
-        style="
-          background-color: #FFC107;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 5px;
-          cursor: pointer;
-          font-size: 14px;
-          width: 50%;
-          margin-top: 10px;
-        ">
-        <i class="mdi mdi-pencil"></i> Edit
-      </button>
+
 
     </div>
 
@@ -311,8 +307,8 @@ export default defineComponent({
     ">
 
       <div style="margin-bottom: 10px;">
-        <strong>Participants:</strong> ${event.properties.participants && event.properties.participants.length > 0
-              ? event.properties.participants.map((participant) => `<span>${participant}</span>`).join(", ")
+        <strong>Participants:</strong> ${Object.keys(event.properties.participants) && Object.keys(event.properties.participants).length > 0
+              ? Object.keys(event.properties.participants).map((participant) => `<span>${participant}: ${event.properties.participants[participant]['comments']}</span>`).join(", ")
               : "No participants yet"
             }
       </div>
@@ -323,7 +319,7 @@ export default defineComponent({
       </div>
 
       <div style="margin-bottom: 10px;">
-        <strong>Dates:</strong> ${event.properties.startDate} to ${event.properties.endDate}
+        <strong>Dates:</strong> ${this.formatLocalDate(event.properties.startDate.split("T")[0])} to ${this.formatLocalDate(event.properties.endDate.split("T")[0])}
       </div>
       <div style="margin-bottom: 10px;">
         <strong>Time:</strong> ${event.properties.startTime} to ${event.properties.endTime}
@@ -338,7 +334,21 @@ export default defineComponent({
   </div>
 `;
 
-
+                    // <button
+                    //         onclick="window.openEditModal('${event.id}', '${eventJson}')"
+                    //         style="
+                    //           background-color: #FFC107;
+                    //           color: white;
+                    //           border: none;
+                    //           padding: 10px 20px;
+                    //           border-radius: 5px;
+                    //           cursor: pointer;
+                    //           font-size: 14px;
+                    //           width: 50%;
+                    //           margin-top: 10px;
+                    //         ">
+                    //         <i class="mdi mdi-pencil"></i> Edit
+                    //       </button>
 
                     // Bind the popup to the marker
                     // marker.bindPopup(popupContent);
@@ -410,7 +420,7 @@ export default defineComponent({
                     // propertyName: "title",  // Search in popup content
                     marker: false,
                     container: "seach_in_map",
-                    textPlaceholder: "Search",
+                    textPlaceholder: "Search in description",
                     collapsed: false,
                     moveToLocation: (latlng, title, map) => {
                         map.flyTo(latlng, 12, { animate: true, duration: 1.2 });
@@ -439,17 +449,19 @@ export default defineComponent({
                 document.querySelector(".leaflet-control-search").style.width = "100%";
                 document.querySelector(".leaflet-control-search").style.display = "flex";
                 document.querySelector(".leaflet-control-search").style.flexDirection = "row";
-                document.querySelector(".leaflet-control-search").style.justifyContent = "space-around";
+                document.querySelector(".leaflet-control-search").style.justifyContent = "space-evenly";
 
                 document.querySelector(".search-tooltip").style.position = "fixed";
                 document.querySelector(".search-tooltip").style.top = "10%";
                 document.querySelector(".search-tooltip").style.left = "10%";
 
+                // document.querySelector(".search-input").style.width = "85%";
+
 
 
 
                 function adjustSearchWidth() {
-                    let searchBox = document.querySelector("#searchtext6");
+                    let searchBox = document.querySelector(`input[id*="searchtext"]`);
                     // searchBox.style.width = "85%";
                     if (!searchBox) return;
 

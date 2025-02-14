@@ -12,6 +12,7 @@ const debug = require('debug')('myapp:server');
 const addEventRouter = require('./routes/add_event_api');
 const getEventRouter = require('./routes/get_all_events');
 const joinEventRouter = require('./routes/join_event_api');
+const cleanUpEventRouter = require('./routes/clean_up_events');
 
 // Create the Express app
 const app = express();
@@ -38,6 +39,7 @@ app.use('/', getEventRouter);
 app.use('/agoraback/api/add_event', addEventRouter);
 app.use('/agoraback/api/get_events', getEventRouter);
 app.use('/agoraback/api/add_participant', joinEventRouter);
+app.use('/agoraback/api/clean_up_event', cleanUpEventRouter);
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {
   const createError = require('http-errors');

@@ -4,10 +4,10 @@
       <v-toolbar floating class="toolabar-perso-style">
         <!-- prepend-icon="mdi-magnify" -->
 
-        <v-btn icon="" color="white" @click="geUserNavigatorLocation">
+        <v-btn density="compact" icon="" color="white" @click="geUserNavigatorLocation">
           <v-icon>mdi-crosshairs-gps</v-icon>
         </v-btn>
-        <v-btn icon="" color="white" @click="setOpenInfoModal(true)">
+        <v-btn density="compact" icon="" color="white" @click="setOpenInfoModal(true)">
           <v-icon>mdi-information-variant-circle-outline</v-icon>
         </v-btn>
 
@@ -24,13 +24,14 @@
         ></div>
 
         <v-btn
+          density="compact"
           id="translate"
           color="white"
           @click="toggleTranslate"
           icon="mdi-translate"
         ></v-btn>
 
-        <v-btn icon color="white" density="compact" @click="reloadPage()">
+        <v-btn density="compact" icon color="white" @click="reloadPage()">
           <v-icon>mdi-reload</v-icon>
         </v-btn>
       </v-toolbar>
@@ -144,13 +145,9 @@ export default defineComponent({
                     window.leafletMap.setView([latitude, longitude], 10); // Adjust zoom level as needed
 
                     // Add a marker for the user's location using HTML and CSS
-                    const userLocationMarker = L.divIcon({
-                        className: 'user-location-marker',
-                        html: '<div class="user-location-marker-inner"></div>',
-                        iconSize: [20, 20],
-                        iconAnchor: [10, 10]
-                    });
-                    L.marker([latitude, longitude], { icon: userLocationMarker }).addTo(window.leafletMap)
+                    let customIcon= L.divIcon(this.$customIconhtmlUserLocation)
+
+                    L.marker([latitude, longitude], { icon: customIcon }).addTo(window.leafletMap)
                         .bindPopup('You are here!')
                         .openPopup();
 

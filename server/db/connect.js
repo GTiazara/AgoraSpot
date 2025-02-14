@@ -81,8 +81,8 @@ const getConnectedClient = async () => {
                                         description: "Description of the event (optional).",
                                     },
                                     participants: {
-                                        bsonType: "array",
-                                        items: { bsonType: "string" },
+                                        bsonType: "object",
+                                        // items: { bsonType: "string" },
                                         description: "List of participants (optional).",
                                     },
                                     createdAt: {

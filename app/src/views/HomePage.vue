@@ -45,22 +45,11 @@ export default {
     };
   },
 
-  // created() {
-  //   const url = "https://chatgpt.com/?q=test"; // Change this to your target website
-  //           const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-
-  //           try {
-  //               fetch(proxy).then(res => res.json()).then(data => {
-
-  //                 console.log(data)
-
-  //               });
-
-
-  //           } catch (error) {
-  //               console.error("Error fetching preview:", error);
-  //           }
-  // },
+  created() {
+    fetch(`${this.$backBaseUrl}/agoraback/api/clean_up_event`).then(res => res.json()).then(json_res => {
+      console.log(json_res);
+    });
+  },
 };
 </script>
 
