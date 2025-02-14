@@ -20,9 +20,9 @@
         </ion-button> -->
         <!-- <v-badge color="info" content="+" class="custom-badge" style="position:relative;top:15px;"> -->
         <v-btn icon="" id="locationButton" @click="toggleActive">
-          <img src="/assets/img/orange-marker.png" alt="home icon" />
+          <img src="/assets/img/add-location.png" alt="home icon" width="85%" />
         </v-btn>
-        add
+        Add event
         <!-- </v-badge> -->
       </v-col>
       <!-- <v-col align="center" style="padding-left: 1px; padding-right: 1px">
@@ -35,6 +35,7 @@
     <AddEventVIew
       :isOpenLocationActionSheet="isOpenLocationActionSheet2"
       :location="location"
+      :marker="marker"
       @update:isOpenLocationActionSheet="isOpenLocationActionSheet2 = $event"
     ></AddEventVIew>
 
@@ -61,7 +62,7 @@ export default {
       isOpenJoinEventNoEvent: false,
       marker: null,
       // Create a custom Leaflet marker using the CSS styles
-      customIcon: L.divIcon(this.$customIconhtml),
+      customIcon: L.divIcon(this.$customIconhtmlAddLocation),
       location: {},
       isActive: false,
       first_click: true
@@ -108,12 +109,13 @@ export default {
         button.classList.remove('active'); // Remove the 'active' class
         window.leafletMap.off("click", this.addMarker); // Disable map click
              // Remove the marker from the map if it exists
-      if (this.marker) {
-        window.leafletMap.removeLayer(this.marker);
-      }
-        this.marker = null
-        this.first_click = true
-        this.setOpenLocationActionSheet2(false)
+        if (this.marker) {
+          window.leafletMap.removeLayer(this.marker);
+          this.marker = null
+          this.first_click = true
+          this.setOpenLocationActionSheet2(false)
+        }
+
       }
     },
     toggleActiveJointEvent() {

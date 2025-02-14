@@ -120,13 +120,13 @@ export default {
     props: {
         isOpenLocationActionSheet: Boolean,
         location: Object,
+        marker: Object,
     },
 
     data() {
         return {
             isOpen: false,
             // isOpenLocationActionSheet: false,
-            marker: null,
             selectedDates: [], // Holds the selected dates as a range or individual
             startDate: "", // Start date
             endDate: "", // End date
@@ -335,6 +335,14 @@ export default {
             try {
                 if (event.detail.data.action == "add_event") {
                     this.setOpen(true)
+                }
+                else if (event.detail.data.action == "cancel") {
+                    // if (this.marker) {
+                    // window.leafletMap.removeLayer(this.marker);
+                    // this.marker = null
+                    // this.first_click = true
+                
+        // }
                 }
             } catch (error) {
                 console.log(error)
