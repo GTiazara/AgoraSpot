@@ -90,12 +90,12 @@ export default defineConfig({
   build: {
     target: 'esnext', // Ensure the output is compatible with modern browsers
     minify: 'esbuild',  // Minification via esbuild (faster and cleaner)
-  },
-  server: {
-    https: {
-      key: "./cert/agora-private.key",
-      cert: "./cert/agora.crt"
-    }
-  },
+  }
+  // server: {
+  //   https: {
+  //     key: "./cert/agora-private.key",
+  //     cert: "./cert/agora.crt"
+  //   }
+  // },
 
 })
