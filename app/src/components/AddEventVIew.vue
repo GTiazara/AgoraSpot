@@ -98,6 +98,19 @@
                     </v-col>
                 </v-row>
             </ion-item>
+
+            <ion-item>
+                <v-row>
+                    <v-col align="left">
+                        <p>Optional : Event image link</p>
+                        <ion-textarea rows="2" maxlength="500" minlenght="4" @ionInput="getImage" :auto-grow="true" placeholder="Enter sources of information">
+                        </ion-textarea>
+                        <p>Optional: information source</p>
+                        <ion-textarea rows="2" maxlength="500" minlenght="4" @ionInput="getInfoSource" :auto-grow="true" placeholder="Enter sources of information">
+                        </ion-textarea>
+                    </v-col>
+                </v-row>
+            </ion-item>
     
     
         </ion-content>
@@ -187,7 +200,10 @@ export default {
                 { text: 'Education', value: 'education' },
                 { text: 'Fitness', value: 'fitness' },
                 { text: 'Race', value: 'race' },
-            ]
+            ], 
+
+            eventImage:"",
+            eventInfoSource:""
 
         };
     },
@@ -204,6 +220,16 @@ export default {
 
         },
 
+        getImage(event) {
+            console.log(event.detail.value)
+            this.eventImage = event.detail.value
+        },
+
+        getInfoSource(event){
+            console.log(event.detail.value)
+            this.eventInfoSource = event.detail.value
+        },
+
         async handleAddEvent() {
             const eventData = {
                 tags: this.selectedCategorieEvent,
@@ -212,7 +238,9 @@ export default {
                 startTime: this.startTime,
                 endTime: this.endTime,
                 location: this.location,
-                description: this.eventDescription
+                description: this.eventDescription, 
+                eventImage: this.eventImage,
+                infoSource: this.eventInfoSource
             };
 
             console.log(eventData)

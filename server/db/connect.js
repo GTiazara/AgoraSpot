@@ -85,10 +85,20 @@ const getConnectedClient = async () => {
                                         // items: { bsonType: "string" },
                                         description: "List of participants (optional).",
                                     },
+                                    eventImage: {
+                                        bsonType: "string",
+                                        description: "Creation date of the event. Will be set on insert.",
+                                    },
+                                    infoSource: {
+                                        bsonType: "string",
+                                        description: "Creation date of the event. Will be set on insert.",
+                                    },
                                     createdAt: {
                                         bsonType: "date",
                                         description: "Creation date of the event. Will be set on insert.",
-                                    },
+                                    }
+
+
                                 },
                             },
                         },
