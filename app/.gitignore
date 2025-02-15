@@ -35,6 +35,5 @@ npm-debug.log*
 .vscode
 .env
 
-# 
-*.key
-*.crt
+#
+/cert
