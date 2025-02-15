@@ -58,6 +58,26 @@ export default defineComponent({
             setTimeout(() => {
                 this.initializeMap();
                 this.fetchEvents();
+                const browserLanguage = navigator.language || navigator.languages[0];
+                function translateToBrowserLanguage(lang) {
+                    const selectElement = document.querySelector(".goog-te-combo");
+                    const translate_button = document.getElementById('translate');
+                    if (selectElement) {
+                        selectElement.value = lang; // Set dropdown to browser language
+                        selectElement.dispatchEvent(new Event("change")); // Simulate selection
+                    }
+
+                    selectElement.addEventListener("change", (event) => {
+                        console.log("Language changed:", event.target.value);
+                        document.getElementById('google_translate_element').style.visibility = 'hidden';
+                        translate_button.classList.remove('active');
+                        window.isTranslateActive = false;
+
+                    });
+                }
+
+                translateToBrowserLanguage(browserLanguage)
+
             }, 100); // Adjust the delay as needed
         });
     },
@@ -248,8 +268,8 @@ export default defineComponent({
 
                     marker.addTo(this.map);
 
-                    if (!event.properties.participants){
-                      event.properties.participants = {}
+                    if (!event.properties.participants) {
+                        event.properties.participants = {}
                     }
 
                     const eventJson = encodeURIComponent(JSON.stringify({
@@ -499,6 +519,14 @@ export default defineComponent({
     }
 })
 </script>
+
+<style>
+.leaflet-container a.leaflet-popup-close-button {
+  width: 40px;
+  background-color: #e97223;
+  color: white;
+}
+</style>
 
 <style scoped>
 /* .leaflet-control-search {

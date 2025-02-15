@@ -24,6 +24,7 @@
         ></div>
 
         <v-btn
+          style="margin-left: 5px"
           density="compact"
           id="translate"
           color="white"
@@ -46,7 +47,7 @@
   >
     <ion-header>
       <ion-toolbar>
-        <ion-title>Agora Spot</ion-title>
+        <ion-title>Info</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="setOpenInfoModal(false)">Close</ion-button>
         </ion-buttons>
@@ -84,9 +85,14 @@ export default defineComponent({
         }
     },
 
+    created() {
+        window.isTranslateActive = this.isTranslateActive;
+    },
+
     methods: {
         toggleTranslate() {
-            this.isTranslateActive = !this.isTranslateActive;
+            this.isTranslateActive = !window.isTranslateActive;
+            window.isTranslateActive = this.isTranslateActive;
             const translate_button = document.getElementById('translate');
             if (this.isTranslateActive) {
                 document.getElementById('google_translate_element').style.visibility = 'visible';
@@ -95,6 +101,12 @@ export default defineComponent({
                 document.getElementById('google_translate_element').style.visibility = 'hidden';
                 translate_button.classList.remove('active');
             }
+
+            // setTimeout(() => {
+            //   this.isTranslateActive = false;
+            //   document.getElementById('google_translate_element').style.visibility = 'hidden';
+            //   translate_button.classList.remove('active');
+            // }, 20000 )
 
         },
 
@@ -157,6 +169,7 @@ export default defineComponent({
                 });
             } else {
                 console.log("Geolocation is not supported by this browser.");
+                alert("Geolocation is not supported by this browser.");
                 this.map.setView([latitude, longitude], 1)
             }
 
@@ -182,8 +195,8 @@ export default defineComponent({
 
 .active {
   border-style: solid;
-  border-color: green;
-  border-width: 1px;
+  border-color: rgb(248, 12, 12);
+  border-width: 2px;
   border-radius: 40px;
   animation: pulse-animation 1.5s infinite ease-in-out;
   /* box-shadow: 0 4px 12px rgba(66, 165, 245, 0.5); */
