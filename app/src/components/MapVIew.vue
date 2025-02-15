@@ -297,6 +297,20 @@ export default defineComponent({
     overflow: hidden;
   ">
 
+     <!-- Event Image -->
+    <img src="${event.properties.eventImage || 'https://via.placeholder.com/400x200'}"
+         alt="Event Image"
+         style="width: 100%; border-radius: 10px 10px 0 0; object-fit: cover; max-height: 200px;" />
+
+
+
+  <a href="${event.properties.infoSource || '#'}"
+           target="_blank"
+           style="color: #007BFF; text-decoration: none; font-weight: bold;">
+          🔗 View Source
+  </a>
+
+
     <div style="padding: 10px; text-align: center;">
       <button
         onclick="window.openJoinModal('${event.id}')"

@@ -6,7 +6,7 @@ router.post("/", async (req, res) => {
     console.log(req.body);
     try {
         // Destructuring input data from request body
-        const { tags, startDate, endDate, startTime, endTime, location, description } = req.body;
+        const { tags, startDate, endDate, startTime, endTime, location, description, eventImage, infoSource } = req.body;
 
         // Validate required fields
         if (!tags || !startDate || !endDate || !startTime || !endTime || !location) {
@@ -37,6 +37,8 @@ router.post("/", async (req, res) => {
                 startTime,
                 endTime,
                 description,
+                eventImage,
+                infoSource,
                 createdAt: new Date(), // You may use `createdAt` in properties as per the GeoJSON format
             },
         });
