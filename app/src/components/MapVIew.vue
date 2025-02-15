@@ -41,7 +41,7 @@ export default defineComponent({
             map: "",
             isOpenJoinEventEvent: false,
             isOpenEditEventEvent: false,
-            selectedEvent: {},
+            selectedEvent: "",
             objectToEdit: {},
             tileLayers: {
                 street: null,
