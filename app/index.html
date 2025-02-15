@@ -13,8 +13,8 @@
   <meta name="format-detection" content="telephone=no" />
   <meta name="msapplication-tap-highlight" content="no" />
 
-  <link rel="shortcut icon" type="image/png" href="/favicon.png" />
-
+  <!-- <link rel="shortcut icon" type="image/png" href="/favicon.png" /> -->
+  <link rel="shortcut icon" type="image/png" href="/assets/icons/icon-72.webp" />
   <!-- add to homescreen for ios -->
   <!-- <meta name="apple-mobile-web-app-capable" content="yes" /> -->
   <meta name="apple-mobile-web-app-title" content="Ionic App" />
@@ -25,33 +25,52 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-  <link rel="stylesheet" href="/src/assets/css/main.css">
-
+  <link rel="stylesheet" href="/src/assets/css/main.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/gh/linuxguist/google-translate@main/google-translate-xxviii.css" />
 </head>
 
 <body>
   <div id="app"></div>
-  <div id="google_translate_element"
-    style="visibility:hidden;position: absolute; width: auto; height: 40px; background-color: red; top:15%;right: 0%;margin:auto;transform: translate(-50%,-50%);">
-  </div>
+  <div id="google_translate_element" style="
+        visibility: hidden;
+        position: absolute;
+        width: 50%;
+        height: 40px;
+        background-color: rgb(255, 255, 255);
+        top: 15%;
+        right: 10%;
+        margin: auto;
+        transform: translate(-50%, -50%);
+      "></div>
   <!-- Placeholder for the Google Translate widget -->
 
   <script>
-
     const browserLanguage = navigator.language || navigator.languages[0];
     console.log(browserLanguage); // Outputs something like 'en-US' or 'fr'
 
     function googleTranslateElementInit() {
-      new google.translate.TranslateElement({
-        pageLanguage: browserLanguage, // Default language
-        includedLanguages: 'en,fr,es,de,zh-CN,ja,ar', // Add languages you want to support
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-      }, 'google_translate_element');
+      new google.translate.TranslateElement(
+        {
+          pageLanguage: browserLanguage, // Default language
+          includedLanguages: "en,fr,es,de,zh-CN,ja,ar", // Add languages you want to support
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        },
+        "google_translate_element"
+      );
     }
-  </script>
 
-  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  </script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/gh/linuxguist/google-translate@main/google-translate-viii.js"></script>
+  <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
   <script type="module" src="/src/main.ts"></script>
+
+
 </body>
 
 </html>
+<!-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/linuxguist/google-translate@main/google-translate-xxviii.css">     -->
+<!-- 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/linuxguist/google-translate@main/google-translate-viii.js"></script>   -->

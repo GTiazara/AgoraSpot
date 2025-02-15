@@ -22,3 +22,8 @@ body {
 #goog-gt-tt {
     display: none !important;
 }
+
+#google_translate_element {
+    visibility: hidden;
+    ;
+}

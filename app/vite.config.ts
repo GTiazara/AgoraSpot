@@ -26,5 +26,12 @@ export default defineConfig({
   build: {
     target: 'esnext', // Ensure the output is compatible with modern browsers
     minify: 'esbuild',  // Minification via esbuild (faster and cleaner)
-  }
+  },
+  // server: {
+  //   https: {
+  //     key: "./gmt-front-privateKey.key",
+  //     cert: "./gmt-front.crt"
+  //   }
+  // },
+
 })
