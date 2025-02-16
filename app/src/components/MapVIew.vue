@@ -3,6 +3,25 @@
     <slot></slot>
   </div>
 
+  <v-fab
+    class="ms-4"
+    color="#e97223"
+    icon=""
+    location="bottom right"
+    size="55"
+    style="position: fixed; top: 80%; left: 90%; z-index: 3000000000"
+    absolute
+    offset
+    @click="fetchRandomAILocation"
+  >
+    <img
+      src="/assets/img/groundhog-day.gif"
+      alt="home icon"
+      width="85%"
+      style="border-radius: 40px"
+    />
+  </v-fab>
+
   <JoinEventVIew
     :isOpenJoinEventEvent="isOpenJoinEventEvent"
     @update:isOpenJoinEventEvent="isOpenJoinEventEvent = $event"
@@ -59,6 +78,7 @@ export default defineComponent({
                 this.initializeMap();
                 this.fetchEvents();
                 const browserLanguage = navigator.language || navigator.languages[0];
+
                 function translateToBrowserLanguage(lang) {
                     const selectElement = document.querySelector(".goog-te-combo");
                     const translate_button = document.getElementById('translate');
@@ -77,6 +97,8 @@ export default defineComponent({
                 }
 
                 translateToBrowserLanguage(browserLanguage)
+
+                this.fetchRandomAILocation()
 
             }, 100); // Adjust the delay as needed
         });
@@ -205,6 +227,35 @@ export default defineComponent({
                 month: 'long',
                 day: 'numeric'
             });
+        },
+
+        async fetchRandomAILocation() {
+            // Fetch random location from the AI API
+            // fetch("https://api.aidungeon.io/locations/random")
+            //     .then((response) => response.json())
+            //     .then((data) => {
+            //         console.log("Random location:", data);
+            //         const { latitude, longitude } = data;
+            //         this.map.flyTo([latitude, longitude], 15, {
+            //             animate: true,
+            //             duration: 1.2, // Smooth animation duration in seconds
+            //         });
+            //     })
+            //     .catch((error) => {
+            //         console.error("Error fetching random location:", error);
+            //     });
+            console.log("putter")
+
+            puter.ai.chat(`my app generates facts about a location. generate a fact about a random location in the world (anywhere, from big to little historique event, make sure it's unique at each request) as geojson type Feature format with properties (fact, adress, location, and image or video from internet )?`, {model: 'o3-mini' }).then((response) =>{
+              console.log(response);
+              let data = JSON.parse(response.message.content)
+              console.log(data)
+              const marker = L.marker([data.geometry.coordinates[1], data.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) }).bindPopup(data.properties.fact) // Add marker to map
+
+              window.markerObjects.addLayer(marker)
+
+            })
+
         },
 
         // Fetch events from the backend API
