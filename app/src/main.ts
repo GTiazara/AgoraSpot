@@ -233,6 +233,27 @@ app.config.globalProperties.$customIconhtmlUserLocation = {
   popupAnchor: [0, -60], // Position the popup when the marker is clicked
 };
 
+app.config.globalProperties.$customIconhtmlRandomFact = {
+  className: 'leaflet-marker-icon',
+  html: `
+      <div style="
+          width: 60px; 
+          height: 60px; 
+          background: radial-gradient(circle at center,rgb(125, 255, 38),rgb(29, 251, 0),rgb(111, 230, 0));
+          border-radius: 50%; 
+          display: flex; 
+          justify-content: center; 
+          align-items: center; 
+          box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3); 
+          animation: pulse-animation 1.5s infinite ease-in-out;
+      ">
+          <img src="/assets/img/groundhog-day.gif" alt=" icon" style="width: 36px; height: 36px; border-radius: 50%;" />
+      </div>
+    `,
+  iconSize: [60, 60], // Size of the custom icon
+  iconAnchor: [30, 60], // Position the icon on the map
+  popupAnchor: [0, -60], // Position the popup when the marker is clicked
+};
 
 
 
