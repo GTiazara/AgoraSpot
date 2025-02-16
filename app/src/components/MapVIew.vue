@@ -98,7 +98,7 @@ export default defineComponent({
 
                 translateToBrowserLanguage(browserLanguage)
 
-                this.fetchRandomAILocation()
+                // this.fetchRandomAILocation()
 
             }, 100); // Adjust the delay as needed
         });
@@ -229,7 +229,7 @@ export default defineComponent({
             });
         },
 
-        async fetchRandomAILocation() {
+        fetchRandomAILocation() {
             // Fetch random location from the AI API
             // fetch("https://api.aidungeon.io/locations/random")
             //     .then((response) => response.json())
@@ -245,16 +245,21 @@ export default defineComponent({
             //         console.error("Error fetching random location:", error);
             //     });
             console.log("putter")
+            console.log("gemini")
 
-            puter.ai.chat(`my app generates facts about a location. generate a fact about a random location in the world (anywhere, from big to little historique event, make sure it's unique at each request) as geojson type Feature format with properties (fact, adress, location, and image or video from internet )?`, {model: 'grok-beta' }).then((response) =>{
-              console.log(response);
-              let data = JSON.parse(response.message.content)
-              console.log(data)
-              const marker = L.marker([data.geometry.coordinates[1], data.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) }).bindPopup(data.properties.fact) // Add marker to map
+            // puter.ai.chat(`my app generates facts about a location. generate a fact about a random location in the world (anywhere, from big to little historique event, make sure it's unique at each request) as geojson type Feature format with properties (fact, adress, location, and image or video from internet )?`).then((response) =>{
+            //   console.log(response);
+            //   let data = JSON.parse(response.message.content)
+            //   console.log(data)
+            //   const marker = L.marker([data.geometry.coordinates[1], data.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) }).bindPopup(data.properties.fact) // Add marker to map
 
-              window.markerObjects.addLayer(marker)
+            //   window.markerObjects.addLayer(marker)
 
+            // })
+            fetch(`${this.$backBaseUrl}/agoraback/api/random_location_fact_api`).then(res => res.json()).then(data => {
+                console.log("gemini", data)
             })
+            this.fetchEvents();
 
         },
 
