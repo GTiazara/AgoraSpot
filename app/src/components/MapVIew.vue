@@ -345,6 +345,21 @@ export default defineComponent({
                       custonIcon = this.$customIconhtmlRandomFact
                       const marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) }).bindPopup(event.properties.description) // Add marker to map
                       this.markers.addLayer(marker);
+
+
+                      marker.on("click", () => {
+
+                        if(window.leafletMap.getZoom() <7){
+                          window.leafletMap.flyTo([latitude, longitude], 13, {
+                        animate: true,
+                        duration: 1.2, // Smooth animation duration in seconds
+                    });
+                      }
+
+
+
+
+                      })
                       return
                     }
                     // else if (event.properties.tags.includes("art")) {

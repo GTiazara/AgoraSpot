@@ -1,15 +1,15 @@
 <template>
   <ion-header>
     <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-button @click="cancelChanges()" style="background-color: red"
-          >Cancel</ion-button
-        >
-      </ion-buttons>
-      <ion-title>{{ $props.title }}</ion-title>
       <ion-buttons slot="end">
-        <ion-button @click="confirmChanges()" style="background-color: greenyellow"
-          >Done</ion-button
+        <ion-button @click="cancelChanges()" class="top-button-cancel">Cancel</ion-button>
+      </ion-buttons>
+      <div style="text-align: center; font-size: 20px; font-weight: bold">
+        {{ $props.title }}
+      </div>
+      <ion-buttons slot="start">
+        <ion-button @click="confirmChanges()" class="top-button-confirm"
+          >Confirm</ion-button
         >
       </ion-buttons>
     </ion-toolbar>
@@ -138,3 +138,39 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.top-button-cancel {
+  color: #fff;
+  /* padding: 15px 25px; */
+  border-radius: 10px;
+  background-color: #d62506;
+  /* background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, 0.23) 0%, transparent 86.18%), radial-gradient(66% 87% at 26% 20%, rgba(255, 255, 255, 0.41) 0%, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%); */
+  box-shadow: 2px 19px 31px rgba(0, 0, 0, 0.2);
+  font-weight: bold;
+  font-size: 16px;
+  border: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  cursor: pointer;
+  margin-right: 15px;
+}
+
+.top-button-confirm {
+  color: #fff;
+  /* padding: 15px 25px; */
+  border-radius: 10px;
+  background-color: #50cc1f;
+  /* background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, 0.23) 0%, transparent 86.18%), radial-gradient(66% 87% at 26% 20%, rgba(255, 255, 255, 0.41) 0%, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%); */
+  box-shadow: 2px 19px 31px rgba(0, 0, 0, 0.2);
+  font-weight: bold;
+  font-size: 16px;
+  border: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  cursor: pointer;
+  margin-left: 15px;
+}
+</style>
