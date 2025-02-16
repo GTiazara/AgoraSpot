@@ -246,7 +246,7 @@ export default defineComponent({
             //     });
             console.log("putter")
 
-            puter.ai.chat(`my app generates facts about a location. generate a fact about a random location in the world (anywhere, from big to little historique event, make sure it's unique at each request) as geojson type Feature format with properties (fact, adress, location, and image or video from internet )?`, {model: 'o3-mini' }).then((response) =>{
+            puter.ai.chat(`my app generates facts about a location. generate a fact about a random location in the world (anywhere, from big to little historique event, make sure it's unique at each request) as geojson type Feature format with properties (fact, adress, location, and image or video from internet )?`, {model: 'grok-beta' }).then((response) =>{
               console.log(response);
               let data = JSON.parse(response.message.content)
               console.log(data)
@@ -295,9 +295,11 @@ export default defineComponent({
                     } else if (event.properties.tags.includes("market")) {
                         custonIcon = this.$customIconhtmlMarket
                     }
-                    // else if (event.properties.tags.includes("food")) {
-                    //     custonIcon = this.$customIconhtmlFood
-                    // } else if (event.properties.tags.includes("art")) {
+
+                    else if (event.properties.tags.includes("location_random_fact")) {
+                        custonIcon = this.$customIconhtmlRandomFact
+                    }
+                    // else if (event.properties.tags.includes("art")) {
                     //     custonIcon = this.$customIconhtmlArt
                     // } else if (event.properties.tags.includes("tech")) {
                     //     custonIcon = this.$customIconhtmlTech
