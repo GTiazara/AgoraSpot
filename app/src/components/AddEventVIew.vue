@@ -1,119 +1,241 @@
 <template>
-    <ion-action-sheet :is-open="isOpenLocationActionSheet" class="my-custom-class" header="Add event here" :buttons="actionSheetButtons" @didDismiss="actionOnCloseAddLocationSheet($event)">
-    
+    <ion-action-sheet :is-open="isOpenLocationActionSheet" class="my-custom-class" header="Add event here"
+        :buttons="actionSheetButtons" @didDismiss="actionOnCloseAddLocationSheet($event)">
+
+
+
     </ion-action-sheet>
-    
+
+
+
     <ion-modal :is-open="isOpen" id="add-event" class="tab-modal">
+
         <ion-header>
+
             <ion-toolbar>
-    
-    
+
+
+
+
+
                 <ion-buttons slot="start">
+
                     <ion-button class="top-button-post-event" @click="handleAddEvent">
+
                         Create
+
                         <ion-icon :icon="add" />
+
                     </ion-button>
+
                 </ion-buttons>
-    
-    
+
                 <ion-buttons slot="end">
+
                     <ion-button @click="setOpen(false)" class="top-button-cancel-event">
+
                         cancel
+
                         <ion-icon :icon="close" />
+
                     </ion-button>
+
                 </ion-buttons>
-    
+
+
+
             </ion-toolbar>
+
         </ion-header>
+
         <ion-content>
-    
-    
+
+
+
+
+
             <ion-item style="margin-top: 10px;">
-                <ion-button class="top-button-select-tags" @click="setOpenModalCatégorie(true)">
+
+                <v-row>
+
+                    <v-col align="center">
+
+                        <ion-button class="top-button-select-tags" @click="setOpenModalCatégorie(true)">
+
+
+
+                            <div style="padding:10px;">
+
+                                Select event tag {{ selectedCategorieEventText }}
+
+                                <ion-icon slot="icon-only" :icon="add" aria-hidden="true"></ion-icon>
+
+                            </div>
+
+                        </ion-button>
+
+                        <!-- <ion-select label-placement="floating" fill="outline" label="Select catégories" placeholder="Select catégories">
     
-                    <p>
-                        Select event tag: {{ selectedCategorieEventText }}
-                        <ion-icon slot="icon-only" :icon="add" aria-hidden="true"></ion-icon>
-                    </p>
-                </ion-button>
-                <!-- <ion-select label-placement="floating" fill="outline" label="Select catégories" placeholder="Select catégories">
-        </ion-select> -->
+            </ion-select> -->
+
+                    </v-col>
+
+                </v-row>
+
             </ion-item>
-    
+
+
+
             <ion-item style="margin-bottom: 10px;">
-                <ion-textarea rows="2" maxlength="200" minlenght="4" @ionInput="getDescription" :auto-grow="true" placeholder="Enter event description">
+
+                <ion-textarea class="top-button-select-tags" rows="2" maxlength="200" minlenght="4"
+                    @ionInput="getDescription" :auto-grow="true" placeholder="Enter event description">
+
                 </ion-textarea>
+
             </ion-item>
-    
-    
+
+
+
             <ion-modal :is-open="isOpenModalCatégorie" ref="modalSelectEventCategorie">
-                <app-typeahead title="Event tag" :items="eventCategories" :selectedItems="selectedCategorieEvent" @selection-change="categorieSelectionChanged($event)" @selection-cancel="setOpenModalCatégorie(false)"></app-typeahead>
+
+                <app-typeahead title="Event tag" :items="eventCategories" :selectedItems="selectedCategorieEvent"
+                    @selection-change="categorieSelectionChanged($event)"
+                    @selection-cancel="setOpenModalCatégorie(false)"></app-typeahead>
+
             </ion-modal>
-    
-    
-    
-            <ion-item >
 
-            <div style="display: flex; flex-direction: column; background-color: #0800f0;  color: white;border-radius: 5px 5px 0px 0px;width: 100%; padding:5px">
-    
-    
-                <p>Select dates</p>
-                <p>
-                    Start Date: <strong>{{ startDate ? formatDate(startDate) : "Not selected" }}</strong>
-                </p>
-                <p>
-                    End Date: <strong>{{ endDate ? formatDate(endDate) : "Not selected" }}</strong>
-                </p>
-            </div>
-    
-    
-    
+
+
+
+
+
+
+            <ion-item>
+
+
+
+                <div
+                    style="display: flex; flex-direction: column; background-color: white; border-radius: 10px; border-style: solid; border-width: 1px; border-color: blue;  color: white;border-radius: 5px 5px 0px 0px;width: 100%; padding:5px; color:black">
+
+
+
+
+
+                    <p>Select dates</p>
+
+                    <p>
+
+                        Start Date: <strong>{{ startDate ? formatDate(startDate) : "Not selected" }}</strong>
+
+                    </p>
+
+                    <p>
+
+                        End Date: <strong>{{ endDate ? formatDate(endDate) : "Not selected" }}</strong>
+
+                    </p>
+
+                </div>
+
+
+
+
+
+
+
             </ion-item>
-    
-    
+
+
+
+
+
             <!-- Single Calendar for Date Range -->
+
             <ion-item>
+
                 <!-- <ion-label>Select Dates</ion-label> -->
-    
-                <ion-datetime presentation="date" :multiple="true" :value="selectedDates" @ionChange="handleDateSelection">
-    
-                </ion-datetime>
-    
-            </ion-item>
-    
-    
-    
-            <ion-item>
+
                 <v-row>
-                    <v-col align="left">
-    
-                        <ion-datetime presentation="time" locale="en-GB-u-hc-h24" @ionChange="handleTimeStartSelection">
-                            <span slot="title">Début:{{ startTime }}</span></ion-datetime>
-                    </v-col align="right">
-                    <v-col>
-    
-    
-                        <ion-datetime presentation="time" locale="en-GB-u-hc-h24" @ionChange="handleTimeEndSelection"><span slot="title">Fin:{{ endTime
-                                    }}</span></ion-datetime>
+
+                    <v-col align="center">
+
+                        <ion-datetime presentation="date" :multiple="true" :value="selectedDates"
+                            @ionChange="handleDateSelection">
+
+
+                        </ion-datetime>
+
+
+
                     </v-col>
+
                 </v-row>
+
             </ion-item>
 
             <ion-item>
+
                 <v-row>
+
                     <v-col align="left">
-                        <p>Optional : Event image link</p>
-                        <ion-textarea rows="2" maxlength="500" minlenght="4" @ionInput="getImage" :auto-grow="true" placeholder="Enter sources of information">
-                        </ion-textarea>
-                        <p>Optional: information source</p>
-                        <ion-textarea rows="2" maxlength="500" minlenght="4" @ionInput="getInfoSource" :auto-grow="true" placeholder="Enter sources of information">
-                        </ion-textarea>
+
+
+
+                        <ion-datetime presentation="time" locale="en-GB-u-hc-h24" @ionChange="handleTimeStartSelection">
+
+                            <span slot="title">Début:{{ startTime }}</span></ion-datetime>
+
+                    </v-col align="right">
+
+                    <v-col>
+
+
+
+
+
+                        <ion-datetime presentation="time" locale="en-GB-u-hc-h24"
+                            @ionChange="handleTimeEndSelection"><span slot="title">Fin:{{ endTime
+
+                                }}</span></ion-datetime>
+
                     </v-col>
+
                 </v-row>
+
             </ion-item>
-    
-    
+
+
+
+            <ion-item>
+
+                <v-row>
+
+                    <v-col align="center">
+
+                        <p>Optional : Event image link</p>
+
+                        <ion-textarea rows="2" maxlength="500" minlenght="4" @ionInput="getImage" :auto-grow="true"
+                            placeholder="Enter sources of information">
+
+                        </ion-textarea>
+
+                        <p>Optional: information source</p>
+
+                        <ion-textarea rows="2" maxlength="500" minlenght="4" @ionInput="getInfoSource" :auto-grow="true"
+                            placeholder="Enter sources of information">
+
+                        </ion-textarea>
+
+                    </v-col>
+
+                </v-row>
+
+            </ion-item>
+
+
         </ion-content>
+
     </ion-modal>
 </template>
 
@@ -200,10 +322,10 @@ export default {
                 { text: 'Education', value: 'education' },
                 { text: 'Fitness', value: 'fitness' },
                 { text: 'Race', value: 'race' },
-            ], 
+            ],
 
-            eventImage:"",
-            eventInfoSource:""
+            eventImage: "",
+            eventInfoSource: ""
 
         };
     },
@@ -225,7 +347,7 @@ export default {
             this.eventImage = event.detail.value
         },
 
-        getInfoSource(event){
+        getInfoSource(event) {
             console.log(event.detail.value)
             this.eventInfoSource = event.detail.value
         },
@@ -238,7 +360,7 @@ export default {
                 startTime: this.startTime,
                 endTime: this.endTime,
                 location: this.location,
-                description: this.eventDescription, 
+                description: this.eventDescription,
                 eventImage: this.eventImage,
                 infoSource: this.eventInfoSource
             };
@@ -274,8 +396,10 @@ export default {
             }
         },
 
-        setOpenModalCatégorie(open) { console.log(this.modalSelectEventCategorie);
-            this.isOpenModalCatégorie = open },
+        setOpenModalCatégorie(open) {
+            console.log(this.modalSelectEventCategorie);
+            this.isOpenModalCatégorie = open
+        },
 
         categorieSelectionChanged(fruits) {
             this.selectedCategorieEvent = fruits;
@@ -363,14 +487,13 @@ export default {
             try {
                 if (event.detail.data.action == "add_event") {
                     this.setOpen(true)
-                }
-                else if (event.detail.data.action == "cancel") {
+                } else if (event.detail.data.action == "cancel") {
                     // if (this.marker) {
                     // window.leafletMap.removeLayer(this.marker);
                     // this.marker = null
                     // this.first_click = true
-                
-        // }
+
+                    // }
                 }
             } catch (error) {
                 console.log(error)
@@ -388,9 +511,9 @@ export default {
 .top-button-post-event {
     color: #fff;
     /* padding: 15px 25px; */
-    border-radius: 100px;
-    background-color: #5fee27;
-    background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, 0.23) 0%, transparent 86.18%), radial-gradient(66% 87% at 26% 20%, rgba(255, 255, 255, 0.41) 0%, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 10px;
+    background-color: #50cc1f;
+    /* background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, 0.23) 0%, transparent 86.18%), radial-gradient(66% 87% at 26% 20%, rgba(255, 255, 255, 0.41) 0%, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%); */
     box-shadow: 2px 19px 31px rgba(0, 0, 0, 0.2);
     font-weight: bold;
     font-size: 16px;
@@ -399,14 +522,15 @@ export default {
     -webkit-user-select: none;
     touch-action: manipulation;
     cursor: pointer;
+    margin-left: 15px;
 }
 
 .top-button-cancel-event {
     color: #fff;
     /* padding: 15px 25px; */
-    border-radius: 100px;
-    background-color: #f36e6e;
-    background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, 0.23) 0%, transparent 86.18%), radial-gradient(66% 87% at 26% 20%, rgba(255, 255, 255, 0.41) 0%, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 10px;
+    background-color:#d62506;
+    /* background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, 0.23) 0%, transparent 86.18%), radial-gradient(66% 87% at 26% 20%, rgba(255, 255, 255, 0.41) 0%, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%); */
     box-shadow: 2px 19px 31px rgba(0, 0, 0, 0.2);
     font-weight: bold;
     font-size: 16px;
@@ -415,27 +539,17 @@ export default {
     -webkit-user-select: none;
     touch-action: manipulation;
     cursor: pointer;
+    margin-right: 15px;
 }
 
 .top-button-select-tags {
-    background-color: #0078d0;
+    background-color: white;
     border: 0;
     margin-bottom: 10px;
     border-radius: 10px;
-    color: #fff;
-    cursor: pointer;
-    display: inline-block;
-    font-family: system-ui, -apple-system, system-ui, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
-    font-size: 18px;
-    font-weight: 600;
-    outline: 0;
-    padding: 16px 21px;
-    position: relative;
-    text-align: center;
-    text-decoration: none;
-    transition: all .3s;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
+    padding: 10px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #0842ff;
 }
 </style>
