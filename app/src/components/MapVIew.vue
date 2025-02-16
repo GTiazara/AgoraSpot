@@ -4,7 +4,8 @@
   </div>
 
   <v-fab
-    class="ms-4"
+    id="my_fab_button"
+    class="ms-4 my_fab_button"
     color="#e97223"
     icon=""
     location="bottom right"
@@ -15,6 +16,7 @@
     @click="fetchRandomAILocation"
   >
     <img
+      id="random_fact_btn_img"
       src="/assets/img/groundhog-day.gif"
       alt="home icon"
       width="85%"
@@ -32,6 +34,15 @@
     :isOpenEditModal="isOpenEditEventEvent"
     :objectToEdit="objectToEdit"
   ></EditEventView>
+
+  <ion-toast
+    color="warning"
+    style="z-index: 1000000000000000"
+    :is-open="isRandmFactToastFromAiOpen"
+    message="Unfrotunately, a random fact about a location was generated less than 5 minutes ago. Let's fly to latest."
+    :duration="5000"
+    @didDismiss="setOpenToasNoRandomFactFromAi(false)"
+  ></ion-toast>
 </template>
 
 <script lang="js">
@@ -46,6 +57,11 @@ import EditEventView from './EditEventView.vue';
 
 import 'leaflet-search/dist/leaflet-search.min.css'
 import 'leaflet-search'
+import 'leaflet.markercluster/dist/leaflet.markercluster.js'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+
+import { IonToast} from "@ionic/vue";
 
 export default defineComponent({
 
@@ -53,6 +69,7 @@ export default defineComponent({
     components: {
         JoinEventVIew,
         EditEventView,
+        IonToast
     },
 
     data() {
@@ -68,11 +85,13 @@ export default defineComponent({
                 satellite: null,
             },
             currentLayer: null,
-            state: state
+            state: state,
+            markers: new L.MarkerClusterGroup(),
+            isRandmFactToastFromAiOpen: false,
         }
     },
 
-    created() {
+    mounted() {
         this.$nextTick(() => {
             setTimeout(() => {
                 this.initializeMap();
@@ -121,6 +140,10 @@ export default defineComponent({
         reloadMap() {
             // Call the refresh method on the MapView component
             console.log('reloadMap');
+        },
+
+        setOpenToasNoRandomFactFromAi(open) {
+            this.isRandmFactToastFromAiOpen = open
         },
         initializeMap() {
             const mapContainer = document.getElementById('map');
@@ -188,7 +211,7 @@ export default defineComponent({
 
                 // Set view to user's location
                 this.map.setView([46.603354, 1.888334], 3)
-
+                map.addLayer(this.markers);
 
             } else {
                 console.error('Map container not found.');
@@ -244,8 +267,8 @@ export default defineComponent({
             //     .catch((error) => {
             //         console.error("Error fetching random location:", error);
             //     });
-            console.log("putter")
-            console.log("gemini")
+            // console.log("putter")
+            // console.log("gemini")
 
             // puter.ai.chat(`my app generates facts about a location. generate a fact about a random location in the world (anywhere, from big to little historique event, make sure it's unique at each request) as geojson type Feature format with properties (fact, adress, location, and image or video from internet )?`).then((response) =>{
             //   console.log(response);
@@ -258,9 +281,26 @@ export default defineComponent({
             // })
             fetch(`${this.$backBaseUrl}/agoraback/api/random_location_fact_api`).then(res => res.json()).then(data => {
                 console.log("gemini", data)
-            })
-            this.fetchEvents();
+                if (data.code=="cant_add_new_fact"){
+                  document.getElementById("random_fact_btn_img").classList.add('inactive');
+                  this.setOpenToasNoRandomFactFromAi(true)
+                  this.map.flyTo([data.events[0].geometry.coordinates[1], data.events[0].geometry.coordinates[0]], 15, {
+                        animate: true,
+                        duration: 1.2, // Smooth animation duration in seconds
+                    });
+                }
+                else {
+                  document.getElementById("random_fact_btn_img").classList.remove('inactive');
+                  const marker = L.marker([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) }).bindPopup(data.ai_response.properties.fact) // Add marker to map
+                  this.markers.addLayer(marker);
+                  this.map.flyTo([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], 15, {
+                        animate: true,
+                        duration: 1.2, // Smooth animation duration in seconds
+                    });
 
+                }
+
+            })
         },
 
         // Fetch events from the backend API
@@ -302,7 +342,10 @@ export default defineComponent({
                     }
 
                     else if (event.properties.tags.includes("location_random_fact")) {
-                        custonIcon = this.$customIconhtmlRandomFact
+                      custonIcon = this.$customIconhtmlRandomFact
+                      const marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) }).bindPopup(event.properties.description) // Add marker to map
+                      this.markers.addLayer(marker);
+                      return
                     }
                     // else if (event.properties.tags.includes("art")) {
                     //     custonIcon = this.$customIconhtmlArt
@@ -323,8 +366,10 @@ export default defineComponent({
                     const marker = L.marker([latitude, longitude], { icon: L.divIcon(custonIcon), title: `${event.properties.description} ${event.properties.tags}` }) // Add marker to map
 
                     window.markerObjects.addLayer(marker)
+                    // this.markers.addLayer(marker);
 
-                    marker.addTo(this.map);
+                    window.markerObjects.addTo(this.map);
+                    // this.markers.addLayer(marker);
 
                     if (!event.properties.participants) {
                         event.properties.participants = {}
@@ -606,7 +651,14 @@ export default defineComponent({
   margin-left: 0px;
   width: 100%;
 } */
-
+.inactive {
+  border-style: solid;
+  border-color: grey;
+  border-width: 5px;
+  border-radius: 30px;
+  /* animation: pulse-animation 1.5s infinite ease-in-out; */
+  /* box-shadow: 0 4px 12px rgba(66, 165, 245, 0.5); */
+}
 ion-textarea {
   font-size: 16px;
   /* padding: 8px; */
@@ -684,5 +736,22 @@ ion-action-sheet.my-custom-class ion-backdrop {
   margin-top: -5px;
   border-radius: 50%;
   background-color: white;
+}
+
+@keyframes pulse-animation {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 16px rgba(255, 102, 0, 0.6);
+  }
+
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 24px rgba(255, 102, 0, 0.8);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 16px rgba(255, 102, 0, 0.6);
+  }
 }
 </style>
