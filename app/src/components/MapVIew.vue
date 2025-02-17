@@ -85,7 +85,7 @@ export default defineComponent({
             },
             currentLayer: null,
             state: state,
-            markers: new L.MarkerClusterGroup(),
+            markers: null,
             isRandmFactToastFromAiOpen: false,
         }
     },
@@ -209,10 +209,15 @@ export default defineComponent({
                 this.map = map
                 window.markerObjects = new L.LayerGroup();
                 this.popupObjects = new L.LayerGroup();
+                this.markers = new L.markerClusterGroup({spiderfyOnMaxZoom: false,
+                showCoverageOnHover: false,
+                                    zoomToBoundsOnClick: false});
 
                 // Set view to user's location
                 this.map.setView([46.603354, 1.888334], 3)
-                map.addLayer(this.markers);
+                window.markerObjects.addLayer(this.markers);
+                window.markerObjects.addTo(this.map);
+                window.markers = this.markers
                 map.addLayer(this.popupObjects );
 
                 // Layer Control (Basemap Switcher)
@@ -228,6 +233,17 @@ export default defineComponent({
                   {},
                   { collapsed: true }
                 ).addTo(map);
+
+                this.map.on("zoomstart", () => {
+
+                  window.leafletMap.eachLayer((layer) => {
+  if (layer instanceof L.Popup) {
+    this.map.removeLayer(layer);
+  }
+});
+
+
+                })
 
 
             } else {
@@ -264,8 +280,19 @@ export default defineComponent({
                   document.getElementById("random_fact_btn_img").classList.remove('inactive');
                   const marker = L.marker([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) })// Add marker to map
                   const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
+                  this.markers.addLayer(marker);
 
                   marker.on("click", () => {
+
+
+
+                  this.map.flyTo([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], 15, {
+                        animate: true,
+                        duration: 1.2, // Smooth animation duration in seconds
+                    });
+
+
+                    this.map.once("moveend", () => {
                         L.popup({
                                             maxWidth: deviceMaxWidth,
                                             closeButton: true,
@@ -277,12 +304,7 @@ export default defineComponent({
                                         .setContent()
                                         .openOn(this.popupObjects);
                                       })
-
-                  this.markers.addLayer(marker);
-                  this.map.flyTo([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], 15, {
-                        animate: true,
-                        duration: 1.2, // Smooth animation duration in seconds
-                    });
+                                    })
 
                 }
 
@@ -291,7 +313,7 @@ export default defineComponent({
 
         // Fetch events from the backend API
         async fetchEvents() {
-            try {
+
                 const response = await fetch(`${this.$backBaseUrl}/agoraback/api/get_events`); // Adjust URL as needed
                 console.log(response)
                 let events = await response.json();
@@ -304,8 +326,9 @@ export default defineComponent({
                     console.log("Popup closed!", e);
                     document.getElementById("row-header-search").style.visibility = "visible"
 
+                    // thisObj.popupObjects.clearLayers();
 
-                    // window.leafletMap.removeLayer(thisObj.popupObjects);
+                    // window.leafletMap.removeLayer(thisObj.markers);
 
 
                     if (e.popup._source instanceof L.Marker) {
@@ -341,12 +364,22 @@ export default defineComponent({
                       custonIcon = this.$customIconhtmlRandomFact
                       let marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) })// Add marker to map
                       const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
+                      marker
 
-                      this.markers.addLayer(marker);
+                      window.markers.addLayer(marker);
                       // marker.bindPopup(event.properties.description)
 
 
                       marker.on("click", (marker) => {
+
+                        if(this.map.getZoom() <7){
+                          this.map.flyTo([latitude, longitude], 13, {
+                        animate: true,
+                        duration: 1.2, // Smooth animation duration in seconds
+                    });
+                      }
+
+                        this.map.once("moveend", () => {
 
                         L.popup({
                                             maxWidth: deviceMaxWidth,
@@ -358,14 +391,9 @@ export default defineComponent({
                                         .setLatLng([latitude, longitude])
                                         .setContent(event.properties.description)
                                         .openOn(thisObj.popupObjects);
+                        })
 
 
-                        if(this.map.getZoom() <7){
-                          this.map.flyTo([latitude, longitude], 13, {
-                        animate: true,
-                        duration: 1.2, // Smooth animation duration in seconds
-                    });
-                      }
 
 
 
@@ -378,10 +406,7 @@ export default defineComponent({
                     const marker = L.marker([latitude, longitude], { icon: L.divIcon(custonIcon), title: `${event.properties.description} ${event.properties.tags}` }) // Add marker to map
 
                     window.markerObjects.addLayer(marker)
-                    // this.markers.addLayer(marker);
 
-                    window.markerObjects.addTo(this.map);
-                    // this.markers.addLayer(marker);
 
                     if (!event.properties.participants) {
                         event.properties.participants = {}
@@ -621,9 +646,7 @@ export default defineComponent({
 
 
 
-            } catch (error) {
-                console.error("Error fetching events:", error);
-            }
+
         },
 
 
