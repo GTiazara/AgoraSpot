@@ -83,9 +83,8 @@ router.get("/", async (req, res) => {
         console.log("randomCountry", randomCountry);
 
 
-        const prompt = `my app generates facts about a location.
-        Generate true fact (funny or serious)that give people drean to tranvel to a random city of ${randomCountry} (anywhere, from big to little fact event, make sure it's unique at each request and from any county, cities, big or little)
-         as geojson type Feature format with properties (fact, adress, precise location of the adress). the coordinate of the geojson must be a pecise location ot the address and return only the geosjon`;
+        const prompt = `My app generates facts about a location. Generate true fact (funny or serious)that gives people dream to travel to a random city of ${randomCountry} (anywhere, from big to little facts or events, make sure it's unique at each request and from any cities, big or little)
+         as geojson type Feature format with properties (fact, adress, precise location of the adress). The coordinate of the geojson must be a pecise geocoding ot the address and return only the geosjon.`;
 
 
         const result = await model.generateContent(prompt);
