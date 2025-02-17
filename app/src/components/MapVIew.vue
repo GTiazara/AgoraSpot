@@ -275,7 +275,7 @@ export default defineComponent({
                                         })
                                         .setLatLng([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]])
                                         .setContent()
-                                        .openOn(this.map);
+                                        .openOn(this.popupObjects);
                                       })
 
                   this.markers.addLayer(marker);
@@ -342,7 +342,7 @@ export default defineComponent({
                       let marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) })// Add marker to map
                       const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
 
-                      this.map.addLayer(marker);
+                      this.markers.addLayer(marker);
                       // marker.bindPopup(event.properties.description)
 
 
