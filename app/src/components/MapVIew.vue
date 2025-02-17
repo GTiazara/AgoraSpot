@@ -204,14 +204,12 @@ export default defineComponent({
                 window.markerObjects = new L.LayerGroup();
                 this.popupObjects = new L.LayerGroup();
                 this.markers = new L.markerClusterGroup({
-                    spiderfyOnMaxZoom: false,
-                    showCoverageOnHover: false,
-                    zoomToBoundsOnClick: false
+
                 });
 
                 // Set view to user's location
                 this.map.setView([46.603354, 1.888334], 3)
-                window.markerObjects.addLayer(this.markers);
+                this.map.addLayer(this.markers);
                 window.markerObjects.addTo(this.map);
                 window.markers = this.markers
                 map.addLayer(this.popupObjects);
@@ -225,17 +223,17 @@ export default defineComponent({
                     "Dark catocdn": this.tileLayers.cartocdn,
                 }, {}, { collapsed: true }).addTo(map);
 
-                // this.map.on("zoomstart", () => {
 
-                //     window.leafletMap.eachLayer((layer) => {
-                //         if (layer instanceof L.Popup) {
-                //             this.map.removeLayer(layer);
-                //         }
-                //     });
+                this.map.on("zoomstart", () => {
+
+                    window.leafletMap.eachLayer((layer) => {
+                        if (layer instanceof L.Popup) {
+                            this.map.removeLayer(layer);
+                        }
+                    });
 
 
-                // })
-
+                })
 
             } else {
                 console.error('Map container not found.');
@@ -259,17 +257,33 @@ export default defineComponent({
 
             fetch(`${this.$backBaseUrl}/agoraback/api/random_location_fact_api`).then(res => res.json()).then(data => {
                 console.log("gemini", data)
+                const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
                 if (data.code == "cant_add_new_fact") {
                     document.getElementById("random_fact_btn_img").classList.add('inactive');
                     this.setOpenToasNoRandomFactFromAi(true)
-                    this.map.flyTo([data.events[0].geometry.coordinates[1], data.events[0].geometry.coordinates[0]], 15, {
+                    this.map.flyTo([data.events[0].geometry.coordinates[1], data.events[0].geometry.coordinates[0]], 12, {
                         animate: true,
                         duration: 1.2, // Smooth animation duration in seconds
                     });
+
+                    setTimeout(() => {
+
+                    L.popup({
+                                maxWidth: deviceMaxWidth,
+                                closeButton: true,
+                                autoClose: true,
+                                closeOnClick: false,
+                                offset: [0, -50],
+                            })
+                            .setLatLng([data.events[0].geometry.coordinates[1], data.events[0].geometry.coordinates[0]])
+                            .setContent(data.events[0].properties.description)
+                            .openOn(this.popupObjects);
+                }, 1200)
+
                 } else {
                     document.getElementById("random_fact_btn_img").classList.remove('inactive');
                     const marker = L.marker([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) }) // Add marker to map
-                    const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
+
                     this.markers.addLayer(marker);
 
                     marker.on("click", () => {
@@ -280,20 +294,17 @@ export default defineComponent({
                             animate: true,
                             duration: 1.2, // Smooth animation duration in seconds
                         });
+                        L.popup({
+                                maxWidth: deviceMaxWidth,
+                                closeButton: true,
+                                autoClose: true,
+                                closeOnClick: false,
+                                offset: [0, -50],
+                            })
+                            .setLatLng([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]])
+                            .setContent( data.ai_response.properties.fact)
+                            .openOn(this.popupObjects);
 
-
-                        this.map.once("moveend", () => {
-                            L.popup({
-                                    maxWidth: deviceMaxWidth,
-                                    closeButton: true,
-                                    autoClose: true,
-                                    closeOnClick: false,
-                                    offset: [0, -50],
-                                })
-                                .setLatLng([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]])
-                                .setContent()
-                                .openOn(this.popupObjects);
-                        })
                     })
 
                 }
@@ -316,10 +327,14 @@ export default defineComponent({
                     console.log("Popup closed!", e);
                     document.getElementById("row-header-search").style.visibility = "visible"
 
+
+
+
                     // thisObj.popupObjects.clearLayers();
 
                     // window.leafletMap.removeLayer(thisObj.markers);
-                    // e.popup._map=window.leafletMap
+                    e.popup._map = thisObj.leafletMap
+                    console.log("Popup closed!", e);
 
 
                     if (e.popup._source instanceof L.Marker) {
