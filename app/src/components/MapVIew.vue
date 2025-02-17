@@ -166,10 +166,21 @@ export default defineComponent({
                     }
                 );
 
-                this.tileLayers.dark = L.tileLayer(
-                    // "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-                    // "https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg",
-                    // { maxZoom: maxZoom, attribution: "© stadiamaps" }
+                this.tileLayers.cartocdn = L.tileLayer(
+                    "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+                        maxZoom: maxZoom,
+                        attribution: "© cartocdn",
+                    }
+                );
+
+                this.tileLayers.stamen_watercolor = L.tileLayer(
+                    "https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg", {
+                        maxZoom: maxZoom,
+                        attribution: "© stadiamaps",
+                    }
+                );
+
+                this.tileLayers.ign = L.tileLayer(
                     "https://data.geopf.fr/wmts?layer=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y}", {
                         attribution: "© IGN - GeoPF",
                         tileSize: 256,
@@ -189,33 +200,20 @@ export default defineComponent({
 
                 this.tileLayers.opentopomap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenTopoMap'
-              }).addTo(map);
-
+              });
 
                 // Set default layer
-
                 this.tileLayers.street.addTo(map);
-                this.currentLayer = this.tileLayers.street;
-
-
-                // Attach zoom event
-                map.on("zoomend", this.handleZoom);
-
-
-
-
-                // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                //   maxZoom: 19,
-                //   attribution: '© OpenStreetMap'
-                // }).addTo(map);
 
                 window.leafletMap = map
                 this.map = map
                 window.markerObjects = new L.LayerGroup();
+                this.popupObjects = new L.LayerGroup();
 
                 // Set view to user's location
                 this.map.setView([46.603354, 1.888334], 3)
                 map.addLayer(this.markers);
+                map.addLayer(this.popupObjects );
 
                 // Layer Control (Basemap Switcher)
                 L.control.layers(
@@ -223,7 +221,9 @@ export default defineComponent({
                     "OpenStreetMap": this.tileLayers.street,
                     "Satellite": this.tileLayers.satellite,
                     "OpenTopo": this.tileLayers.opentopomap,
-                    "IGN": this.tileLayers.dark,
+                    "IGN": this.tileLayers.ign,
+                    "Dark catocdn": this.tileLayers.cartocdn,
+                    "Stamen Watercolor": this.tileLayers.stamen_watercolor,
                   },
                   {},
                   { collapsed: true }
@@ -236,28 +236,6 @@ export default defineComponent({
 
         },
 
-        handleZoom() {
-            const zoom = this.map.getZoom();
-
-            // Determine which tile layer to display
-            let newLayer;
-            if (zoom <= 3) {
-                newLayer = this.tileLayers.street; // Dark for low zoom
-            } else if (zoom <= 17) {
-                newLayer = this.tileLayers.street; // Satellite for medium zoom
-            } else {
-                newLayer = this.tileLayers.satellite; // Street for high zoom
-            }
-
-            // Switch layers if the new layer is different
-            if (newLayer !== this.currentLayer) {
-                if (this.currentLayer) {
-                    this.map.removeLayer(this.currentLayer);
-                }
-                this.map.addLayer(newLayer);
-                this.currentLayer = newLayer;
-            }
-        },
 
         formatLocalDate(dateString, locale = navigator.language) {
             const date = new Date(dateString);
@@ -270,32 +248,8 @@ export default defineComponent({
         },
 
         fetchRandomAILocation() {
-            // Fetch random location from the AI API
             // fetch("https://api.aidungeon.io/locations/random")
-            //     .then((response) => response.json())
-            //     .then((data) => {
-            //         console.log("Random location:", data);
-            //         const { latitude, longitude } = data;
-            //         this.map.flyTo([latitude, longitude], 15, {
-            //             animate: true,
-            //             duration: 1.2, // Smooth animation duration in seconds
-            //         });
-            //     })
-            //     .catch((error) => {
-            //         console.error("Error fetching random location:", error);
-            //     });
-            // console.log("putter")
-            // console.log("gemini")
 
-            // puter.ai.chat(`my app generates facts about a location. generate a fact about a random location in the world (anywhere, from big to little historique event, make sure it's unique at each request) as geojson type Feature format with properties (fact, adress, location, and image or video from internet )?`).then((response) =>{
-            //   console.log(response);
-            //   let data = JSON.parse(response.message.content)
-            //   console.log(data)
-            //   const marker = L.marker([data.geometry.coordinates[1], data.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) }).bindPopup(data.properties.fact) // Add marker to map
-
-            //   window.markerObjects.addLayer(marker)
-
-            // })
             fetch(`${this.$backBaseUrl}/agoraback/api/random_location_fact_api`).then(res => res.json()).then(data => {
                 console.log("gemini", data)
                 if (data.code=="cant_add_new_fact"){
@@ -342,12 +296,17 @@ export default defineComponent({
                 console.log(response)
                 let events = await response.json();
                 console.log(events)
+                let thisObj = this
 
                 this.map.on("popupclose", function(e) {
 
                   try{
                     console.log("Popup closed!", e);
                     document.getElementById("row-header-search").style.visibility = "visible"
+
+
+                    // window.leafletMap.removeLayer(thisObj.popupObjects);
+
 
                     if (e.popup._source instanceof L.Marker) {
                         console.log("The popup was attached to a marker.");
@@ -380,24 +339,25 @@ export default defineComponent({
 
                     else if (event.properties.tags.includes("location_random_fact")) {
                       custonIcon = this.$customIconhtmlRandomFact
-                      const marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) })// Add marker to map
+                      let marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) })// Add marker to map
                       const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
 
-                      this.markers.addLayer(marker);
+                      this.map.addLayer(marker);
+                      // marker.bindPopup(event.properties.description)
 
 
-                      marker.on("click", () => {
+                      marker.on("click", (marker) => {
 
                         L.popup({
                                             maxWidth: deviceMaxWidth,
                                             closeButton: true,
                                             autoClose: true,
-                                            closeOnClick: true,
+                                            closeOnClick: false,
                                             offset: [0, -50],
                                         })
                                         .setLatLng([latitude, longitude])
                                         .setContent(event.properties.description)
-                                        .openOn(window.leafletMap);
+                                        .openOn(thisObj.popupObjects);
 
 
                         if(this.map.getZoom() <7){
@@ -413,21 +373,7 @@ export default defineComponent({
                       })
                       return
                     }
-                    // else if (event.properties.tags.includes("art")) {
-                    //     custonIcon = this.$customIconhtmlArt
-                    // } else if (event.properties.tags.includes("tech")) {
-                    //     custonIcon = this.$customIconhtmlTech
-                    // } else if (event.properties.tags.includes("education")) {
-                    //     custonIcon = this.$customIconhtmlEducation
-                    // } else if (event.properties.tags.includes("business")) {
-                    //     custonIcon = this.$customIconhtmlBusiness
-                    // } else if (event.properties.tags.includes("health")) {
-                    //     custonIcon = this.$customIconhtmlHealth
-                    // } else if (event.properties.tags.includes("social")) {
-                    //     custonIcon = this.$customIconhtmlSocial
-                    // } else if (event.properties.tags.includes("other")) {
-                    //     custonIcon = this.$customIconhtmlOther
-                    // }
+
 
                     const marker = L.marker([latitude, longitude], { icon: L.divIcon(custonIcon), title: `${event.properties.description} ${event.properties.tags}` }) // Add marker to map
 
@@ -541,24 +487,8 @@ export default defineComponent({
   </div>
 `;
 
-                    // <button
-                    //         onclick="window.openEditModal('${event.id}', '${eventJson}')"
-                    //         style="
-                    //           background-color: #FFC107;
-                    //           color: white;
-                    //           border: none;
-                    //           padding: 10px 20px;
-                    //           border-radius: 5px;
-                    //           cursor: pointer;
-                    //           font-size: 14px;
-                    //           width: 50%;
-                    //           margin-top: 10px;
-                    //         ">
-                    //         <i class="mdi mdi-pencil"></i> Edit
-                    //       </button>
 
-                    // Bind the popup to the marker
-                    // marker.bindPopup(popupContent);
+                    //         <i class="mdi mdi-pencil"></i> Edit
 
 
                     // Store event details globally for the "Join" button click
@@ -579,7 +509,7 @@ export default defineComponent({
                     };
 
 
-                    //
+
                     marker.on("click", () => {
                         // Fly to the marker's location
                         document.getElementById("row-header-search").style.visibility = "hidden"
@@ -597,7 +527,6 @@ export default defineComponent({
                             this.map.panBy([0, offsetY], { animate: true });
 
                             // Add another "moveend" listener for when the panning animation is completed
-                            // Add another "moveend" listener for when the panning animation is completed
                             const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
                             this.map.once("moveend", () => {
                                 setTimeout(() => {
@@ -611,7 +540,7 @@ export default defineComponent({
                                         })
                                         .setLatLng([latitude, longitude])
                                         .setContent(popupContent)
-                                        .openOn(window.leafletMap);
+                                        .openOn(thisObj.popupObjects);
                                 }, 200); // Adjust the delay as needed to match the animation timing
                             });
                         });
