@@ -215,14 +215,14 @@
 
                         <p>Optional : Event image link</p>
 
-                        <ion-textarea rows="2" maxlength="500" minlenght="4" @ionInput="getImage" :auto-grow="true"
-                            placeholder="Enter sources of information">
+                        <ion-textarea class="top-button-select-tags"  rows="2" maxlength="500" minlenght="4" @ionInput="getImage" :auto-grow="true"
+                            placeholder="Enter image link like https://www.example.com/image.jpg">
 
                         </ion-textarea>
 
                         <p>Optional: information source</p>
 
-                        <ion-textarea rows="2" maxlength="500" minlenght="4" @ionInput="getInfoSource" :auto-grow="true"
+                        <ion-textarea class="top-button-select-tags"  rows="2" maxlength="500" minlenght="4" @ionInput="getInfoSource" :auto-grow="true"
                             placeholder="Enter sources of information">
 
                         </ion-textarea>

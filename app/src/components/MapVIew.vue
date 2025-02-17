@@ -60,7 +60,6 @@ import 'leaflet-search'
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
-
 import { IonToast} from "@ionic/vue";
 
 export default defineComponent({
@@ -92,7 +91,7 @@ export default defineComponent({
     },
 
     mounted() {
-        this.$nextTick(() => {
+        // this.$nextTick(() => {
             setTimeout(() => {
                 this.initializeMap();
                 this.fetchEvents();
@@ -120,7 +119,7 @@ export default defineComponent({
                 // this.fetchRandomAILocation()
 
             }, 100); // Adjust the delay as needed
-        });
+        // });
     },
 
     watch: {
@@ -163,7 +162,7 @@ export default defineComponent({
                 this.tileLayers.street = L.tileLayer(
                     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
                         maxZoom: maxZoom,
-                        attribution: "© OpenStreetMap contributors",
+                        attribution: "© OpenStreetMap",
                     }
                 );
 
@@ -181,12 +180,17 @@ export default defineComponent({
                 );
 
                 this.tileLayers.satellite = L.tileLayer(
-                    "https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {
+                    'http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
                         maxZoom: maxZoom,
                         attribution: "© Google Maps",
                         subdomains: ["mt0", "mt1", "mt2", "mt3"],
                     }
                 );
+
+                this.tileLayers.opentopomap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenTopoMap'
+              }).addTo(map);
+
 
                 // Set default layer
 
@@ -212,6 +216,19 @@ export default defineComponent({
                 // Set view to user's location
                 this.map.setView([46.603354, 1.888334], 3)
                 map.addLayer(this.markers);
+
+                // Layer Control (Basemap Switcher)
+                L.control.layers(
+                  {
+                    "OpenStreetMap": this.tileLayers.street,
+                    "Satellite": this.tileLayers.satellite,
+                    "OpenTopo": this.tileLayers.opentopomap,
+                    "IGN": this.tileLayers.dark,
+                  },
+                  {},
+                  { collapsed: true }
+                ).addTo(map);
+
 
             } else {
                 console.error('Map container not found.');
@@ -291,7 +308,22 @@ export default defineComponent({
                 }
                 else {
                   document.getElementById("random_fact_btn_img").classList.remove('inactive');
-                  const marker = L.marker([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) }).bindPopup(data.ai_response.properties.fact) // Add marker to map
+                  const marker = L.marker([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) })// Add marker to map
+                  const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
+
+                  marker.on("click", () => {
+                        L.popup({
+                                            maxWidth: deviceMaxWidth,
+                                            closeButton: true,
+                                            autoClose: true,
+                                            closeOnClick: false,
+                                            offset: [0, -50],
+                                        })
+                                        .setLatLng([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]])
+                                        .setContent()
+                                        .openOn(this.map);
+                                      })
+
                   this.markers.addLayer(marker);
                   this.map.flyTo([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], 15, {
                         animate: true,
@@ -312,12 +344,17 @@ export default defineComponent({
                 console.log(events)
 
                 this.map.on("popupclose", function(e) {
+
+                  try{
                     console.log("Popup closed!", e);
                     document.getElementById("row-header-search").style.visibility = "visible"
 
                     if (e.popup._source instanceof L.Marker) {
                         console.log("The popup was attached to a marker.");
                     }
+                  } catch (error) {
+                    console.log("Error closing popup:", error);
+                  }
                 });
 
 
@@ -343,14 +380,28 @@ export default defineComponent({
 
                     else if (event.properties.tags.includes("location_random_fact")) {
                       custonIcon = this.$customIconhtmlRandomFact
-                      const marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) }).bindPopup(event.properties.description) // Add marker to map
+                      const marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) })// Add marker to map
+                      const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
+
                       this.markers.addLayer(marker);
 
 
                       marker.on("click", () => {
 
-                        if(window.leafletMap.getZoom() <7){
-                          window.leafletMap.flyTo([latitude, longitude], 13, {
+                        L.popup({
+                                            maxWidth: deviceMaxWidth,
+                                            closeButton: true,
+                                            autoClose: true,
+                                            closeOnClick: true,
+                                            offset: [0, -50],
+                                        })
+                                        .setLatLng([latitude, longitude])
+                                        .setContent(event.properties.description)
+                                        .openOn(window.leafletMap);
+
+
+                        if(this.map.getZoom() <7){
+                          this.map.flyTo([latitude, longitude], 13, {
                         animate: true,
                         duration: 1.2, // Smooth animation duration in seconds
                     });
@@ -657,6 +708,12 @@ export default defineComponent({
   width: 40px;
   background-color: #e97223;
   color: white;
+}
+.leaflet-control-layers {
+  position: fixed;
+  z-index: 10000;
+  top: 13%;
+  right: 5%;
 }
 </style>
 

@@ -67,6 +67,14 @@
         This app let you create and joing fleeting event. The event will be delete
         automaticaly when the end date is reached
       </p>
+      <p>
+        Don't hesitate to contribute poste your next groupe activity and hopefully peopele
+        will join you on your activities like cycling, runnig, hiking or event like party,
+        concert, festival,...
+      </p>
+      <p>
+        I you have any suggestion or feedback, don't heistate to contact the developer.
+      </p>
     </ion-content>
   </ion-modal>
 </template>
