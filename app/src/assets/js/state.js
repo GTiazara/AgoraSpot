@@ -1,5 +1,7 @@
 import { reactive } from 'vue';
 
-export const state = reactive({
+export let state = reactive({
   eventAdded: false,
+  isTranslateActive: false,
+
 });

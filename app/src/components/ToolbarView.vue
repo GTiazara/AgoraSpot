@@ -83,6 +83,8 @@
 import { IonSearchbar, alertController, IonTitle, IonButton, IonModal, IonButtons, IonHeader, IonToolbar, IonContent} from "@ionic/vue";
 import { defineComponent } from "vue";
 
+import { state } from '@/assets/js/state.js';
+
 export default defineComponent({
     components: { IonSearchbar , alertController, IonTitle, IonButton, IonModal, IonButtons, IonHeader, IonToolbar, IonContent},
 
@@ -94,13 +96,13 @@ export default defineComponent({
     },
 
     created() {
-        window.isTranslateActive = this.isTranslateActive;
+      state.isTranslateActive = this.isTranslateActive;
     },
 
     methods: {
         toggleTranslate() {
-            this.isTranslateActive = !window.isTranslateActive;
-            window.isTranslateActive = this.isTranslateActive;
+            this.isTranslateActive = !state.isTranslateActive;
+            state.isTranslateActive = this.isTranslateActive;
             const translate_button = document.getElementById('translate');
             if (this.isTranslateActive) {
                 document.getElementById('google_translate_element').style.visibility = 'visible';
