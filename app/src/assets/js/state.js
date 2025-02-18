@@ -5,3 +5,7 @@ export let state = reactive({
   isTranslateActive: false,
 
 });
+
+export let store = reactive({
+  markersDict: {},
+})

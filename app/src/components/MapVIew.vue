@@ -3,27 +3,7 @@
     <slot></slot>
   </div>
 
-  <v-fab
-    id="my_fab_button"
-    class="ms-4 my_fab_button"
-    color="#e97223"
-    icon=""
-    location="bottom right"
-    size="55"
-    style="position: fixed; top: 80%; left: 90%; z-index: 3000000000"
-    absolute
-    offset
-    @click="fetchRandomAILocation"
-  >
-    <img
-      id="random_fact_btn_img"
-      src="/assets/img/groundhog-day.gif"
-      alt="home icon"
-      width="85%"
-      style="border-radius: 40px"
-    />
-  </v-fab>
-
+  <SpeedialView></SpeedialView>
   <JoinEventVIew
     :isOpenJoinEventEvent="isOpenJoinEventEvent"
     @update:isOpenJoinEventEvent="isOpenJoinEventEvent = $event"
@@ -34,15 +14,6 @@
     :isOpenEditModal="isOpenEditEventEvent"
     :objectToEdit="objectToEdit"
   ></EditEventView>
-
-  <ion-toast
-    color="warning"
-    style="z-index: 1000000000000000"
-    :is-open="isRandomFactToastFromAiOpen"
-    message="Unfrotunately, a random fact about a location was generated less than 5 minutes ago. Let's fly to latest."
-    :duration="5000"
-    @didDismiss="setOpenToasNoRandomFactFromAi(false)"
-  ></ion-toast>
 </template>
 
 <script lang="js">
@@ -51,8 +22,9 @@ import { defineComponent } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'
 import JoinEventVIew from './JoinEventVIew.vue';
-import { state } from '@/assets/js/state.js';
+import { state, store } from '@/assets/js/state.js';
 import EditEventView from './EditEventView.vue';
+import SpeedialView from './SpeedialView.vue';
 
 import 'leaflet-search/dist/leaflet-search.min.css'
 import 'leaflet-search'
@@ -67,7 +39,8 @@ export default defineComponent({
     components: {
         JoinEventVIew,
         EditEventView,
-        IonToast
+        IonToast,
+        SpeedialView
     },
 
     data() {
@@ -85,7 +58,6 @@ export default defineComponent({
             currentLayer: null,
             state: state,
             markers: null,
-            isRandomFactToastFromAiOpen: false,
         }
     },
 
@@ -142,9 +114,7 @@ export default defineComponent({
             });
         },
 
-        setOpenToasNoRandomFactFromAi(open) {
-            this.isRandomFactToastFromAiOpen = open
-        },
+
 
         initializeMap() {
             const mapContainer = document.getElementById('map');
@@ -190,18 +160,17 @@ export default defineComponent({
                 // Set default layer
                 this.tileLayers.street.addTo(map);
                 window.leafletMap = map
+                store.map = map
                 this.map = map
                 window.markerObjects = new L.LayerGroup();
                 this.popupObjects = new L.LayerGroup();
-                this.markers = new L.markerClusterGroup({
-
-                });
+                this.markers = new L.markerClusterGroup({});
 
                 // Set view to user's location
                 this.map.setView([46.603354, 1.888334], 3)
                 this.map.addLayer(this.markers);
                 window.markerObjects.addTo(this.map);
-                window.markers = this.markers
+                store.randomFactMarkerClusterLayer = this.markers
                 map.addLayer(this.popupObjects);
 
                 // Layer Control (Basemap Switcher)
@@ -229,61 +198,6 @@ export default defineComponent({
             });
         },
 
-        fetchRandomAILocation() {
-            // fetch("https://api.aidungeon.io/locations/random")
-            fetch(`${this.$backBaseUrl}/agoraback/api/random_location_fact_api`).then(res => res.json()).then(data => {
-                console.log("gemini", data)
-                const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
-                if (data.code == "cant_add_new_fact") {
-                    document.getElementById("random_fact_btn_img").classList.add('inactive');
-                    this.setOpenToasNoRandomFactFromAi(true)
-                    this.map.flyTo([data.events[0].geometry.coordinates[1], data.events[0].geometry.coordinates[0]], 12, {
-                        animate: true,
-                        duration: 1.2,
-                    });
-                    setTimeout(() => {
-                        let popup = L.popup({
-                                maxWidth: deviceMaxWidth,
-                                closeButton: true,
-                                autoClose: true,
-                                closeOnClick: false,
-                                offset: [0, -50],
-                            })
-                            .setLatLng([data.events[0].geometry.coordinates[1], data.events[0].geometry.coordinates[0]])
-                            .setContent(data.events[0].properties.description);
-                        // .openOn(this.popupObjects);
-                        window.leafletMap.openPopup(popup)
-                    }, 1200)
-
-                } else {
-                    document.getElementById("random_fact_btn_img").classList.remove('inactive');
-                    const marker = L.marker([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) })
-                    this.markers.addLayer(marker);
-
-                    this.map.flyTo([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], 15, {
-                        animate: true,
-                        duration: 1.2, // Smooth animation duration in seconds
-                    });
-
-                    setTimeout(() => {
-
-                        let popup = L.popup({
-                                maxWidth: deviceMaxWidth,
-                                closeButton: true,
-                                autoClose: true,
-                                closeOnClick: false,
-                                offset: [0, -50],
-                            })
-                            .setLatLng([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]])
-                            .setContent(data.ai_response.properties.fact)
-                        // .openOn(this.popupObjects);
-                        window.leafletMap.openPopup(popup)
-                    }, 1200)
-                }
-
-            })
-        },
-
         // Fetch events from the backend API
         fetchEvents() {
             fetch(`${this.$backBaseUrl}/agoraback/api/get_events`).then(reponse => reponse.json()).then(events => {
@@ -306,11 +220,12 @@ export default defineComponent({
                 } else if (event.properties.tags.includes("location_random_fact")) {
                     custonIcon = this.$customIconhtmlRandomFact
                     let marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) }) // Add marker to map
+                    store.markersDict[event.id] = marker
                     const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
 
-                    window.markers.addLayer(marker);
+                    store.randomFactMarkerClusterLayer.addLayer(marker);
                     // marker.bindPopup(event.properties.description)
-                    marker.on("click", (marker) => {
+                    marker.on("click", () => {
                         this.map.flyTo([latitude, longitude], 13, {
                             animate: true,
                             duration: 1.2, // Smooth animation duration in seconds
@@ -336,6 +251,7 @@ export default defineComponent({
                                         })
                                         .setLatLng([latitude, longitude])
                                         .setContent(event.properties.description)
+                                        // <iframe width="260" height="315" src="https://www.youtube.com/embed/mPc8LdEwHZQ?si=bb9C59iQJNl9FROa" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>>`
                                     // .openOn(thisObj.popupObjects);
 
                                     window.leafletMap.openPopup(popup)
