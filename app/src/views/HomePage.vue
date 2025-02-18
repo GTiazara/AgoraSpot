@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="js">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonLabel, IonIcon } from '@ionic/vue';
+import { IonContent, IonHeader, IonPage, } from '@ionic/vue';
 import { playCircle, radio, library, search } from 'ionicons/icons';
 </script>
 
@@ -28,7 +28,6 @@ import ToolbarView from '@/components/ToolbarView.vue';
 import MapVIew from '@/components/MapVIew.vue';
 import TabarView from '@/components/TabarView.vue';
 import TranslationView from '@/components/TranslationView.vue';
-import { state } from '@/assets/js/state.js';
 export default {
   components: {
     ToolbarView,

@@ -38,7 +38,7 @@
   <ion-toast
     color="warning"
     style="z-index: 1000000000000000"
-    :is-open="isRandmFactToastFromAiOpen"
+    :is-open="isRandomFactToastFromAiOpen"
     message="Unfrotunately, a random fact about a location was generated less than 5 minutes ago. Let's fly to latest."
     :duration="5000"
     @didDismiss="setOpenToasNoRandomFactFromAi(false)"
@@ -46,12 +46,11 @@
 </template>
 
 <script lang="js">
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'
 import JoinEventVIew from './JoinEventVIew.vue';
-import { reload } from 'ionicons/icons';
 import { state } from '@/assets/js/state.js';
 import EditEventView from './EditEventView.vue';
 
@@ -86,46 +85,37 @@ export default defineComponent({
             currentLayer: null,
             state: state,
             markers: null,
-            isRandmFactToastFromAiOpen: false,
+            isRandomFactToastFromAiOpen: false,
         }
     },
 
     mounted() {
-        // this.$nextTick(() => {
         setTimeout(() => {
             this.initializeMap();
             this.fetchEvents();
             const browserLanguage = navigator.language || navigator.languages[0];
+            this.translateToBrowserLanguage(browserLanguage)
 
-            function translateToBrowserLanguage(lang) {
-                const selectElement = document.querySelector(".goog-te-combo");
-                const translate_button = document.getElementById('translate');
-                if (selectElement) {
-                    selectElement.value = lang; // Set dropdown to browser language
-                    selectElement.dispatchEvent(new Event("change")); // Simulate selection
+            this.map.on("popupclose", function(e) {
+                try {
+                    console.log("Popup closed!", e);
+                    document.getElementById("row-header-search").style.visibility = "visible"
+                    if (e.popup._source instanceof L.Marker) {
+                        console.log("The popup was attached to a marker.");
+                    }
+                } catch (error) {
+                    console.log("Error closing popup:", error);
                 }
+            });
 
-                selectElement.addEventListener("change", (event) => {
-                    console.log("Language changed:", event.target.value);
-                    document.getElementById('google_translate_element').style.visibility = 'hidden';
-                    translate_button.classList.remove('active');
-                    window.isTranslateActive = false;
 
-                });
-            }
-
-            translateToBrowserLanguage(browserLanguage)
-
-            // this.fetchRandomAILocation()
-
-        }, 100); // Adjust the delay as needed
-        // });
+        }, 500);
     },
 
     watch: {
         state: {
             handler() {
-                console.log('State changed:', state);
+                console.log("state changeed")
                 if (state.eventAdded) {
                     this.fetchEvents();
                     state.eventAdded = false;
@@ -135,29 +125,36 @@ export default defineComponent({
         },
     },
     methods: {
+        translateToBrowserLanguage(lang) {
+            const selectElement = document.querySelector(".goog-te-combo");
+            const translate_button = document.getElementById('translate');
+            if (selectElement) {
+                selectElement.value = lang; // Set dropdown to browser language
+                selectElement.dispatchEvent(new Event("change")); // Simulate selection
+            }
 
-        reloadMap() {
-            // Call the refresh method on the MapView component
-            console.log('reloadMap');
+            selectElement.addEventListener("change", (event) => {
+                console.log("Language changed:", event.target.value);
+                document.getElementById('google_translate_element').style.visibility = 'hidden';
+                translate_button.classList.remove('active');
+                state.isTranslateActive = true;
+
+            });
         },
 
         setOpenToasNoRandomFactFromAi(open) {
-            this.isRandmFactToastFromAiOpen = open
+            this.isRandomFactToastFromAiOpen = open
         },
+
         initializeMap() {
             const mapContainer = document.getElementById('map');
-            console.log(mapContainer)
-
             if (mapContainer) {
-
                 let maxZoom = 19;
-
                 // var map = L.map('map').fitWorld();
                 let map = L.map('map', {
                     maxZoom: maxZoom,
                     zoomControl: false, // Disable zoom control
                 })
-
                 // Define tile layers
                 this.tileLayers.street = L.tileLayer(
                     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -165,15 +162,12 @@ export default defineComponent({
                         attribution: "© OpenStreetMap",
                     }
                 );
-
                 this.tileLayers.cartocdn = L.tileLayer(
                     "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
                         maxZoom: maxZoom,
                         attribution: "© cartocdn",
                     }
                 );
-
-
                 this.tileLayers.ign = L.tileLayer(
                     "https://data.geopf.fr/wmts?layer=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y}", {
                         attribution: "© IGN - GeoPF",
@@ -183,7 +177,6 @@ export default defineComponent({
                         noWrap: true,
                     }
                 );
-
                 this.tileLayers.satellite = L.tileLayer(
                     'http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
                         maxZoom: maxZoom,
@@ -191,14 +184,11 @@ export default defineComponent({
                         subdomains: ["mt0", "mt1", "mt2", "mt3"],
                     }
                 );
-
                 this.tileLayers.opentopomap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenTopoMap'
                 });
-
                 // Set default layer
                 this.tileLayers.street.addTo(map);
-
                 window.leafletMap = map
                 this.map = map
                 window.markerObjects = new L.LayerGroup();
@@ -223,22 +213,9 @@ export default defineComponent({
                     "Dark catocdn": this.tileLayers.cartocdn,
                 }, {}, { collapsed: true }).addTo(map);
 
-
-                this.map.on("zoomstart", () => {
-
-                    window.leafletMap.eachLayer((layer) => {
-                        if (layer instanceof L.Popup) {
-                            this.map.removeLayer(layer);
-                        }
-                    });
-
-
-                })
-
             } else {
                 console.error('Map container not found.');
             }
-
         },
 
 
@@ -254,7 +231,6 @@ export default defineComponent({
 
         fetchRandomAILocation() {
             // fetch("https://api.aidungeon.io/locations/random")
-
             fetch(`${this.$backBaseUrl}/agoraback/api/random_location_fact_api`).then(res => res.json()).then(data => {
                 console.log("gemini", data)
                 const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
@@ -263,12 +239,10 @@ export default defineComponent({
                     this.setOpenToasNoRandomFactFromAi(true)
                     this.map.flyTo([data.events[0].geometry.coordinates[1], data.events[0].geometry.coordinates[0]], 12, {
                         animate: true,
-                        duration: 1.2, // Smooth animation duration in seconds
+                        duration: 1.2,
                     });
-
                     setTimeout(() => {
-
-                    L.popup({
+                        let popup = L.popup({
                                 maxWidth: deviceMaxWidth,
                                 closeButton: true,
                                 autoClose: true,
@@ -276,25 +250,24 @@ export default defineComponent({
                                 offset: [0, -50],
                             })
                             .setLatLng([data.events[0].geometry.coordinates[1], data.events[0].geometry.coordinates[0]])
-                            .setContent(data.events[0].properties.description)
-                            .openOn(this.popupObjects);
-                }, 1200)
+                            .setContent(data.events[0].properties.description);
+                        // .openOn(this.popupObjects);
+                        window.leafletMap.openPopup(popup)
+                    }, 1200)
 
                 } else {
                     document.getElementById("random_fact_btn_img").classList.remove('inactive');
-                    const marker = L.marker([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) }) // Add marker to map
-
+                    const marker = L.marker([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) })
                     this.markers.addLayer(marker);
 
-                    marker.on("click", () => {
+                    this.map.flyTo([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], 15, {
+                        animate: true,
+                        duration: 1.2, // Smooth animation duration in seconds
+                    });
 
+                    setTimeout(() => {
 
-
-                        this.map.flyTo([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], 15, {
-                            animate: true,
-                            duration: 1.2, // Smooth animation duration in seconds
-                        });
-                        L.popup({
+                        let popup = L.popup({
                                 maxWidth: deviceMaxWidth,
                                 closeButton: true,
                                 autoClose: true,
@@ -302,54 +275,20 @@ export default defineComponent({
                                 offset: [0, -50],
                             })
                             .setLatLng([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]])
-                            .setContent( data.ai_response.properties.fact)
-                            .openOn(this.popupObjects);
-
-                    })
-
+                            .setContent(data.ai_response.properties.fact)
+                        // .openOn(this.popupObjects);
+                        window.leafletMap.openPopup(popup)
+                    }, 1200)
                 }
 
             })
         },
 
         // Fetch events from the backend API
-        async fetchEvents() {
-
-            const response = await fetch(`${this.$backBaseUrl}/agoraback/api/get_events`); // Adjust URL as needed
-            console.log(response)
-            let events = await response.json();
-            console.log(events)
-            let thisObj = this
-
-            this.map.on("popupclose", function(e) {
-
-                try {
-                    console.log("Popup closed!", e);
-                    document.getElementById("row-header-search").style.visibility = "visible"
-
-
-
-
-                    // thisObj.popupObjects.clearLayers();
-
-                    // window.leafletMap.removeLayer(thisObj.markers);
-                    e.popup._map = thisObj.leafletMap
-                    console.log("Popup closed!", e);
-
-
-                    if (e.popup._source instanceof L.Marker) {
-                        console.log("The popup was attached to a marker.");
-                    }
-                } catch (error) {
-                    console.log("Error closing popup:", error);
-                }
-            });
-
-
-
+        fetchEvents() {
+            fetch(`${this.$backBaseUrl}/agoraback/api/get_events`).then(reponse => reponse.json()).then(events => {
             // Loop over the events and create markers
             events.events.forEach((event) => {
-                console.log(event)
                 const { coordinates } = event.geometry; // GeoJSON format
                 const [longitude, latitude] = coordinates; // Fetch coordinates in (lng, lat)
 
@@ -368,40 +307,41 @@ export default defineComponent({
                     custonIcon = this.$customIconhtmlRandomFact
                     let marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) }) // Add marker to map
                     const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
-                    marker
 
                     window.markers.addLayer(marker);
                     // marker.bindPopup(event.properties.description)
-
-
                     marker.on("click", (marker) => {
+                        this.map.flyTo([latitude, longitude], 13, {
+                            animate: true,
+                            duration: 1.2, // Smooth animation duration in seconds
+                        });
 
-                        if (this.map.getZoom() < 7) {
-                            this.map.flyTo([latitude, longitude], 13, {
-                                animate: true,
-                                duration: 1.2, // Smooth animation duration in seconds
-                            });
-                        }
-
+                        // After the map has moved, adjust the view to set the marker at 3/4 screen height
                         this.map.once("moveend", () => {
+                            const mapHeight = document.getElementById('map').offsetHeight;
+                            const offsetY = -(mapHeight / 4); // Pan 1/4 of the map's height upward
 
-                            L.popup({
-                                    maxWidth: deviceMaxWidth,
-                                    closeButton: true,
-                                    autoClose: true,
-                                    closeOnClick: false,
-                                    offset: [0, -50],
-                                })
-                                .setLatLng([latitude, longitude])
-                                .setContent(event.properties.description)
-                                .openOn(thisObj.popupObjects);
-                        })
+                            // Pan the map
+                            this.map.panBy([0, offsetY], { animate: true });
 
+                            this.map.once("moveend", () => {
+                                setTimeout(() => {
+                                    // Open the popup manually after the pan animation ends
+                                    let popup = L.popup({
+                                            maxWidth: deviceMaxWidth,
+                                            closeButton: true,
+                                            autoClose: true,
+                                            closeOnClick: false,
+                                            offset: [0, -50],
+                                        })
+                                        .setLatLng([latitude, longitude])
+                                        .setContent(event.properties.description)
+                                    // .openOn(thisObj.popupObjects);
 
-
-
-
-
+                                    window.leafletMap.openPopup(popup)
+                                }, 200); // Adjust the delay as needed to match the animation timing
+                            });
+                        });
                     })
                     return
                 }
@@ -410,7 +350,6 @@ export default defineComponent({
                 const marker = L.marker([latitude, longitude], { icon: L.divIcon(custonIcon), title: `${event.properties.description} ${event.properties.tags}` }) // Add marker to map
 
                 window.markerObjects.addLayer(marker)
-
 
                 if (!event.properties.participants) {
                     event.properties.participants = {}
@@ -560,7 +499,7 @@ export default defineComponent({
                         this.map.once("moveend", () => {
                             setTimeout(() => {
                                 // Open the popup manually after the pan animation ends
-                                L.popup({
+                                let popup = L.popup({
                                         maxWidth: deviceMaxWidth,
                                         closeButton: true,
                                         autoClose: true,
@@ -568,8 +507,9 @@ export default defineComponent({
                                         offset: [0, -50],
                                     })
                                     .setLatLng([latitude, longitude])
-                                    .setContent(popupContent)
-                                    .openOn(thisObj.popupObjects);
+                                    .setContent(popupContent);
+                                // .openOn(thisObj.popupObjects);
+                                window.leafletMap.openPopup(popup)
                             }, 200); // Adjust the delay as needed to match the animation timing
                         });
                     });
@@ -649,7 +589,7 @@ export default defineComponent({
             window.addEventListener("resize", adjustSearchWidth);
 
 
-
+          })
 
         },
 

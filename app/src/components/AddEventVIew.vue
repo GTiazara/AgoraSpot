@@ -240,8 +240,8 @@
 </template>
 
 <script setup lang="js">
-import { IonDatetime, IonFooter, IonTextarea, IonContent, IonActionSheet, IonTab, IonHeader, IonModal, IonItem, IonButton, IonButtons, IonToolbar, IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonLabel, IonIcon } from '@ionic/vue';
-import { playCircle, radio, library, search, close, add } from 'ionicons/icons';
+import { IonDatetime, IonTextarea, IonContent, IonActionSheet, IonHeader, IonModal, IonItem, IonButton, IonButtons, IonToolbar, IonIcon } from '@ionic/vue';
+import { close, add } from 'ionicons/icons';
 import AppTypeahead from './AppTypeahead.vue';
 </script>
 
