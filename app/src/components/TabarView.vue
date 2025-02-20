@@ -1,20 +1,13 @@
 <template>
-  <ion-toolbar class="footer-perso-style">
-    <v-row
-      style="
-        margin-bottom: 10;
-        background: #0ff;
-        padding-top: 4px;
-        background-image: linear-gradient(blue 0, rgba(255, 255, 255, 0) 100%);
-      "
-    >
+  <div class="footer-perso-style">
+    <v-row>
       <!-- <v-col align="center" style="padding-left: 1px; padding-right: 1px">
         <v-btn icon="" @click="">
           <img src="/assets/img/edit_orange.png" alt="home icon" />
         </v-btn>
         edit
       </v-col> -->
-      <v-col align="center" style="padding-left: 1px; padding-right: 1px">
+      <v-col class="tab-bar-perso" align="center">
         <!-- <ion-button fill="solid" size="small" color="dark" @click="toggleActive" id="locationButton">
           <img src="/img/location.gif" alt="home icon" style="width: 50px; height: 50px;" />
         </ion-button> -->
@@ -43,7 +36,7 @@
       :isOpenJoinEventNoEvent="isOpenJoinEventNoEvent"
       @update:isOpenJoinEventNoEvent="setOpenJoinEventNoEvent($event)"
     ></EditEventView>
-  </ion-toolbar>
+  </div>
 </template>
 <script setup lang="js">
 import { IonButton, IonToolbar, } from '@ionic/vue';
@@ -167,15 +160,25 @@ export default {
   position: fixed;
   bottom: 25px;
   /* border-style: dotted; */
-  width: 95%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-left: 2.5%;
+  width: 90%;
+  margin: 5% 5% 0 5%;
+
   height: 80px;
   align-content: center;
-  border-radius: 20px;
+  /* border-radius: 20px; */
   /* border-color: rgba(255, 102, 0, 0.8); */
+  /* border-width: 2px; */
+  /* background-color: #e972237e; */
+}
+
+.tab-bar-perso {
+  width: 90%;
+  background-color: #e972237e;
+  border-radius: 20px;
+  border-style: solid;
   border-width: 2px;
+  border-color: #ff6600b2;
+  /* background-image: linear-gradient(blue 0, rgba(255, 255, 255, 0) 100%); */
 }
 
 button {

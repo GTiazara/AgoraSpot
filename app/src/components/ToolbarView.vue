@@ -192,15 +192,15 @@ export default defineComponent({
 <style scoped>
 .toolabar-perso-style {
   z-index: 20000;
-  width: 90%;
+  width: 95%;
   height: 60px;
-  margin: 20px;
+  margin: 2.5%;
   border-style: solid;
-  /* border-width: 1px; */
-  /* border-color: rgb(0, 0, 0); */
+  border-width: 2px;
+  border-color: #ff6600b2;
   border-radius: 35px;
-  background-color: #0ff;
-  background-image: linear-gradient(blue, rgba(42, 247, 247, 0));
+  background-color: #e972237e; /*#0ff;;*/
+  /* background-image: linear-gradient(#e9722379, #e9722379); */
 }
 
 .active {

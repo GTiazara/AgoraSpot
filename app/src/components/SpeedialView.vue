@@ -123,7 +123,7 @@ export default defineComponent({
                     store.randomFactMarkerClusterLayer.addLayer(marker);
 
                     marker.on("click", () => {
-                        store.map.flyTo([latitude, longitude], 13, {
+                        store.map.flyTo([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], 13, {
                             animate: true,
                             duration: 1.2, // Smooth animation duration in seconds
                         });
@@ -155,8 +155,8 @@ export default defineComponent({
                         });
                     })
 
-                    marker.fire('click');
 
+                    marker.fire('click');
 
 
                 }
