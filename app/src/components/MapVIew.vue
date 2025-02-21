@@ -526,7 +526,7 @@ export default defineComponent({
   position: fixed;
   z-index: 10000;
   top: 13%;
-  right: 5%;
+  right: 7%;
 }
 </style>
 
