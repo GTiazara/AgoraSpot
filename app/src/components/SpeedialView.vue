@@ -54,7 +54,7 @@
     color="warning"
     style="z-index: 1000000000000000"
     :is-open="isRandomFactToastFromAiOpen"
-    message="Unfrotunately, a random fact about a location was generated less than 5 minutes ago. Let's fly to latest."
+    message="Unfrotunately, a random fact about a location was generated less than 1 minutes ago. Let's fly to latest."
     :duration="5000"
     @didDismiss="setOpenToasNoRandomFactFromAi(false)"
   ></ion-toast>
@@ -122,6 +122,12 @@ export default defineComponent({
                     const marker = L.marker([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], { icon: L.divIcon(this.$customIconhtmlRandomFact) })
                     store.randomFactMarkerClusterLayer.addLayer(marker);
 
+                    let video = `<iframe width="${deviceMaxWidth*0.98}" height="315"
+                                src="${data.ai_response.properties.eventImage}"
+                                frameborder="0" allowfullscreen>
+                            </iframe>`
+
+
                     marker.on("click", () => {
                         store.map.flyTo([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]], 13, {
                             animate: true,
@@ -147,7 +153,7 @@ export default defineComponent({
                                             offset: [0, -50],
                                         })
                                         .setLatLng([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]])
-                                        .setContent(data.ai_response.properties.fact)
+                                        .setContent(`${video} <br>${data.ai_response.properties.fact}</br>`)
                                     // .openOn(this.popupObjects);
                                     store.map.openPopup(popup)
                                 }, 200); // Adjust the delay as needed to match the animation timing

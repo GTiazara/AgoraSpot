@@ -72,12 +72,18 @@ export default defineComponent({
                 try {
                     console.log("Popup closed!", e);
                     document.getElementById("row-header-search").style.visibility = "visible"
+                    document.querySelector(".leaflet-control-layers").style.visibility = "visible"
                     if (e.popup._source instanceof L.Marker) {
                         console.log("The popup was attached to a marker.");
                     }
                 } catch (error) {
                     console.log("Error closing popup:", error);
                 }
+            });
+
+            this.map.on("popupopen", function(e) {
+                document.getElementById("row-header-search").style.visibility = "hidden"
+                document.querySelector(".leaflet-control-layers").style.visibility = "hidden"
             });
 
             this.map.on('zoomstart', () => {
@@ -249,10 +255,10 @@ export default defineComponent({
                             // Pan the map
                             this.map.panBy([0, offsetY], { animate: true });
 
-                            let video = `<iframe width="${deviceMaxWidth*0.9}" height="315"
-    src="${event.properties.eventImage}"
-    frameborder="0" allowfullscreen>
-</iframe>`
+                            let video = `<iframe width="${deviceMaxWidth*0.98}" height="315"
+                                src="${event.properties.eventImage}"
+                                frameborder="0" allowfullscreen>
+                            </iframe>`
 
                             this.map.once("moveend", () => {
                                 setTimeout(() => {
@@ -411,7 +417,6 @@ export default defineComponent({
 
                 marker.on("click", () => {
                     // Fly to the marker's location
-                    document.getElementById("row-header-search").style.visibility = "hidden"
                     this.map.flyTo([latitude, longitude], 15, {
                         animate: true,
                         duration: 1.2, // Smooth animation duration in seconds

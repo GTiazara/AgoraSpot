@@ -20,7 +20,7 @@ router.get("/", async (req, res) => {
 
         // Get current timestamp
         const now = new Date();
-        const xLimiteTimeAgo = new Date(now.getTime() - 5 * 60 * 1000); // 
+        const xLimiteTimeAgo = new Date(now.getTime() - 1 * 60 * 1000); // (- x min * ....)
         console.log(now)
         console.log(xLimiteTimeAgo)
         // Find existing events with the "location_random_fact" tag created within the last hour
