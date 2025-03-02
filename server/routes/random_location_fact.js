@@ -121,7 +121,7 @@ router.get("/", async (req, res) => {
             },
         }
 
-        let you_tube_search = await  youtubesearchapi.GetListByKeyword(jsonResult.properties.fact + 'documentary',true,1)
+        let you_tube_search = await  youtubesearchapi.GetListByKeyword(jsonResult.properties.fact + 'documentaries',true,1)
         console.log(you_tube_search)
         let you_tube_search_res = you_tube_search
         console.log(you_tube_search_res)
