@@ -153,7 +153,7 @@ export default defineComponent({
                                             offset: [0, -50],
                                         })
                                         .setLatLng([data.ai_response.geometry.coordinates[1], data.ai_response.geometry.coordinates[0]])
-                                        .setContent(`${video} <br>${data.ai_response.properties.fact}</br>`)
+                                        .setContent(`${video} <br>${data.ai_response.properties.fact}</br> <br>${data.ai_response.properties.address}</br>`)
                                     // .openOn(this.popupObjects);
                                     store.map.openPopup(popup)
                                 }, 200); // Adjust the delay as needed to match the animation timing

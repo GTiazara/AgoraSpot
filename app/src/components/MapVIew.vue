@@ -259,6 +259,40 @@ export default defineComponent({
                                 src="${event.properties.eventImage}"
                                 frameborder="0" allowfullscreen>
                             </iframe>`
+                            window.shareEvent = (eventId) => {
+                        let baseUrl = window.location.origin;
+                        const eventLink = `${baseUrl}/event/${eventId}`;
+
+                        console.log( navigator.share)
+
+                        if (navigator.share) {
+                          navigator.share({
+                            title: `Check out this event: ${eventName}`,
+                            url: eventLink
+                          }).catch(err => console.error('Sharing failed:', err));
+                        } else {
+                          navigator.clipboard.writeText(eventLink);
+                          alert('Event link copied to clipboard!');
+                        }
+                      }
+
+
+                          let shareButton =  ` <div style="padding: 10px; text-align: center;">
+                            <button onclick="window.shareEvent('${event.id}')"
+                              style="
+                                background-color: #007BFF;
+                                color: white;
+                                border: none;
+                                padding: 10px 20px;
+                                border-radius: 5px;
+                                cursor: pointer;
+                                font-size: 14px;
+                                width: 50%;
+                              ">
+                              📤 Share Event
+                            </button>
+                          </div>`
+
 
                             this.map.once("moveend", () => {
                                 setTimeout(() => {
@@ -271,7 +305,7 @@ export default defineComponent({
                                             offset: [0, -50],
                                         })
                                         .setLatLng([latitude, longitude])
-                                        .setContent(`${video} <br>${event.properties.description}</br>`)
+                                        .setContent(`${video} <br>${shareButton}</br> <br>${event.properties.description}</br>`)
                                         // <iframe width="260" height="315" src="https://www.youtube.com/embed/mPc8LdEwHZQ?si=bb9C59iQJNl9FROa" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>>`
                                     // .openOn(thisObj.popupObjects);
 
@@ -412,6 +446,8 @@ export default defineComponent({
 
 
                 };
+
+
 
 
 
