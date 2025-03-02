@@ -1,35 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const getConnectedClient = require("../db/connect");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenerativeAI, DynamicRetrievalMode } = require("@google/generative-ai");
 const { countries } = require('countries-list');
-
+// const { Mistral } = require('@mistralai/mistralai');
+const youtubesearchapi = require("youtube-search-api");
+// const { JsonSchema$inboundSchema } = require("@mistralai/mistralai/models/components");
 
 const config = require("dotenv").config();
 
+
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || config.parsed.GEMINI_API_KEY;
+// const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
 router.get("/", async (req, res) => {
     try {
         // Get the database
         const db = await getConnectedClient();
         const eventsCollection = db.collection("events");
-
-        // Get today's date
-        // const today = new Date();
-        // today.setHours(0, 0, 0, 0);
-
-        // Find existing events with the "location_random_fact" tag
-        // const events = await eventsCollection.find({ "properties.tags": "location_random_fact" }).toArray();
-
-        // console.log("Existing events:", events);
-
-        // Check if any event exists and is within 1 day from its creation
-        // let validEvents = events.filter(event => {
-        //     const createdAt = new Date(event.properties.createdAt);
-        //     const oneDayAgo = new Date(today);
-        //     oneDayAgo.setDate(today.getDate() - 1);
-        //     return createdAt >= oneDayAgo;
-        // });
 
         // Get current timestamp
         const now = new Date();
@@ -58,23 +45,19 @@ router.get("/", async (req, res) => {
             });
         }
 
-        // If we have valid events, return them
-        // if (validEvents.length > 0) {
-        //     console.log("Returning existing valid events.");
-        //     return res.json({
-        //         events: validEvents.map(event => ({
-        //             type: "Feature",
-        //             geometry: event.geometry,
-        //             properties: event.properties,
-        //             id: event._id
-        //         }))
-        //     });
-        // }
-
         console.log("No valid events found. Generating new one...");
 
         const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+        genAI.GoogleSearch
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash",    
+            tools: [
+                {
+                  googleSearch: {
+                  
+                  },
+                },
+              ], });
 
         const countryCodes = Object.keys(countries); // Get all country codes
         const randomCode = countryCodes[Math.floor(Math.random() * countryCodes.length)]; // Pick a random code
@@ -84,20 +67,51 @@ router.get("/", async (req, res) => {
 
 
         const prompt = `My app generates facts about a location. Generate true fact (funny or serious)that gives people dream to travel to a random city of ${randomCountry} (anywhere, from big to little facts or events, make sure it's unique at each request and from any cities, big or little)
-         as geojson type Feature format with properties (fact, adress, precise location of the adress). The coordinate of the geojson must be a pecise geocoding ot the address and return only the geosjon.`;
+         as geojson type Feature format with properties (fact, address, precise location of the address ). The coordinate of the geojson must be a pecise geocoding ot the address and return only the geosjon.`;
 
 
-        const result = await model.generateContent(prompt);
+        //  const client = new Mistral({apiKey: MISTRAL_API_KEY});
+
+
+
+
+        let result = await model.generateContent(prompt);
+        
         console.log(result.response.text());
-        let jsonResult = JSON.parse(result.response.text().replace("```json", "").replace("```", ""))
 
+        // Regular expression to match content within ```json and ```
+        const jsonRegex = /```json([\s\S]*?)```/;
+
+        // Extract the JSON content
+        const match = result.response.text().match(jsonRegex);
+
+        let jsonObject=null
+        if (match) {
+        const jsonContent = match[1].trim();
+        console.log("Extracted JSON Content:", jsonContent);
+
+        // Parse the JSON content
+            try {
+                jsonObject = JSON.parse(jsonContent);
+                console.log("Parsed JSON Object:", jsonObject);
+            } catch (error) {
+                console.error("Invalid JSON content:", error);
+            }
+        } else {
+        console.log("No JSON content found within triple backticks.");
+        }
+
+        let jsonResult = jsonObject //JSON.parse(result.response.text().replace("```json", "").replace("```", ""))
+
+        let endDate = new Date();
+        endDate.setDate(endDate.getDate() + 7);
 
         const event_to_add = {
             geometry: jsonResult.geometry, // Inserting the location as GeoJSON
             properties: {
                 tags: ["location_random_fact"],
                 startDate: new Date().toISOString(),
-                endDate: new Date().toISOString(),
+                endDate: endDate.toISOString(),
                 startTime: "00:00",
                 endTime: "23:59",
                 description: `${jsonResult.properties.fact} Address: ${jsonResult.properties.address}`,
@@ -106,6 +120,27 @@ router.get("/", async (req, res) => {
                 createdAt: new Date(), // You may use `createdAt` in properties as per the GeoJSON format
             },
         }
+
+        let you_tube_search = await  youtubesearchapi.GetListByKeyword(jsonResult.properties.fact + 'documentary',true,1)
+        console.log(you_tube_search)
+        let you_tube_search_res = you_tube_search
+        console.log(you_tube_search_res)
+        let id = you_tube_search_res["items"][0]["id"]
+        console.log(id)
+
+        event_to_add.properties.eventImage= `https://www.youtube.com/embed/${id}`
+
+
+
+        // const chatResponse = await client.chat.complete({
+        //     model: "mistral-large-latest",
+        //     messages: [{role: 'user', content: `get a youtube video link related to this:  ${jsonResult.properties.fact}`}]
+        // });
+
+        // console.log( chatResponse.choices[0].message.content);
+
+        jsonResult.properties.eventImage=event_to_add.properties.eventImage
+
 
         console.log(event_to_add);
 

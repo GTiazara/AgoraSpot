@@ -80,6 +80,10 @@ export default defineComponent({
                 }
             });
 
+            this.map.on('zoomstart', () => {
+              window.leafletMap.closePopup()
+            })
+
 
         }, 500);
     },
@@ -245,6 +249,11 @@ export default defineComponent({
                             // Pan the map
                             this.map.panBy([0, offsetY], { animate: true });
 
+                            let video = `<iframe width="${deviceMaxWidth*0.9}" height="315"
+    src="${event.properties.eventImage}"
+    frameborder="0" allowfullscreen>
+</iframe>`
+
                             this.map.once("moveend", () => {
                                 setTimeout(() => {
                                     // Open the popup manually after the pan animation ends
@@ -256,7 +265,7 @@ export default defineComponent({
                                             offset: [0, -50],
                                         })
                                         .setLatLng([latitude, longitude])
-                                        .setContent(event.properties.description)
+                                        .setContent(`${video} <br>${event.properties.description}</br>`)
                                         // <iframe width="260" height="315" src="https://www.youtube.com/embed/mPc8LdEwHZQ?si=bb9C59iQJNl9FROa" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>>`
                                     // .openOn(thisObj.popupObjects);
 
