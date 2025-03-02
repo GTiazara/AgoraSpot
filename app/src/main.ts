@@ -44,6 +44,9 @@ import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css'
 import './registerServiceWorker'
 
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css'
+
 
 const vuetify = createVuetify({
   components,
@@ -53,13 +56,16 @@ const vuetify = createVuetify({
 const app = createApp(App)
   .use(IonicVue)
   .use(router)
-  .use(vuetify);
+  .use(vuetify)
+  .use(VueSweetalert2);
 
 app.config.globalProperties.$backBaseUrl = "https://agora-spot.vercel.app"
 // app.config.globalProperties.$backBaseUrl = "http://localhost:3000"
 app.config.globalProperties.$customIconhtml = {
-  className: 'leaflet-marker-icon',
-  html: `
+  customImage: "/assets/img/group.gif",
+  cutomIcon: {
+    className: 'leaflet-marker-icon',
+    html: `
       <div style="
           width: 60px; 
           height: 60px; 
@@ -74,14 +80,17 @@ app.config.globalProperties.$customIconhtml = {
           <img src="/assets/img/group.gif" alt=" icon" style="width: 36px; height: 36px; border-radius: 50%;" />
       </div>
     `,
-  iconSize: [60, 60], // Size of the custom icon
-  iconAnchor: [30, 60], // Position the icon on the map
-  popupAnchor: [0, -60], // Position the popup when the marker is clicked
+    iconSize: [60, 60], // Size of the custom icon
+    iconAnchor: [30, 60], // Position the icon on the map
+    popupAnchor: [0, -60], // Position the popup when the marker is clicked}
+  }
 };
 
 app.config.globalProperties.$customIconhtmlCar = {
-  className: 'leaflet-marker-icon',
-  html: `
+  customImage: "/assets/img/championship.gif",
+  cutomIcon: {
+    className: 'leaflet-marker-icon',
+    html: `
       <div style="
           width: 60px; 
           height: 60px; 
@@ -96,14 +105,17 @@ app.config.globalProperties.$customIconhtmlCar = {
           <img src="/assets/img/championship.gif" alt=" icon" style="width: 36px; height: 36px; border-radius: 50%;" />
       </div>
     `,
-  iconSize: [60, 60], // Size of the custom icon
-  iconAnchor: [30, 60], // Position the icon on the map
-  popupAnchor: [0, -60], // Position the popup when the marker is clicked
+    iconSize: [60, 60], // Size of the custom icon
+    iconAnchor: [30, 60], // Position the icon on the map
+    popupAnchor: [0, -60], // Position the popup when the marker is clicked
+  }
 };
 
 app.config.globalProperties.$customIconhtmlCycling = {
-  className: 'leaflet-marker-icon',
-  html: `
+  customImage: "/assets/img/cycling.gif",
+  cutomIcon: {
+    className: 'leaflet-marker-icon',
+    html: `
       <div style="
           width: 60px; 
           height: 60px; 
@@ -118,14 +130,17 @@ app.config.globalProperties.$customIconhtmlCycling = {
           <img src="/assets/img/cycling.gif" alt=" icon" style="width: 36px; height: 36px; border-radius: 50%;" />
       </div>
     `,
-  iconSize: [60, 60], // Size of the custom icon
-  iconAnchor: [30, 60], // Position the icon on the map
-  popupAnchor: [0, -60], // Position the popup when the marker is clicked
+    iconSize: [60, 60], // Size of the custom icon
+    iconAnchor: [30, 60], // Position the icon on the map
+    popupAnchor: [0, -60], // Position the popup when the marker is clicked
+  }
 };
 
 app.config.globalProperties.$customIconhtmlParty = {
-  className: 'leaflet-marker-icon',
-  html: `
+  customImage: "/assets/img/party.gif",
+  cutomIcon: {
+    className: 'leaflet-marker-icon',
+    html: `
       <div style="
           width: 60px; 
           height: 60px; 
@@ -140,14 +155,17 @@ app.config.globalProperties.$customIconhtmlParty = {
           <img src="/assets/img/party.gif" alt=" icon" style="width: 36px; height: 36px; border-radius: 50%;" />
       </div>
     `,
-  iconSize: [60, 60], // Size of the custom icon
-  iconAnchor: [30, 60], // Position the icon on the map
-  popupAnchor: [0, -60], // Position the popup when the marker is clicked
+    iconSize: [60, 60], // Size of the custom icon
+    iconAnchor: [30, 60], // Position the icon on the map
+    popupAnchor: [0, -60], // Position the popup when the marker is clicked
+  }
 };
 
 app.config.globalProperties.$customIconhtmlConcert = {
-  className: 'leaflet-marker-icon',
-  html: `
+  customImage: "/assets/img/performance.gif",
+  cutomIcon: {
+    className: 'leaflet-marker-icon',
+    html: `
       <div style="
           width: 60px; 
           height: 60px; 
@@ -162,14 +180,18 @@ app.config.globalProperties.$customIconhtmlConcert = {
           <img src="/assets/img/performance.gif" alt=" icon" style="width: 36px; height: 36px; border-radius: 50%;" />
       </div>
     `,
-  iconSize: [60, 60], // Size of the custom icon
-  iconAnchor: [30, 60], // Position the icon on the map
-  popupAnchor: [0, -60], // Position the popup when the marker is clicked
+    iconSize: [60, 60], // Size of the custom icon
+    iconAnchor: [30, 60], // Position the icon on the map
+    popupAnchor: [0, -60], // Position the popup when the marker is clicked
+  }
+
 };
 
 app.config.globalProperties.$customIconhtmlMarket = {
-  className: 'leaflet-marker-icon',
-  html: `
+  customImage: "/assets/img/stall.gif",
+  cutomIcon: {
+    className: 'leaflet-marker-icon',
+    html: `
       <div style="
           width: 60px; 
           height: 60px; 
@@ -184,9 +206,10 @@ app.config.globalProperties.$customIconhtmlMarket = {
           <img src="/assets/img/stall.gif" alt=" icon" style="width: 36px; height: 36px; border-radius: 50%;" />
       </div>
     `,
-  iconSize: [60, 60], // Size of the custom icon
-  iconAnchor: [30, 60], // Position the icon on the map
-  popupAnchor: [0, -60], // Position the popup when the marker is clicked
+    iconSize: [60, 60], // Size of the custom icon
+    iconAnchor: [30, 60], // Position the icon on the map
+    popupAnchor: [0, -60], // Position the popup when the marker is clicked
+  }
 };
 
 app.config.globalProperties.$customIconhtmlAddLocation = {

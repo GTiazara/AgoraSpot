@@ -80,6 +80,10 @@ export default defineComponent({
                 }
             });
 
+            this.map.on('zoomstart', () => {
+              window.leafletMap.closePopup()
+            })
+
 
         }, 500);
     },
@@ -206,17 +210,23 @@ export default defineComponent({
                 const { coordinates } = event.geometry; // GeoJSON format
                 const [longitude, latitude] = coordinates; // Fetch coordinates in (lng, lat)
 
-                let custonIcon = this.$customIconhtml
+                let custonIcon = this.$customIconhtml.cutomIcon
+                let custonImage = this.$customIconhtml.customImage
                 if (event.properties.tags.includes("race")) {
-                    custonIcon = this.$customIconhtmlCar
+                    custonIcon = this.$customIconhtmlCar.cutomIcon
+                    custonImage = this.$customIconhtmlCar.customImage
                 } else if (event.properties.tags.includes("cycling") || event.properties.tags.includes("cyclist")) {
-                    custonIcon = this.$customIconhtmlCycling
+                    custonIcon = this.$customIconhtmlCycling.cutomIcon
+                    custonImage = this.$customIconhtmlCycling.customImage
                 } else if (event.properties.tags.includes("party")) {
-                    custonIcon = this.$customIconhtmlParty
+                    custonIcon = this.$customIconhtmlParty.cutomIcon
+                    custonImage = this.$customIconhtmlParty.customImage
                 } else if (event.properties.tags.includes("concert")) {
-                    custonIcon = this.$customIconhtmlConcert
+                    custonIcon = this.$customIconhtmlConcert.cutomIcon
+                    custonImage = this.$customIconhtmlConcert.customImage
                 } else if (event.properties.tags.includes("market")) {
-                    custonIcon = this.$customIconhtmlMarket
+                    custonIcon = this.$customIconhtmlMarket.cutomIcon
+                    custonImage = this.$customIconhtmlMarket.customImage
                 } else if (event.properties.tags.includes("location_random_fact")) {
                     custonIcon = this.$customIconhtmlRandomFact
                     let marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) }) // Add marker to map
@@ -239,6 +249,11 @@ export default defineComponent({
                             // Pan the map
                             this.map.panBy([0, offsetY], { animate: true });
 
+                            let video = `<iframe width="${deviceMaxWidth*0.9}" height="315"
+    src="${event.properties.eventImage}"
+    frameborder="0" allowfullscreen>
+</iframe>`
+
                             this.map.once("moveend", () => {
                                 setTimeout(() => {
                                     // Open the popup manually after the pan animation ends
@@ -250,7 +265,7 @@ export default defineComponent({
                                             offset: [0, -50],
                                         })
                                         .setLatLng([latitude, longitude])
-                                        .setContent(event.properties.description)
+                                        .setContent(`${video} <br>${event.properties.description}</br>`)
                                         // <iframe width="260" height="315" src="https://www.youtube.com/embed/mPc8LdEwHZQ?si=bb9C59iQJNl9FROa" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>>`
                                     // .openOn(thisObj.popupObjects);
 
@@ -297,9 +312,9 @@ export default defineComponent({
   ">
 
      <!-- Event Image -->
-    <img src="${event.properties.eventImage || 'https://via.placeholder.com/400x200'}"
+    <img src="${event.properties.eventImage || custonImage}"
          alt="Event Image"
-         style="width: 100%; border-radius: 10px 10px 0 0; object-fit: cover; max-height: 200px;" />
+         style="width: 100%; border-radius: 10px 10px 0 0; object-fit: cover; max-height: 150px;" />
 
 
 

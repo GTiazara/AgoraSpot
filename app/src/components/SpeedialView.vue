@@ -10,7 +10,7 @@
     absolute
     offset
   >
-    <v-tooltip v-model="show" activator="parent">Agora +</v-tooltip>
+    <v-tooltip v-model="show" activator="parent" left>Agora +</v-tooltip>
     <img
       id="random_fact_btn_img"
       src="/assets/img/globe.gif"
@@ -26,7 +26,7 @@
       @update:modelValue="showLabel"
     >
       <v-btn key="1" color="success" icon @click="fetchRandomAILocation">
-        <v-tooltip v-model="show" activator="parent" style="position: sticky"
+        <v-tooltip v-model="show" activator="parent" style="position: sticky" left
           >Agora Random Fact</v-tooltip
         >
         <img
