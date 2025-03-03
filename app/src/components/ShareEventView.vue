@@ -66,6 +66,8 @@ export default {
                         title: `Check out this event: ${eventName}`,
                         url: eventLink
                     }).catch(err => console.error('Sharing failed:', err));
+
+                    this.$emit('update:isOpenShareEventEvent', !new_value);
                 } else {
                     navigator.clipboard.writeText(eventLink);
                     alert('Event link copied to clipboard!');
