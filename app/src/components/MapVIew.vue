@@ -363,7 +363,7 @@ export default defineComponent({
      <!-- Event Image -->
     <img src="${event.properties.eventImage || custonImage}"
          alt="Event Image"
-         style="width: 100%; border-radius: 10px 10px 0 0; object-fit: cover; max-height: 150px;" />
+         style="width: 100%; border-radius: 10px 10px 0 0; object-fit: contain; max-height: 150px;" />
 
 
 
