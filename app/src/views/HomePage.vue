@@ -20,7 +20,6 @@
 
 <script setup lang="js">
 import { IonContent, IonHeader, IonPage, } from '@ionic/vue';
-import { playCircle, radio, library, search } from 'ionicons/icons';
 </script>
 
 <script lang="js">
@@ -28,6 +27,8 @@ import ToolbarView from '@/components/ToolbarView.vue';
 import MapVIew from '@/components/MapVIew.vue';
 import TabarView from '@/components/TabarView.vue';
 import TranslationView from '@/components/TranslationView.vue';
+import { useRoute } from 'vue-router';
+import { store } from '@/assets/js/state.js';
 export default {
   components: {
     ToolbarView,
@@ -37,10 +38,7 @@ export default {
   },
   data() {
     return {
-      playCircle,
-      radio,
-      library,
-      search,
+      optionParam: null,
     };
   },
 
@@ -48,7 +46,29 @@ export default {
     fetch(`${this.$backBaseUrl}/agoraback/api/clean_up_event`).then(res => res.json()).then(json_res => {
       console.log(json_res);
     });
+
+    // const route = useRoute();
+    // this.optionParam = route.params.optionParam || null;
+
+
+    // if (this.optionParam) {
+    //   console.log("Optional Parameter Exists:", this.optionParam);
+
+    //   setTimeout(() => {
+    //   this.checkAndClickMarker( this.optionParam)}, 4000)
+    //   // Do something if the parameter exists
+    // }
   },
+
+  methods:{
+    checkAndClickMarker(event_id) {
+            let foundMarker = store.markersDict[event_id];
+            if (foundMarker) {
+                // this.setOpenToasNoRandomFactFromAi(true); // Your custom function
+                foundMarker.fire('click'); // Simulate a click event on the marker
+            }
+        }
+  }
 };
 </script>
 
