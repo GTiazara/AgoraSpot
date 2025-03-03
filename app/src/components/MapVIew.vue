@@ -75,6 +75,13 @@ export default defineComponent({
     mounted() {
         setTimeout(() => {
             this.initializeMap();
+
+            window.shareEvent = (selectedEventid) => {
+                console.log("window.shareEvent ")
+                this.selectedEvent = selectedEventid
+                this.isOpenShareEventEvent = true;
+            }
+
             this.fetchEvents();
             const browserLanguage = navigator.language || navigator.languages[0];
             this.translateToBrowserLanguage(browserLanguage)
@@ -101,19 +108,7 @@ export default defineComponent({
                 window.leafletMap.closePopup()
             })
 
-            window.shareEvent = (selectedEventid) => {
-                console.log("window.shareEvent ")
 
-                this.selectedEvent = selectedEventid
-
-                this.isOpenShareEventEvent = true;
-                // let baseUrl = window.location.origin;
-                // const eventLink = `${baseUrl}/event/${eventId}`;
-
-                // console.log(navigator.share)
-
-
-            }
 
 
 
