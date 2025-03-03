@@ -327,6 +327,7 @@ export default defineComponent({
 
 
                     const marker = L.marker([latitude, longitude], { icon: L.divIcon(custonIcon), title: `${event.properties.description} ${event.properties.tags}` }) // Add marker to map
+                    store.markersDict[event.id] = marker
 
                     window.markerObjects.addLayer(marker)
 
