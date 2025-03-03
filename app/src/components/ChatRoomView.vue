@@ -22,6 +22,11 @@
           :messages-loaded="messagesLoaded"
           @send-message="sendMessage($event.detail[0])"
           @fetch-messages="fetchMessages($event.detail[0])"
+          :show-search="false"
+          :show-add-room="false"
+          :show-audio="false"
+          :show-emojis="false"
+          :show-files="false"
         />
       </div>
     </ion-content>
@@ -30,7 +35,7 @@
 
 <script lang="js">
 import { IonDatetime, IonTextarea, IonContent, IonActionSheet, IonHeader, IonModal, IonItem, IonButton, IonButtons, IonToolbar, IonIcon } from '@ionic/vue';
-import { inject, ref } from 'vue';
+import { inject, ref, toRaw } from 'vue';
 
 import { register } from 'vue-advanced-chat'
 // import { register } from '../../vue-advanced-chat/dist/vue-advanced-chat.es.js'
@@ -54,7 +59,7 @@ export default {
     name: 'ShareEventView',
     props: {
         isOpenChatRoomEvent: Boolean,
-        targetEvent: String,
+        targetEvent: Object,
     },
     data() {
         return {
@@ -81,12 +86,12 @@ export default {
 
     watch: {
         isOpenChatRoomEvent(new_value) {
-            console.log("isOpenChatRoomEvent")
-            let eventName = this.targetEvent
+            console.log("isOpenChatRoomEvent", toRaw(this.targetEvent))
+            let eventName = toRaw(this.targetEvent)["event_descr"]
             let eventLink = eventName
             this.setOpen(new_value)
             if(new_value){
-                this.rooms[0]["roomName"]=eventName
+                this.rooms[0]["roomName"]= ` ${eventName}`
             }
         }
     },
@@ -107,14 +112,14 @@ export default {
         },
         fetchMessages({ options = {} }) {
             setTimeout(() => {
-                if (options.reset) {
-                    // this.messages = this.addMessages(false)
-                    console.log("add message")
-                } else {
-                    // this.messages = [...this.addMessages(), ...this.messages]
+                // if (options.reset) {
+                //     this.messages = this.addMessages(true)
+                //     console.log("add message")
+                // } else {
+                    this.messages = [...this.addMessages(), ...this.messages]
                     console.log("add message")
                     this.messagesLoaded = true
-                }
+                // }
                 // this.addNewMessage()
             })
         },
@@ -122,16 +127,17 @@ export default {
         addMessages(reset) {
             const messages = []
 
-            for (let i = 0; i < 30; i++) {
+
                 messages.push({
-                    _id: reset ? i : this.messages.length + i,
-                    content: `${reset ? '' : 'paginated'} message ${i + 1}`,
+                    _id: reset ? 0 : this.messages.length + 0,
+                    // content: `${reset ? '' : 'paginated'} message ${i + 1}`,
+                    content: "start conv, on going dev",
                     senderId: '4321',
                     username: 'John Doe',
                     date: '13 November',
                     timestamp: '10:20'
                 })
-            }
+
 
             return messages
         },

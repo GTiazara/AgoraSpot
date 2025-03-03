@@ -20,7 +20,7 @@
   <ChatRoomView
     :isOpenChatRoomEvent="isOpenChatRoomEvent"
     @update:isOpenChatRoomEvent="isOpenChatRoomEvent = $event"
-    :targetEvent="selectedEvent"
+    :targetEvent="selectedEventChatRoom"
   ></ChatRoomView>
 
   <EditEventView
@@ -69,6 +69,7 @@ export default defineComponent({
             isOpenEditEventEvent: false,
             isOpenChatRoomEvent: false,
             selectedEvent: "",
+            selectedEventChatRoom:{},
             objectToEdit: {},
             tileLayers: {
                 street: null,
@@ -78,6 +79,7 @@ export default defineComponent({
             currentLayer: null,
             state: state,
             markers: null,
+            overlayOnMap:null,
         }
     },
 
@@ -91,9 +93,9 @@ export default defineComponent({
                 this.isOpenShareEventEvent = true;
             }
 
-            window.ChatRoomEvent = (selectedEventid) => {
+            window.ChatRoomEvent = (selectedEventid, selectedEventDescr) => {
                 console.log("window.chat room ")
-                this.selectedEvent = selectedEventid
+                this.selectedEventChatRoom = {"event_id":selectedEventid, "event_descr":selectedEventDescr}
                 this.isOpenChatRoomEvent = true;
             }
 
@@ -217,19 +219,31 @@ export default defineComponent({
 
                 // Set view to user's location
                 this.map.setView([46.603354, 1.888334], 3)
-                this.map.addLayer(this.markers);
+                // this.map.addLayer(this.markers);
                 window.markerObjects.addTo(this.map);
                 store.randomFactMarkerClusterLayer = this.markers
                 map.addLayer(this.popupObjects);
 
+                //overlay
+                // this.overlayOnMap={
+                //   "RandomFact": store.randomFactMarkerClusterLayer
+                // }
+
                 // Layer Control (Basemap Switcher)
-                L.control.layers({
+                let layerControl = L.control.layers({
                     "OpenStreetMap": this.tileLayers.street,
                     "Satellite": this.tileLayers.satellite,
                     "OpenTopo": this.tileLayers.opentopomap,
                     "IGN": this.tileLayers.ign,
                     "Dark catocdn": this.tileLayers.cartocdn,
-                }, {}, { collapsed: true }).addTo(map);
+                }, {}, { collapsed: true });
+
+                layerControl.addTo(map);
+
+                layerControl.addOverlay(window.markerObjects, "Event")
+                layerControl.addOverlay(store.randomFactMarkerClusterLayer, "RandomFact")
+
+                layerControl.expand()
 
             } else {
                 console.error('Map container not found.');
@@ -273,7 +287,7 @@ export default defineComponent({
                           // 📤
 
                       let chatRoomButton = ` <div style="padding: 1px; text-align: center;">
-                            <button onclick="window.ChatRoomEvent('${event.id}')"
+                            <button onclick="window.ChatRoomEvent('${event.id}', '${event.properties.description}')"
                               style="
                                 background-color: #007BFF;
                                 color: white;
