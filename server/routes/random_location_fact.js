@@ -49,15 +49,15 @@ router.get("/", async (req, res) => {
 
         const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-        genAI.GoogleSearch
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash",    
-            tools: [
-                {
-                  googleSearch: {
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        // tools: [
+            //     {
+            //       googleSearch: {
                   
-                  },
-                },
-              ], });
+            //       },
+            //     },
+            //   ],
+            
 
         const countryCodes = Object.keys(countries); // Get all country codes
         const randomCode = countryCodes[Math.floor(Math.random() * countryCodes.length)]; // Pick a random code
