@@ -1,232 +1,241 @@
 <template>
-    <ion-action-sheet :is-open="isOpenLocationActionSheet" class="my-custom-class" header="Add event here" :buttons="actionSheetButtons" @didDismiss="actionOnCloseAddLocationSheet($event)">
-    
-    
-    
+    <ion-action-sheet :is-open="isOpenLocationActionSheet" class="my-custom-class" header="Add event here"
+        :buttons="actionSheetButtons" @didDismiss="actionOnCloseAddLocationSheet($event)">
+
+
+
     </ion-action-sheet>
-    
-    
-    
+
+
+
     <ion-modal :is-open="isOpen" id="add-event" class="tab-modal">
-    
+
         <ion-header>
-    
+
             <ion-toolbar>
-    
-    
-    
-    
-    
+
+
+
+
+
                 <ion-buttons slot="start">
-    
+
                     <ion-button class="top-button-post-event" @click="handleAddEvent">
-    
+
                         Create
-    
+
                         <ion-icon :icon="add" />
-    
+
                     </ion-button>
-    
+
                 </ion-buttons>
-    
+
                 <ion-buttons slot="end">
-    
+
                     <ion-button @click="setOpen(false)" class="top-button-cancel-event">
-    
+
                         cancel
-    
+
                         <ion-icon :icon="close" />
-    
+
                     </ion-button>
-    
+
                 </ion-buttons>
-    
-    
-    
+
+
+
             </ion-toolbar>
-    
+
         </ion-header>
-    
+
         <ion-content>
-    
-    
-    
-    
-    
+
+
+
+
+
             <ion-item style="margin-top: 10px;">
-    
+
                 <v-row>
-    
+
                     <v-col align="center">
-    
+
                         <ion-button class="top-button-select-tags" @click="setOpenModalCatégorie(true)">
-    
-    
-    
+
+
+
                             <div style="padding:10px;">
-    
-                                Optional: Select event tag {{ selectedCategorieEventText }}
-    
+
+                                Select event tag {{ selectedCategorieEventText }}
+
                                 <ion-icon slot="icon-only" :icon="add" aria-hidden="true"></ion-icon>
-    
+
                             </div>
-    
+
                         </ion-button>
-    
+
                         <!-- <ion-select label-placement="floating" fill="outline" label="Select catégories" placeholder="Select catégories">
-        
-                </ion-select> -->
     
+            </ion-select> -->
+
                     </v-col>
-    
+
                 </v-row>
-    
+
             </ion-item>
-    
-    
-    
+
+
+
             <ion-item style="margin-bottom: 10px;">
-    
-                <ion-textarea class="top-button-select-tags" rows="2" maxlength="200" minlenght="4" @ionInput="getDescription" :auto-grow="true" placeholder="Enter event description">
-    
+
+                <ion-textarea class="top-button-select-tags" rows="2" maxlength="200" minlenght="4"
+                    @ionInput="getDescription" :auto-grow="true" placeholder="Enter event description">
+
                 </ion-textarea>
-    
+
             </ion-item>
-    
-    
-    
+
+
+
             <ion-modal :is-open="isOpenModalCatégorie" ref="modalSelectEventCategorie">
-    
-                <app-typeahead title="Event tag" :items="eventCategories" :selectedItems="selectedCategorieEvent" @selection-change="categorieSelectionChanged($event)" @selection-cancel="setOpenModalCatégorie(false)"></app-typeahead>
-    
+
+                <app-typeahead title="Event tag" :items="eventCategories" :selectedItems="selectedCategorieEvent"
+                    @selection-change="categorieSelectionChanged($event)"
+                    @selection-cancel="setOpenModalCatégorie(false)"></app-typeahead>
+
             </ion-modal>
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
             <ion-item>
-    
-    
-    
-                <div style="display: flex; flex-direction: column; background-color: white; border-radius: 10px; border-style: solid; border-width: 1px; border-color: blue;  color: white;border-radius: 5px 5px 0px 0px;width: 100%; padding:5px; color:black">
-    
-    
-    
-    
-    
+
+
+
+                <div
+                    style="display: flex; flex-direction: column; background-color: white; border-radius: 10px; border-style: solid; border-width: 1px; border-color: blue;  color: white;border-radius: 5px 5px 0px 0px;width: 100%; padding:5px; color:black">
+
+
+
+
+
                     <p>Select dates</p>
-    
+
                     <p>
-    
+
                         Start Date: <strong>{{ startDate ? formatDate(startDate) : "Not selected" }}</strong>
-    
+
                     </p>
-    
+
                     <p>
-    
+
                         End Date: <strong>{{ endDate ? formatDate(endDate) : "Not selected" }}</strong>
-    
+
                     </p>
-    
+
                 </div>
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
             </ion-item>
-    
-    
-    
-    
-    
+
+
+
+
+
             <!-- Single Calendar for Date Range -->
-    
+
             <ion-item>
-    
+
                 <!-- <ion-label>Select Dates</ion-label> -->
-    
+
                 <v-row>
-    
+
                     <v-col align="center">
-    
-                        <ion-datetime presentation="date" :multiple="true" :value="selectedDates" @ionChange="handleDateSelection">
-    
-    
+
+                        <ion-datetime presentation="date" :multiple="true" :value="selectedDates"
+                            @ionChange="handleDateSelection">
+
+
                         </ion-datetime>
-    
-    
-    
+
+
+
                     </v-col>
-    
+
                 </v-row>
-    
+
             </ion-item>
-    
+
             <ion-item>
-    
+
                 <v-row>
-    
+
                     <v-col align="left">
-    
-    
-    
+
+
+
                         <ion-datetime presentation="time" locale="en-GB-u-hc-h24" @ionChange="handleTimeStartSelection">
-    
+
                             <span slot="title">Début:{{ startTime }}</span></ion-datetime>
-    
+
                     </v-col align="right">
-    
+
                     <v-col>
-    
-    
-    
-    
-    
-                        <ion-datetime presentation="time" locale="en-GB-u-hc-h24" @ionChange="handleTimeEndSelection"><span slot="title">Fin:{{ endTime
-    
-                                    }}</span></ion-datetime>
-    
+
+
+
+
+
+                        <ion-datetime presentation="time" locale="en-GB-u-hc-h24"
+                            @ionChange="handleTimeEndSelection"><span slot="title">Fin:{{ endTime
+
+                                }}</span></ion-datetime>
+
                     </v-col>
-    
+
                 </v-row>
-    
+
             </ion-item>
-    
-    
-    
+
+
+
             <ion-item>
-    
+
                 <v-row>
-    
+
                     <v-col align="center">
-    
+
                         <p>Optional : Event image link</p>
-    
-                        <ion-textarea class="top-button-select-tags" rows="2" maxlength="500" minlenght="4" @ionInput="getImage" :auto-grow="true" placeholder="Enter image link like https://www.example.com/image.jpg">
-    
+
+                        <ion-textarea class="top-button-select-tags"  rows="2" maxlength="500" minlenght="4" @ionInput="getImage" :auto-grow="true"
+                            placeholder="Enter image link like https://www.example.com/image.jpg">
+
                         </ion-textarea>
-    
+
                         <p>Optional: information source</p>
-    
-                        <ion-textarea class="top-button-select-tags" rows="2" maxlength="500" minlenght="4" @ionInput="getInfoSource" :auto-grow="true" placeholder="Enter sources of information">
-    
+
+                        <ion-textarea class="top-button-select-tags"  rows="2" maxlength="500" minlenght="4" @ionInput="getInfoSource" :auto-grow="true"
+                            placeholder="Enter sources of information">
+
                         </ion-textarea>
-    
+
                     </v-col>
-    
+
                 </v-row>
-    
+
             </ion-item>
-    
-    
+
+
         </ion-content>
-    
+
     </ion-modal>
 </template>
 
@@ -355,75 +364,6 @@ export default {
                 eventImage: this.eventImage,
                 infoSource: this.eventInfoSource
             };
-
-            // https://sweetalert2.github.io/#
-
-            if (this.eventDescription == "" || this.eventDescription == null) {
-                this.$swal.fire({
-                    html: `
-                          Description required!
-                        `,
-                    showConfirmButton: false,
-                    showCancelButton: true,
-                    cancelButtonText: "Cancel",
-
-                });
-                return
-            }
-
-            if (this.startDate == "" || this.startDate == null) {
-                this.$swal.fire({
-                    html: `
-                          Start date required!
-                        `,
-                    showConfirmButton: false,
-                    showCancelButton: true,
-                    cancelButtonText: "Cancel",
-
-                });
-                return
-            }
-
-            
-
-            if (this.endDate == "" || this.endDate == null) {
-                this.$swal.fire({
-                    html: `
-                          End date required!
-                        `,
-                    showConfirmButton: false,
-                    showCancelButton: true,
-                    cancelButtonText: "Cancel",
-
-                });
-                return
-            }
-
-            if (this.startTime == "" || this.startTime == null) {
-                this.$swal.fire({
-                    html: `
-                          Start time required!
-                        `,
-                    showConfirmButton: false,
-                    showCancelButton: true,
-                    cancelButtonText: "Cancel",
-
-                });
-                return
-            }
-
-            if (this.endTime == "" || this.endTime == null) {
-                this.$swal.fire({
-                    html: `
-                          Start time required!
-                        `,
-                    showConfirmButton: false,
-                    showCancelButton: true,
-                    cancelButtonText: "Cancel",
-
-                });
-                return
-            }
 
             console.log(eventData)
 
@@ -589,7 +529,7 @@ export default {
     color: #fff;
     /* padding: 15px 25px; */
     border-radius: 10px;
-    background-color: #d62506;
+    background-color:#d62506;
     /* background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, 0.23) 0%, transparent 86.18%), radial-gradient(66% 87% at 26% 20%, rgba(255, 255, 255, 0.41) 0%, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%); */
     box-shadow: 2px 19px 31px rgba(0, 0, 0, 0.2);
     font-weight: bold;

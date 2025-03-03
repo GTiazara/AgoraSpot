@@ -4,11 +4,18 @@
   </div>
 
   <SpeedialView></SpeedialView>
+
   <JoinEventVIew
     :isOpenJoinEventEvent="isOpenJoinEventEvent"
     @update:isOpenJoinEventEvent="isOpenJoinEventEvent = $event"
     :targetEvent="selectedEvent"
   ></JoinEventVIew>
+
+  <ShareEventView
+    :isOpenShareEventEvent="isOpenShareEventEvent"
+    @update:isOpenShareEventEvent="isOpenShareEventEvent = $event"
+    :targetEvent="selectedEvent"
+  ></ShareEventView>
 
   <EditEventView
     :isOpenEditModal="isOpenEditEventEvent"
@@ -22,6 +29,7 @@ import { defineComponent } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'
 import JoinEventVIew from './JoinEventVIew.vue';
+import ShareEventView from './ShareEventView.vue'
 import { state, store } from '@/assets/js/state.js';
 import EditEventView from './EditEventView.vue';
 import SpeedialView from './SpeedialView.vue';
@@ -38,6 +46,7 @@ export default defineComponent({
     name: "MapVIew",
     components: {
         JoinEventVIew,
+        ShareEventView,
         EditEventView,
         IonToast,
         SpeedialView
@@ -47,6 +56,7 @@ export default defineComponent({
         return {
             map: "",
             isOpenJoinEventEvent: false,
+            isOpenShareEventEvent:false,
             isOpenEditEventEvent: false,
             selectedEvent: "",
             objectToEdit: {},
@@ -87,7 +97,7 @@ export default defineComponent({
             });
 
             this.map.on('zoomstart', () => {
-              window.leafletMap.closePopup()
+                window.leafletMap.closePopup()
             })
 
 
@@ -211,73 +221,73 @@ export default defineComponent({
         // Fetch events from the backend API
         fetchEvents() {
             fetch(`${this.$backBaseUrl}/agoraback/api/get_events`).then(reponse => reponse.json()).then(events => {
-            // Loop over the events and create markers
-            events.events.forEach((event) => {
-                const { coordinates } = event.geometry; // GeoJSON format
-                const [longitude, latitude] = coordinates; // Fetch coordinates in (lng, lat)
+                // Loop over the events and create markers
+                events.events.forEach((event) => {
+                    const { coordinates } = event.geometry; // GeoJSON format
+                    const [longitude, latitude] = coordinates; // Fetch coordinates in (lng, lat)
 
-                let custonIcon = this.$customIconhtml.cutomIcon
-                let custonImage = this.$customIconhtml.customImage
-                if (event.properties.tags.includes("race")) {
-                    custonIcon = this.$customIconhtmlCar.cutomIcon
-                    custonImage = this.$customIconhtmlCar.customImage
-                } else if (event.properties.tags.includes("cycling") || event.properties.tags.includes("cyclist")) {
-                    custonIcon = this.$customIconhtmlCycling.cutomIcon
-                    custonImage = this.$customIconhtmlCycling.customImage
-                } else if (event.properties.tags.includes("party")) {
-                    custonIcon = this.$customIconhtmlParty.cutomIcon
-                    custonImage = this.$customIconhtmlParty.customImage
-                } else if (event.properties.tags.includes("concert")) {
-                    custonIcon = this.$customIconhtmlConcert.cutomIcon
-                    custonImage = this.$customIconhtmlConcert.customImage
-                } else if (event.properties.tags.includes("market")) {
-                    custonIcon = this.$customIconhtmlMarket.cutomIcon
-                    custonImage = this.$customIconhtmlMarket.customImage
-                } else if (event.properties.tags.includes("location_random_fact")) {
-                    custonIcon = this.$customIconhtmlRandomFact
-                    let marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) }) // Add marker to map
-                    store.markersDict[event.id] = marker
-                    const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
+                    let custonIcon = this.$customIconhtml.cutomIcon
+                    let custonImage = this.$customIconhtml.customImage
+                    if (event.properties.tags.includes("race")) {
+                        custonIcon = this.$customIconhtmlCar.cutomIcon
+                        custonImage = this.$customIconhtmlCar.customImage
+                    } else if (event.properties.tags.includes("cycling") || event.properties.tags.includes("cyclist")) {
+                        custonIcon = this.$customIconhtmlCycling.cutomIcon
+                        custonImage = this.$customIconhtmlCycling.customImage
+                    } else if (event.properties.tags.includes("party")) {
+                        custonIcon = this.$customIconhtmlParty.cutomIcon
+                        custonImage = this.$customIconhtmlParty.customImage
+                    } else if (event.properties.tags.includes("concert")) {
+                        custonIcon = this.$customIconhtmlConcert.cutomIcon
+                        custonImage = this.$customIconhtmlConcert.customImage
+                    } else if (event.properties.tags.includes("market")) {
+                        custonIcon = this.$customIconhtmlMarket.cutomIcon
+                        custonImage = this.$customIconhtmlMarket.customImage
+                    } else if (event.properties.tags.includes("location_random_fact")) {
+                        custonIcon = this.$customIconhtmlRandomFact
+                        let marker = L.marker([latitude, longitude], { icon: L.divIcon(this.$customIconhtmlRandomFact) }) // Add marker to map
+                        store.markersDict[event.id] = marker
+                        const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
 
-                    store.randomFactMarkerClusterLayer.addLayer(marker);
-                    // marker.bindPopup(event.properties.description)
-                    marker.on("click", () => {
-                        this.map.flyTo([latitude, longitude], 13, {
-                            animate: true,
-                            duration: 1.2, // Smooth animation duration in seconds
-                        });
+                        store.randomFactMarkerClusterLayer.addLayer(marker);
+                        // marker.bindPopup(event.properties.description)
+                        marker.on("click", () => {
+                            this.map.flyTo([latitude, longitude], 13, {
+                                animate: true,
+                                duration: 1.2, // Smooth animation duration in seconds
+                            });
 
-                        // After the map has moved, adjust the view to set the marker at 3/4 screen height
-                        this.map.once("moveend", () => {
-                            const mapHeight = document.getElementById('map').offsetHeight;
-                            const offsetY = -(mapHeight / 4); // Pan 1/4 of the map's height upward
+                            // After the map has moved, adjust the view to set the marker at 3/4 screen height
+                            this.map.once("moveend", () => {
+                                const mapHeight = document.getElementById('map').offsetHeight;
+                                const offsetY = -(mapHeight / 4); // Pan 1/4 of the map's height upward
 
-                            // Pan the map
-                            this.map.panBy([0, offsetY], { animate: true });
+                                // Pan the map
+                                this.map.panBy([0, offsetY], { animate: true });
 
-                            let video = `<iframe width="${deviceMaxWidth*0.98}" height="315"
+                                let video = `<iframe width="${deviceMaxWidth*0.98}" height="315"
                                 src="${event.properties.eventImage}"
                                 frameborder="0" allowfullscreen>
                             </iframe>`
-                            window.shareEvent = (eventId) => {
-                        let baseUrl = window.location.origin;
-                        const eventLink = `${baseUrl}/event/${eventId}`;
+                                window.shareEvent = (selectedEventid) => {
 
-                        console.log( navigator.share)
+                                  console.log("window.shareEvent ")
 
-                        if (navigator.share) {
-                          navigator.share({
-                            title: `Check out this event: ${eventName}`,
-                            url: eventLink
-                          }).catch(err => console.error('Sharing failed:', err));
-                        } else {
-                          navigator.clipboard.writeText(eventLink);
-                          alert('Event link copied to clipboard!');
-                        }
-                      }
+                                  this.selectedEvent = selectedEventid
+
+                                  this.isOpenShareEventEvent = true;
 
 
-                          let shareButton =  ` <div style="padding: 10px; text-align: center;">
+                                    // let baseUrl = window.location.origin;
+                                    // const eventLink = `${baseUrl}/event/${eventId}`;
+
+                                    // console.log(navigator.share)
+
+
+                                }
+
+
+                                let shareButton = ` <div style="padding: 10px; text-align: center;">
                             <button onclick="window.shareEvent('${event.id}')"
                               style="
                                 background-color: #007BFF;
@@ -294,50 +304,50 @@ export default defineComponent({
                           </div>`
 
 
-                            this.map.once("moveend", () => {
-                                setTimeout(() => {
-                                    // Open the popup manually after the pan animation ends
-                                    let popup = L.popup({
-                                            maxWidth: deviceMaxWidth,
-                                            closeButton: true,
-                                            autoClose: true,
-                                            closeOnClick: false,
-                                            offset: [0, -50],
-                                        })
-                                        .setLatLng([latitude, longitude])
-                                        .setContent(`${video} <br>${shareButton}</br> <br>${event.properties.description}</br>`)
+                                this.map.once("moveend", () => {
+                                    setTimeout(() => {
+                                        // Open the popup manually after the pan animation ends
+                                        let popup = L.popup({
+                                                maxWidth: deviceMaxWidth,
+                                                closeButton: true,
+                                                autoClose: true,
+                                                closeOnClick: false,
+                                                offset: [0, -50],
+                                            })
+                                            .setLatLng([latitude, longitude])
+                                            .setContent(`${video} <br>${shareButton}</br> <br>${event.properties.description}</br>`)
                                         // <iframe width="260" height="315" src="https://www.youtube.com/embed/mPc8LdEwHZQ?si=bb9C59iQJNl9FROa" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>>`
-                                    // .openOn(thisObj.popupObjects);
+                                        // .openOn(thisObj.popupObjects);
 
-                                    window.leafletMap.openPopup(popup)
-                                }, 200); // Adjust the delay as needed to match the animation timing
+                                        window.leafletMap.openPopup(popup)
+                                    }, 200); // Adjust the delay as needed to match the animation timing
+                                });
                             });
-                        });
-                    })
-                    return
-                }
+                        })
+                        return
+                    }
 
 
-                const marker = L.marker([latitude, longitude], { icon: L.divIcon(custonIcon), title: `${event.properties.description} ${event.properties.tags}` }) // Add marker to map
+                    const marker = L.marker([latitude, longitude], { icon: L.divIcon(custonIcon), title: `${event.properties.description} ${event.properties.tags}` }) // Add marker to map
 
-                window.markerObjects.addLayer(marker)
+                    window.markerObjects.addLayer(marker)
 
-                if (!event.properties.participants) {
-                    event.properties.participants = {}
-                }
+                    if (!event.properties.participants) {
+                        event.properties.participants = {}
+                    }
 
-                const eventJson = encodeURIComponent(JSON.stringify({
-                    description: event.properties.description,
-                    startDate: event.properties.startDate,
-                    endDate: event.properties.endDate,
-                    startTime: event.properties.startTime,
-                    endTime: event.properties.endTime,
-                    tags: event.properties.tags
-                }));
+                    const eventJson = encodeURIComponent(JSON.stringify({
+                        description: event.properties.description,
+                        startDate: event.properties.startDate,
+                        endDate: event.properties.endDate,
+                        startTime: event.properties.startTime,
+                        endTime: event.properties.endTime,
+                        tags: event.properties.tags
+                    }));
 
-                // Create a popup content
-                // Create a popup content
-                const popupContent = `
+                    // Create a popup content
+                    // Create a popup content
+                    const popupContent = `
   <div style="
     font-family: Arial, sans-serif;
     text-align: center;
@@ -427,141 +437,141 @@ export default defineComponent({
 `;
 
 
-                //         <i class="mdi mdi-pencil"></i> Edit
+                    //         <i class="mdi mdi-pencil"></i> Edit
 
 
-                // Store event details globally for the "Join" button click
-                window.openJoinModal = (selectedEvent) => {
-                    console.log("Join event:", selectedEvent);
-                    this.selectedEvent = selectedEvent;
-                    this.isOpenJoinEventEvent = true;
-                };
+                    // Store event details globally for the "Join" button click
+                    window.openJoinModal = (selectedEvent) => {
+                        console.log("Join event:", selectedEvent);
+                        this.selectedEvent = selectedEvent;
+                        this.isOpenJoinEventEvent = true;
+                    };
 
-                // Store event details globally for the "Join" button click
-                window.openEditModal = (selectedEventId, selectedEventData) => {
-                    console.log("Edit event:", selectedEventId, decodeURIComponent(selectedEventData), selectedEventData);
-                    this.objectToEdit = JSON.parse(decodeURIComponent(selectedEventData));
-                    console.log(this.objectToEdit, "this.objectToEdit");
-                    this.isOpenEditEventEvent = true;
-
-
-                };
+                    // Store event details globally for the "Join" button click
+                    window.openEditModal = (selectedEventId, selectedEventData) => {
+                        console.log("Edit event:", selectedEventId, decodeURIComponent(selectedEventData), selectedEventData);
+                        this.objectToEdit = JSON.parse(decodeURIComponent(selectedEventData));
+                        console.log(this.objectToEdit, "this.objectToEdit");
+                        this.isOpenEditEventEvent = true;
 
 
+                    };
 
 
 
-                marker.on("click", () => {
-                    // Fly to the marker's location
-                    this.map.flyTo([latitude, longitude], 15, {
-                        animate: true,
-                        duration: 1.2, // Smooth animation duration in seconds
-                    });
 
-                    // After the map has moved, adjust the view to set the marker at 3/4 screen height
-                    this.map.once("moveend", () => {
-                        const mapHeight = document.getElementById('map').offsetHeight;
-                        const offsetY = -(mapHeight / 4); // Pan 1/4 of the map's height upward
 
-                        // Pan the map
-                        this.map.panBy([0, offsetY], { animate: true });
-
-                        // Add another "moveend" listener for when the panning animation is completed
-                        const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
-                        this.map.once("moveend", () => {
-                            setTimeout(() => {
-                                // Open the popup manually after the pan animation ends
-                                let popup = L.popup({
-                                        maxWidth: deviceMaxWidth,
-                                        closeButton: true,
-                                        autoClose: true,
-                                        closeOnClick: false,
-                                        offset: [0, -50],
-                                    })
-                                    .setLatLng([latitude, longitude])
-                                    .setContent(popupContent);
-                                // .openOn(thisObj.popupObjects);
-                                window.leafletMap.openPopup(popup)
-                            }, 200); // Adjust the delay as needed to match the animation timing
+                    marker.on("click", () => {
+                        // Fly to the marker's location
+                        this.map.flyTo([latitude, longitude], 15, {
+                            animate: true,
+                            duration: 1.2, // Smooth animation duration in seconds
                         });
+
+                        // After the map has moved, adjust the view to set the marker at 3/4 screen height
+                        this.map.once("moveend", () => {
+                            const mapHeight = document.getElementById('map').offsetHeight;
+                            const offsetY = -(mapHeight / 4); // Pan 1/4 of the map's height upward
+
+                            // Pan the map
+                            this.map.panBy([0, offsetY], { animate: true });
+
+                            // Add another "moveend" listener for when the panning animation is completed
+                            const deviceMaxWidth = Math.min(window.innerWidth * 0.8, 400);
+                            this.map.once("moveend", () => {
+                                setTimeout(() => {
+                                    // Open the popup manually after the pan animation ends
+                                    let popup = L.popup({
+                                            maxWidth: deviceMaxWidth,
+                                            closeButton: true,
+                                            autoClose: true,
+                                            closeOnClick: false,
+                                            offset: [0, -50],
+                                        })
+                                        .setLatLng([latitude, longitude])
+                                        .setContent(popupContent);
+                                    // .openOn(thisObj.popupObjects);
+                                    window.leafletMap.openPopup(popup)
+                                }, 200); // Adjust the delay as needed to match the animation timing
+                            });
+                        });
+
                     });
+
+
 
                 });
 
+                let searchControl = new L.Control.Search({
+                    layer: window.markerObjects, // Use stored markers
+                    // propertyName: "title",  // Search in popup content
+                    marker: false,
+                    container: "seach_in_map",
+                    textPlaceholder: "Search in description",
+                    collapsed: false,
+                    moveToLocation: (latlng, title, map) => {
+                        map.flyTo(latlng, 12, { animate: true, duration: 1.2 });
+                    },
+                    filterData: function(text, records) {
+                        console.log("Search text:", text);
+                        console.log("Original records:", records);
+
+                        // Convert search text to lowercase for case-insensitive search
+                        let searchText = text.toLowerCase();
+
+                        // Filter the dictionary: Keep only entries where the key includes the search text
+                        let filteredRecords = Object.fromEntries(
+                            Object.entries(records).filter(([key, value]) => key.toLowerCase().includes(searchText))
+                        );
+
+                        console.log("Filtered records:", filteredRecords);
+                        return filteredRecords;
+                    }
+                });
+
+                this.map.addControl(searchControl);
+
+                document.querySelector(".leaflet-control-search").style.marginTop = "0px";
+                document.querySelector(".leaflet-control-search").style.marginLeft = "0px";
+                document.querySelector(".leaflet-control-search").style.width = "100%";
+                document.querySelector(".leaflet-control-search").style.display = "flex";
+                document.querySelector(".leaflet-control-search").style.flexDirection = "row";
+                document.querySelector(".leaflet-control-search").style.justifyContent = "space-evenly";
+
+                document.querySelector(".search-tooltip").style.position = "fixed";
+                document.querySelector(".search-tooltip").style.top = "10%";
+                document.querySelector(".search-tooltip").style.left = "10%";
+
+                // document.querySelector(".search-input").style.width = "85%";
 
 
-            });
 
-            let searchControl = new L.Control.Search({
-                layer: window.markerObjects, // Use stored markers
-                // propertyName: "title",  // Search in popup content
-                marker: false,
-                container: "seach_in_map",
-                textPlaceholder: "Search in description",
-                collapsed: false,
-                moveToLocation: (latlng, title, map) => {
-                    map.flyTo(latlng, 12, { animate: true, duration: 1.2 });
-                },
-                filterData: function(text, records) {
-                    console.log("Search text:", text);
-                    console.log("Original records:", records);
 
-                    // Convert search text to lowercase for case-insensitive search
-                    let searchText = text.toLowerCase();
+                function adjustSearchWidth() {
+                    let searchBox = document.querySelector(`input[id*="searchtext"]`);
+                    // searchBox.style.width = "85%";
+                    if (!searchBox) return;
 
-                    // Filter the dictionary: Keep only entries where the key includes the search text
-                    let filteredRecords = Object.fromEntries(
-                        Object.entries(records).filter(([key, value]) => key.toLowerCase().includes(searchText))
-                    );
 
-                    console.log("Filtered records:", filteredRecords);
-                    return filteredRecords;
+                    if (window.innerWidth < 290) {
+                        // Mobile devices
+                        searchBox.style.width = "30%";
+                    } else {
+                        // Desktop or larger screens
+                        searchBox.style.width = "85%";
+                    }
+
+
+
                 }
-            });
+                // Run on page load
+                adjustSearchWidth();
 
-            this.map.addControl(searchControl);
-
-            document.querySelector(".leaflet-control-search").style.marginTop = "0px";
-            document.querySelector(".leaflet-control-search").style.marginLeft = "0px";
-            document.querySelector(".leaflet-control-search").style.width = "100%";
-            document.querySelector(".leaflet-control-search").style.display = "flex";
-            document.querySelector(".leaflet-control-search").style.flexDirection = "row";
-            document.querySelector(".leaflet-control-search").style.justifyContent = "space-evenly";
-
-            document.querySelector(".search-tooltip").style.position = "fixed";
-            document.querySelector(".search-tooltip").style.top = "10%";
-            document.querySelector(".search-tooltip").style.left = "10%";
-
-            // document.querySelector(".search-input").style.width = "85%";
+                // Update on window resize
+                window.addEventListener("resize", adjustSearchWidth);
 
 
-
-
-            function adjustSearchWidth() {
-                let searchBox = document.querySelector(`input[id*="searchtext"]`);
-                // searchBox.style.width = "85%";
-                if (!searchBox) return;
-
-
-                if (window.innerWidth < 290) {
-                    // Mobile devices
-                    searchBox.style.width = "30%";
-                } else {
-                    // Desktop or larger screens
-                    searchBox.style.width = "85%";
-                }
-
-
-
-            }
-            // Run on page load
-            adjustSearchWidth();
-
-            // Update on window resize
-            window.addEventListener("resize", adjustSearchWidth);
-
-
-          })
+            })
 
         },
 
