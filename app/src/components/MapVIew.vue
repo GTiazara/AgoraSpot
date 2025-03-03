@@ -40,7 +40,7 @@ import 'leaflet.markercluster/dist/leaflet.markercluster.js'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { IonToast } from "@ionic/vue";
-import { useRoute } from 'vue-router';
+// import { useRoute } from 'vue-router';
 
 export default defineComponent({
 
