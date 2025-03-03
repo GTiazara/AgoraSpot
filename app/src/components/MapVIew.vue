@@ -17,6 +17,12 @@
     :targetEvent="selectedEvent"
   ></ShareEventView>
 
+  <ChatRoomView
+    :isOpenChatRoomEvent="isOpenChatRoomEvent"
+    @update:isOpenChatRoomEvent="isOpenChatRoomEvent = $event"
+    :targetEvent="selectedEventChatRoom"
+  ></ChatRoomView>
+
   <EditEventView
     :isOpenEditModal="isOpenEditEventEvent"
     :objectToEdit="objectToEdit"
@@ -30,6 +36,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'
 import JoinEventVIew from './JoinEventVIew.vue';
 import ShareEventView from './ShareEventView.vue'
+import ChatRoomView from './ChatRoomView.vue'
 import { state, store } from '@/assets/js/state.js';
 import EditEventView from './EditEventView.vue';
 import SpeedialView from './SpeedialView.vue';
@@ -50,7 +57,8 @@ export default defineComponent({
         ShareEventView,
         EditEventView,
         IonToast,
-        SpeedialView
+        SpeedialView,
+        ChatRoomView
     },
 
     data() {
@@ -59,7 +67,9 @@ export default defineComponent({
             isOpenJoinEventEvent: false,
             isOpenShareEventEvent: false,
             isOpenEditEventEvent: false,
+            isOpenChatRoomEvent: false,
             selectedEvent: "",
+            selectedEventChatRoom:{},
             objectToEdit: {},
             tileLayers: {
                 street: null,
@@ -69,6 +79,7 @@ export default defineComponent({
             currentLayer: null,
             state: state,
             markers: null,
+            overlayOnMap:null,
         }
     },
 
@@ -80,6 +91,12 @@ export default defineComponent({
                 console.log("window.shareEvent ")
                 this.selectedEvent = selectedEventid
                 this.isOpenShareEventEvent = true;
+            }
+
+            window.ChatRoomEvent = (selectedEventid, selectedEventDescr) => {
+                console.log("window.chat room ")
+                this.selectedEventChatRoom = {"event_id":selectedEventid, "event_descr":selectedEventDescr}
+                this.isOpenChatRoomEvent = true;
             }
 
             this.fetchEvents();
@@ -136,12 +153,12 @@ export default defineComponent({
                 selectElement.dispatchEvent(new Event("change")); // Simulate selection
 
                 selectElement.addEventListener("change", (event) => {
-                console.log("Language changed:", event.target.value);
-                document.getElementById('google_translate_element').style.visibility = 'hidden';
-                translate_button.classList.remove('active');
-                state.isTranslateActive = true;
+                    console.log("Language changed:", event.target.value);
+                    document.getElementById('google_translate_element').style.visibility = 'hidden';
+                    translate_button.classList.remove('active');
+                    state.isTranslateActive = true;
 
-            });
+                });
 
             }
 
@@ -202,19 +219,31 @@ export default defineComponent({
 
                 // Set view to user's location
                 this.map.setView([46.603354, 1.888334], 3)
-                this.map.addLayer(this.markers);
+                // this.map.addLayer(this.markers);
                 window.markerObjects.addTo(this.map);
                 store.randomFactMarkerClusterLayer = this.markers
                 map.addLayer(this.popupObjects);
 
+                //overlay
+                // this.overlayOnMap={
+                //   "RandomFact": store.randomFactMarkerClusterLayer
+                // }
+
                 // Layer Control (Basemap Switcher)
-                L.control.layers({
+                let layerControl = L.control.layers({
                     "OpenStreetMap": this.tileLayers.street,
                     "Satellite": this.tileLayers.satellite,
                     "OpenTopo": this.tileLayers.opentopomap,
                     "IGN": this.tileLayers.ign,
                     "Dark catocdn": this.tileLayers.cartocdn,
-                }, {}, { collapsed: true }).addTo(map);
+                }, {}, { collapsed: true });
+
+                layerControl.addTo(map);
+
+                layerControl.addOverlay(window.markerObjects, "Event")
+                layerControl.addOverlay(store.randomFactMarkerClusterLayer, "RandomFact")
+
+                layerControl.expand()
 
             } else {
                 console.error('Map container not found.');
@@ -240,19 +269,36 @@ export default defineComponent({
                     const { coordinates } = event.geometry; // GeoJSON format
                     const [longitude, latitude] = coordinates; // Fetch coordinates in (lng, lat)
 
-                    let shareButton = ` <div style="padding: 10px; text-align: center;">
+                    let shareButton = ` <div style="padding: 1px; text-align: center;">
                             <button onclick="window.shareEvent('${event.id}')"
                               style="
                                 background-color: #007BFF;
                                 color: white;
                                 border: none;
-                                padding: 10px 20px;
+                                padding: 5px 25px;
                                 border-radius: 5px;
                                 cursor: pointer;
-                                font-size: 14px;
+                                font-size: 12px;
                                 width: 50%;
                               ">
-                              📤 Share Event
+                               Share
+                            </button>
+                          </div>`
+                          // 📤
+
+                      let chatRoomButton = ` <div style="padding: 1px; text-align: center;">
+                            <button onclick="window.ChatRoomEvent('${event.id}', '${event.properties.description}')"
+                              style="
+                                background-color: #007BFF;
+                                color: white;
+                                border: none;
+                                padding: 5px 25px;
+                                border-radius: 5px;
+                                cursor: pointer;
+                                font-size: 12px;
+                                width: 50%;
+                              ">
+                               Chat
                             </button>
                           </div>`
 
@@ -301,10 +347,6 @@ export default defineComponent({
                             </iframe>`
 
 
-
-
-
-
                                 this.map.once("moveend", () => {
                                     setTimeout(() => {
                                         // Open the popup manually after the pan animation ends
@@ -325,6 +367,8 @@ export default defineComponent({
                                 });
                             });
                         })
+
+
                         return
                     }
 
@@ -397,7 +441,12 @@ export default defineComponent({
 
     </div>
 
+    <div style="display:flex; flex-direction:column; justify-content: center;">
+
     ${shareButton}
+
+    ${chatRoomButton}
+      </div>
 
 
 
