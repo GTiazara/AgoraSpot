@@ -40,7 +40,7 @@ import 'leaflet.markercluster/dist/leaflet.markercluster.js'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { IonToast } from "@ionic/vue";
-import { useRoute } from 'vue-router';
+// import { useRoute } from 'vue-router';
 
 export default defineComponent({
 
@@ -72,7 +72,7 @@ export default defineComponent({
         }
     },
 
-    mounted() {
+    created() {
         setTimeout(() => {
             this.initializeMap();
 
@@ -134,15 +134,18 @@ export default defineComponent({
             if (selectElement) {
                 selectElement.value = lang; // Set dropdown to browser language
                 selectElement.dispatchEvent(new Event("change")); // Simulate selection
-            }
 
-            selectElement.addEventListener("change", (event) => {
+                selectElement.addEventListener("change", (event) => {
                 console.log("Language changed:", event.target.value);
                 document.getElementById('google_translate_element').style.visibility = 'hidden';
                 translate_button.classList.remove('active');
                 state.isTranslateActive = true;
 
             });
+
+            }
+
+
         },
 
 

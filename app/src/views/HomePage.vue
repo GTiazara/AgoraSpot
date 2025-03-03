@@ -27,7 +27,7 @@ import ToolbarView from '@/components/ToolbarView.vue';
 import MapVIew from '@/components/MapVIew.vue';
 import TabarView from '@/components/TabarView.vue';
 import TranslationView from '@/components/TranslationView.vue';
-import { useRoute } from 'vue-router';
+// import { useRoute } from 'vue-router';
 import { store } from '@/assets/js/state.js';
 export default {
   components: {
