@@ -56,9 +56,9 @@ export default {
     watch: {
         isOpenShareEventEvent(new_value) {
             console.log("isOpenShareEventEvent")
-            this.setOpen(new_value)
+
             let eventName = this.targetEvent
-            let eventLink="fqsdgfqsgdqsmdgqjsmdgjqsgdqjsdlgkmqsmgjqsmfgjqsg"
+            let eventLink=eventName
 
             if (new_value) {
                 if (navigator.share) {
@@ -69,8 +69,11 @@ export default {
                 } else {
                     navigator.clipboard.writeText(eventLink);
                     alert('Event link copied to clipboard!');
+                    this.setOpen(new_value)
                 }
             }
+
+
         }
     },
 
@@ -80,6 +83,14 @@ export default {
             this.$emit('update:isOpenShareEventEvent', open);
 
         },
+
+        checkAndClickMarker(event_id) {
+            let foundMarker = store.markersDict[event_id];
+            if (foundMarker) {
+                // this.setOpenToasNoRandomFactFromAi(true); // Your custom function
+                foundMarker.fire('click'); // Simulate a click event on the marker
+            }
+        }
 
 
     }

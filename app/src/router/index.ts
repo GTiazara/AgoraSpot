@@ -10,7 +10,14 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '',
     component: HomePage
+  },
+  
+  {
+    path: '/:optionParam?',
+    name: 'HomeWithParam',
+    component: HomePage
   }
+
 ]
 
 const router = createRouter({

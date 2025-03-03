@@ -40,6 +40,7 @@ import 'leaflet.markercluster/dist/leaflet.markercluster.js'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { IonToast } from "@ionic/vue";
+import { useRoute } from 'vue-router';
 
 export default defineComponent({
 
@@ -56,7 +57,7 @@ export default defineComponent({
         return {
             map: "",
             isOpenJoinEventEvent: false,
-            isOpenShareEventEvent:false,
+            isOpenShareEventEvent: false,
             isOpenEditEventEvent: false,
             selectedEvent: "",
             objectToEdit: {},
@@ -99,6 +100,21 @@ export default defineComponent({
             this.map.on('zoomstart', () => {
                 window.leafletMap.closePopup()
             })
+
+            window.shareEvent = (selectedEventid) => {
+                console.log("window.shareEvent ")
+
+                this.selectedEvent = selectedEventid
+
+                this.isOpenShareEventEvent = true;
+                // let baseUrl = window.location.origin;
+                // const eventLink = `${baseUrl}/event/${eventId}`;
+
+                // console.log(navigator.share)
+
+
+            }
+
 
 
         }, 500);
@@ -226,6 +242,22 @@ export default defineComponent({
                     const { coordinates } = event.geometry; // GeoJSON format
                     const [longitude, latitude] = coordinates; // Fetch coordinates in (lng, lat)
 
+                    let shareButton = ` <div style="padding: 10px; text-align: center;">
+                            <button onclick="window.shareEvent('${event.id}')"
+                              style="
+                                background-color: #007BFF;
+                                color: white;
+                                border: none;
+                                padding: 10px 20px;
+                                border-radius: 5px;
+                                cursor: pointer;
+                                font-size: 14px;
+                                width: 50%;
+                              ">
+                              📤 Share Event
+                            </button>
+                          </div>`
+
                     let custonIcon = this.$customIconhtml.cutomIcon
                     let custonImage = this.$customIconhtml.customImage
                     if (event.properties.tags.includes("race")) {
@@ -269,39 +301,10 @@ export default defineComponent({
                                 src="${event.properties.eventImage}"
                                 frameborder="0" allowfullscreen>
                             </iframe>`
-                                window.shareEvent = (selectedEventid) => {
-
-                                  console.log("window.shareEvent ")
-
-                                  this.selectedEvent = selectedEventid
-
-                                  this.isOpenShareEventEvent = true;
 
 
-                                    // let baseUrl = window.location.origin;
-                                    // const eventLink = `${baseUrl}/event/${eventId}`;
-
-                                    // console.log(navigator.share)
 
 
-                                }
-
-
-                                let shareButton = ` <div style="padding: 10px; text-align: center;">
-                            <button onclick="window.shareEvent('${event.id}')"
-                              style="
-                                background-color: #007BFF;
-                                color: white;
-                                border: none;
-                                padding: 10px 20px;
-                                border-radius: 5px;
-                                cursor: pointer;
-                                font-size: 14px;
-                                width: 50%;
-                              ">
-                              📤 Share Event
-                            </button>
-                          </div>`
 
 
                                 this.map.once("moveend", () => {
@@ -394,6 +397,8 @@ export default defineComponent({
 
 
     </div>
+
+    ${shareButton}
 
 
 
@@ -502,6 +507,21 @@ export default defineComponent({
 
                 });
 
+                // const route = useRoute();
+                const route = this.$route
+                console.log("route", route, this.$route)
+                this.optionParam = route.params.optionParam || null;
+
+
+                if (this.optionParam && route.name == "HomeWithParam") {
+                    console.log("Optional Parameter Exists from map comp:", this.optionParam);
+
+
+                    this.checkAndClickMarker(this.optionParam)
+                    // Do something if the parameter exists
+                }
+
+
                 let searchControl = new L.Control.Search({
                     layer: window.markerObjects, // Use stored markers
                     // propertyName: "title",  // Search in popup content
@@ -574,6 +594,15 @@ export default defineComponent({
             })
 
         },
+
+        checkAndClickMarker(event_id) {
+            let foundMarker = store.markersDict[event_id];
+            if (foundMarker) {
+                // this.setOpenToasNoRandomFactFromAi(true); // Your custom function
+                foundMarker.fire('click'); // Simulate a click event on the marker
+            }
+        }
+
 
 
 
