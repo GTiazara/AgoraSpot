@@ -27,9 +27,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({ 
-  // origin: "https://agora-spot-app.vercel.app", // Allow all origins
-  // methods: ["GET","OPTIONS","PATCH","DELETE","POST","PUT"],
-  // allowedHeaders: ["Content-Type"]
+  origin: "*", // Allow all origins
+  methods: ["GET","OPTIONS","PATCH","DELETE","POST","PUT"],
+  allowedHeaders: ["Content-Type"]
 }));
 
 // Define routes
@@ -74,20 +74,33 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 //
-const io = require('socket.io')(server);
-io.on('connection', function(socket) {
-  console.log(socket.id)
-    socket.on('SEND_MESSAGE', function(data) {
-      console.log("message reveibelsfsfsdqfd")
-      console.log(data)
-        io.emit('MESSAGE', data)
-    });
+// const io = require('socket.io')(server);
+// io.on('connection', function(socket) {
+//   console.log(socket.id)
+//     socket.on('SEND_MESSAGE', function(data) {
+//       console.log("message reveibelsfsfsdqfd")
+//       console.log(data)
+//         io.emit('MESSAGE', data)
+//     });
 
-    socket.on('disconnect', () => {
-      console.log("Client disconnected:", socket.id);
-  });
+//     socket.on('disconnect', () => {
+//       console.log("Client disconnected:", socket.id);
+//   });
 
-});
+// });
+
+   // "headers": [
+    // {
+    //   "source": "/(.*)",
+    //   "headers": [
+    //     { "key": "Access-Control-Allow-Credentials", "value": "true" },
+    //     { "key": "Access-Control-Allow-Origin", "value": "*" },
+    //     { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+    //     { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" }
+    //   ]
+    // }
+//   ]
+
 
 // Helper functions
 function normalizePort(val) {
