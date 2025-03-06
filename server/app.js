@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({ 
-  origin: "https://agora-spot-app.vercel.app/", // Allow all origins
+  origin: "*", // Allow all origins
   methods: ["GET","OPTIONS","PATCH","DELETE","POST","PUT"],
   allowedHeaders: ["Content-Type"]
 }));
@@ -74,20 +74,20 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 //
-const io = require('socket.io')(server);
-io.on('connection', function(socket) {
-  console.log(socket.id)
-    socket.on('SEND_MESSAGE', function(data) {
-      console.log("message reveibelsfsfsdqfd")
-      console.log(data)
-        io.emit('MESSAGE', data)
-    });
+// const io = require('socket.io')(server);
+// io.on('connection', function(socket) {
+//   console.log(socket.id)
+//     socket.on('SEND_MESSAGE', function(data) {
+//       console.log("message reveibelsfsfsdqfd")
+//       console.log(data)
+//         io.emit('MESSAGE', data)
+//     });
 
-    socket.on('disconnect', () => {
-      console.log("Client disconnected:", socket.id);
-  });
+//     socket.on('disconnect', () => {
+//       console.log("Client disconnected:", socket.id);
+//   });
 
-});
+// });
 
 // Helper functions
 function normalizePort(val) {
