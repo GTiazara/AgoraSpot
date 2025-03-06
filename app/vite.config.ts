@@ -35,7 +35,7 @@ export default defineConfig({
       includeAssets: ['favicon.ico'],
       manifest: {
 
-        name: "agoraspot",
+        name: "Agoraspot",
         short_name: 'agoraspot',
         description: 'Agora Spot, application carto de sortie, de loisirs et activités',
         theme_color: '#ffffff',

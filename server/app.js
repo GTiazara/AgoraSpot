@@ -6,6 +6,7 @@ const cors = require('cors');
 const http = require('http');
 const debug = require('debug')('myapp:server');
 
+
 // Import routes
 // const indexRouter = require('./routes/index');
 // const usersRouter = require('./routes/users');
@@ -14,6 +15,7 @@ const getEventRouter = require('./routes/get_all_events');
 const joinEventRouter = require('./routes/join_event_api');
 const cleanUpEventRouter = require('./routes/clean_up_events');
 const randomLocationFactRouter = require('./routes/random_location_fact');
+const EventChatRouter = require('./routes/event_chat_api');
 
 // Create the Express app
 const app = express();
@@ -24,7 +26,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors());
+app.use(cors({ 
+  origin: "*", // Allow all origins
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"]
+}));
 
 // Define routes
 // app.use('/', getEventRouter);
@@ -42,6 +48,7 @@ app.use('/agoraback/api/get_events', getEventRouter);
 app.use('/agoraback/api/add_participant', joinEventRouter);
 app.use('/agoraback/api/clean_up_event', cleanUpEventRouter);
 app.use('/agoraback/api/random_location_fact_api', randomLocationFactRouter);
+app.use('/agoraback/api/event_chat_api', EventChatRouter);
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {
   const createError = require('http-errors');
@@ -65,6 +72,22 @@ const server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+//
+const io = require('socket.io')(server);
+io.on('connection', function(socket) {
+  console.log(socket.id)
+    socket.on('SEND_MESSAGE', function(data) {
+      console.log("message reveibelsfsfsdqfd")
+      console.log(data)
+        io.emit('MESSAGE', data)
+    });
+
+    socket.on('disconnect', () => {
+      console.log("Client disconnected:", socket.id);
+  });
+
+});
 
 // Helper functions
 function normalizePort(val) {

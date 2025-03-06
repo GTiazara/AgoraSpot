@@ -36,9 +36,12 @@
 <script lang="js">
 import { IonDatetime, IonTextarea, IonContent, IonActionSheet, IonHeader, IonModal, IonItem, IonButton, IonButtons, IonToolbar, IonIcon } from '@ionic/vue';
 import { inject, ref, toRaw } from 'vue';
+import { state, store } from '@/assets/js/state.js';
 
 import { register } from 'vue-advanced-chat'
 // import { register } from '../../vue-advanced-chat/dist/vue-advanced-chat.es.js'
+import { generateFromEmail, generateUsername } from "unique-username-generator";
+import io from 'socket.io-client';
 register()
 
 export default {
@@ -67,28 +70,63 @@ export default {
             marker: null,
             location: {},
 
-            currentUserId: '1234',
+            currentUserId: new Date().getTime().toString(),
+            currentUserName: generateUsername(),
             rooms: [{
                 roomId: '1',
-                roomName: 'Room 1',
+                roomName: 'Room_1',
                 avatar: '/assets/img/group.gif',
                 users: [
-                    { _id: '1234', username: 'John Doe', avatar: '/assets/img/cycling.gif', },
-                    { _id: '4321', username: 'John Snow' }
+                    { _id: this.currentUserId, username: this.currentUserName  }, //avatar: '/assets/img/cycling.gif',
                 ]
             }],
             messages: [],
-            messagesLoaded: false
+            messagesLoaded: false,
+            event_chat_host:{},
+            socket : io(this.$backBaseUrl, { transports: ["websocket", "polling"] })
+
 
 
         };
     },
 
+    mounted() {
+        this.socket.on('MESSAGE', (data) => {
+            console.log("reveile message from server", data)
+            // this.messages = [...this.messages, data.message];
+            this.addNewMessage(data.message)
+            // you can also do this.messages.push(data)
+        });
+    },
+
+
     watch: {
         isOpenChatRoomEvent(new_value) {
             console.log("isOpenChatRoomEvent", toRaw(this.targetEvent))
-            let eventName = toRaw(this.targetEvent)["event_descr"]
+            this.event_chat_host= store.events[this.targetEvent.event_id]
+            console.log("chat targ event", this.event_chat_host)
+            let eventName = this.targetEvent["event_descr"]
             let eventLink = eventName
+
+            if(this.event_chat_host.properties.eventChat && this.event_chat_host.properties.eventChat.length > 0 ){
+                this.messages= this.event_chat_host.properties.eventChat
+            }
+            else{
+                console.log('mo messages')
+                this.messages.push({
+                    _id: 0,
+                    // content: `${reset ? '' : 'paginated'} message ${i + 1}`,
+                    content: "No conversation stared yet. Start the conv if you have info or question...",
+                    senderId: this.currentUserId,
+                    username: this.currentUserName,
+                    date: new Date().toISOString(),
+                    timestamp: `${new Date().getHours().toString()}:${new Date().getMinutes().toString()}`
+                })
+
+                console.log(this.messages)
+            }
+
+
             this.setOpen(new_value)
             if(new_value){
                 this.rooms[0]["roomName"]= ` ${eventName}`
@@ -103,24 +141,20 @@ export default {
 
         },
 
-        checkAndClickMarker(event_id) {
-            let foundMarker = store.markersDict[event_id];
-            if (foundMarker) {
-                // this.setOpenToasNoRandomFactFromAi(true); // Your custom function
-                foundMarker.fire('click'); // Simulate a click event on the marker
-            }
-        },
         fetchMessages({ options = {} }) {
+
+
             setTimeout(() => {
                 // if (options.reset) {
                 //     this.messages = this.addMessages(true)
                 //     console.log("add message")
                 // } else {
-                    this.messages = [...this.addMessages(), ...this.messages]
-                    console.log("add message")
-                    this.messagesLoaded = true
+                    // this.messages = [...this.addMessages(), ...this.messages]
+                    // console.log("add message")
+
                 // }
-                // this.addNewMessage()
+                this.messagesLoaded = true
+                this.addNewMessage(this.messages)
             })
         },
 
@@ -143,6 +177,7 @@ export default {
         },
 
         sendMessage(message) {
+            console.log(message)
             this.messages = [
                 ...this.messages,
                 {
@@ -153,19 +188,26 @@ export default {
                     date: new Date().toDateString()
                 }
             ]
+
+            let message_to_send =  {
+                user: this.currentUserName,
+                message: this.messages
+            }
+
+            console.log(message_to_send)
+
+            this.socket.emit('SEND_MESSAGE', message_to_send);
+
+
+
+
+
         },
 
-        addNewMessage() {
+        addNewMessage(messages) {
             setTimeout(() => {
                 this.messages = [
-                    ...this.messages,
-                    {
-                        _id: this.messages.length,
-                        content: 'NEW MESSAGE',
-                        senderId: '1234',
-                        timestamp: new Date().toString().substring(16, 21),
-                        date: new Date().toDateString()
-                    }
+                    ...messages,
                 ]
             }, 2000)
         }
