@@ -28,8 +28,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({ 
   origin: "*", // Allow all origins
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"]
 }));
 
 // Define routes
