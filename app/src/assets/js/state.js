@@ -8,4 +8,5 @@ export let state = reactive({
 
 export let store = reactive({
   markersDict: {},
+  events:{}
 })

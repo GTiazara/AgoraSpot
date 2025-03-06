@@ -27,3 +27,25 @@ body {
     visibility: hidden;
     ;
 }
+
+/* ===== Scrollbar CSS ===== */
+    /* Firefox */
+    * {
+        scrollbar-width: auto;
+        scrollbar-color: #45a049 #add8e6;
+    }
+
+    /* Chrome, Edge, and Safari */
+    *::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    *::-webkit-scrollbar-track {
+        background: #add8e6;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background-color: #45a049;
+        border-radius: 10px;
+        border: 2px solid #ffffff;
+    }

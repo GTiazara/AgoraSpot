@@ -5,10 +5,10 @@
         <!-- prepend-icon="mdi-magnify" -->
 
         <v-btn density="compact" icon="" color="white" @click="geUserNavigatorLocation">
-          <v-icon>mdi-crosshairs-gps</v-icon>
+          <v-icon color="orange">mdi-crosshairs-gps</v-icon>
         </v-btn>
         <v-btn density="compact" icon="" color="white" @click="setOpenInfoModal(true)">
-          <v-icon>mdi-information-variant-circle-outline</v-icon>
+          <v-icon color="orange">mdi-information-variant-circle-outline</v-icon>
         </v-btn>
 
         <!--<v-text-field hide-details single-line density="compact"></v-text-field> -->
@@ -27,13 +27,13 @@
           style="margin-left: 5px"
           density="compact"
           id="translate"
-          color="white"
+          color="orange"
           @click="toggleTranslate"
           icon="mdi-translate"
         ></v-btn>
 
         <v-btn density="compact" icon color="white" @click="reloadPage()">
-          <v-icon>mdi-reload</v-icon>
+          <v-icon color="orange">mdi-reload</v-icon>
         </v-btn>
       </v-toolbar>
     </v-col>
@@ -145,9 +145,9 @@ export default defineComponent({
             console.log(event);
             let searchText = event.detail.value.toLowerCase();
             console.log(searchText);
-            console.log(window.markerObjects)
+            console.log(window.eventsLayerGroup)
 
-            markerObjects.forEach(marker => {
+            eventsLayerGroup.forEach(marker => {
                 console.log(marker)
                 console.log(Object.getPrototypeOf(Object.getPrototypeOf(marker)))
                 console.log(Object.getPrototypeOf(Object.getPrototypeOf(marker)).getPopup.call(marker))
@@ -199,7 +199,7 @@ export default defineComponent({
   border-width: 2px;
   border-color: #ff6600b2;
   border-radius: 35px;
-  background-color: #e972237e; /*#0ff;;*/
+  background-color: #e972237e; /*#fafafa83; #0ff;;*/
   /* background-image: linear-gradient(#e9722379, #e9722379); */
 }
 

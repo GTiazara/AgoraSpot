@@ -15,7 +15,18 @@
         <v-btn icon="" id="locationButton" @click="toggleActive">
           <img src="/assets/img/add-location.png" alt="home icon" width="85%" />
         </v-btn>
-        Add event
+
+        <div
+          style="
+            background-color: white;
+            width: fit-content;
+            padding: 4px;
+            margin: 2px;
+            border-radius: 5px;
+          "
+        >
+          Add event
+        </div>
         <!-- </v-badge> -->
       </v-col>
       <!-- <v-col align="center" style="padding-left: 1px; padding-right: 1px">
@@ -161,7 +172,7 @@ export default {
   bottom: 25px;
   /* border-style: dotted; */
   width: 90%;
-  margin: 5% 5% 0 5%;
+  margin: 5% 5% 2% 5%;
 
   height: 80px;
   align-content: center;
