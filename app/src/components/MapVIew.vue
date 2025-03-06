@@ -251,6 +251,7 @@ export default defineComponent({
                         console.log("Popup closed!", e);
                         document.getElementById("row-header-search").style.visibility = "visible"
                         document.querySelector(".leaflet-control-layers").style.visibility = "visible"
+                        document.querySelector(".footer-perso-style").style.visibility = "visible"
                         if (e.popup._source instanceof L.Marker) {
                             console.log("The popup was attached to a marker.");
                         }
@@ -262,6 +263,8 @@ export default defineComponent({
                 this.map.on("popupopen", function(e) {
                     document.getElementById("row-header-search").style.visibility = "hidden"
                     document.querySelector(".leaflet-control-layers").style.visibility = "hidden"
+                    document.querySelector(".footer-perso-style").style.visibility = "hidden"
+
                 });
 
                 L.Popup.prototype._animateZoom = function (e) {
