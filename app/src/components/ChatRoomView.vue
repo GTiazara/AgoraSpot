@@ -41,7 +41,7 @@ import { state, store } from '@/assets/js/state.js';
 import { register } from 'vue-advanced-chat'
 // import { register } from '../../vue-advanced-chat/dist/vue-advanced-chat.es.js'
 import { generateFromEmail, generateUsername } from "unique-username-generator";
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
 register()
 
 export default {
