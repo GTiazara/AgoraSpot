@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({ 
-  origin: "*", // Allow all origins
+  origin: "https://agora-spot-app.vercel.app/", // Allow all origins
   methods: ["GET","OPTIONS","PATCH","DELETE","POST","PUT"],
   allowedHeaders: ["Content-Type"]
 }));
