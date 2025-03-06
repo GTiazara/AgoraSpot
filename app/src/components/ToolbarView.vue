@@ -5,10 +5,10 @@
         <!-- prepend-icon="mdi-magnify" -->
 
         <v-btn density="compact" icon="" color="white" @click="geUserNavigatorLocation">
-          <v-icon color="orange">mdi-crosshairs-gps</v-icon>
+          <v-icon color="white">mdi-crosshairs-gps</v-icon>
         </v-btn>
         <v-btn density="compact" icon="" color="white" @click="setOpenInfoModal(true)">
-          <v-icon color="orange">mdi-information-variant-circle-outline</v-icon>
+          <v-icon color="white">mdi-information-variant-circle-outline</v-icon>
         </v-btn>
 
         <!--<v-text-field hide-details single-line density="compact"></v-text-field> -->
@@ -27,13 +27,13 @@
           style="margin-left: 5px"
           density="compact"
           id="translate"
-          color="orange"
+          color="white"
           @click="toggleTranslate"
           icon="mdi-translate"
         ></v-btn>
 
         <v-btn density="compact" icon color="white" @click="reloadPage()">
-          <v-icon color="orange">mdi-reload</v-icon>
+          <v-icon color="white">mdi-reload</v-icon>
         </v-btn>
       </v-toolbar>
     </v-col>
