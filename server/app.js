@@ -1,10 +1,13 @@
 const express = require('express');
+const router = express.Router();
+
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
 const http = require('http');
 const debug = require('debug')('myapp:server');
+const SSEChannel = require('sse-channel');
 
 
 // Import routes
@@ -49,6 +52,27 @@ app.use('/agoraback/api/add_participant', joinEventRouter);
 app.use('/agoraback/api/clean_up_event', cleanUpEventRouter);
 app.use('/agoraback/api/random_location_fact_api', randomLocationFactRouter);
 app.use('/agoraback/api/event_chat_api', EventChatRouter);
+
+// SSE endpoint: add clients to the channel
+app.get('/stream', (req, res) => {
+  channel.addClient(req, res);
+  console.log('Client connected to SSE');
+});
+
+
+// Endpoint to broadcast messages to all connected clients
+app.post('/send', (req, res) => {
+  const { message } = req.body;
+  if (!message) {
+    return res.status(400).json({ error: 'Message is required' });
+  }
+
+  console.log("message", message)
+  
+  // Broadcast the message; sse-channel handles the JSON formatting if desired
+  channel.send(JSON.stringify(message));
+  res.json({ success: true });
+});
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {
   const createError = require('http-errors');
@@ -73,26 +97,31 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
+
+// Create an instance of sse-channel
+const channel = new SSEChannel();
+
+
 //
-const io = require('socket.io')(server, {
-  cors: {
-    origin: "*", // Allow only your frontend
-    methods: ["GET", "OPTIONS", "PATCH", "DELETE", "POST", "PUT"],
-    allowedHeaders: ["Content-Type", "Authorization"] // Add any other headers you might need
-  }});
-io.on('connection', function(socket) {
-  console.log(socket.id)
-    socket.on('SEND_MESSAGE', function(data) {
-      console.log("message reveibelsfsfsdqfd")
-      console.log(data)
-        io.emit('MESSAGE', data)
-    });
+// const io = require('socket.io')(server, {
+//   cors: {
+//     origin: "*", // Allow only your frontend
+//     methods: ["GET", "OPTIONS", "PATCH", "DELETE", "POST", "PUT"],
+//     allowedHeaders: ["Content-Type", "Authorization"] // Add any other headers you might need
+//   }});
+// io.on('connection', function(socket) {
+//   console.log(socket.id)
+//     socket.on('SEND_MESSAGE', function(data) {
+//       console.log("message reveibelsfsfsdqfd")
+//       console.log(data)
+//         io.emit('MESSAGE', data)
+//     });
 
-    socket.on('disconnect', () => {
-      console.log("Client disconnected:", socket.id);
-  });
+//     socket.on('disconnect', () => {
+//       console.log("Client disconnected:", socket.id);
+//   });
 
-});
+// });
 
 // Helper functions
 function normalizePort(val) {

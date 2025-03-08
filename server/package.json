@@ -21,6 +21,7 @@
     "morgan": "~1.9.1",
     "nodemon": "^3.1.9",
     "socket.io": "^4.8.1",
+    "sse-channel": "^4.0.0",
     "tunnel": "^0.0.6",
     "youtube-search-api": "^1.2.2"
   },
