@@ -41,7 +41,7 @@ import { state, store } from '@/assets/js/state.js';
 import { register } from 'vue-advanced-chat'
 // import { register } from '../../vue-advanced-chat/dist/vue-advanced-chat.es.js'
 import { generateFromEmail, generateUsername } from "unique-username-generator";
-// import io from 'socket.io-client';
+import io from 'socket.io-client';
 register()
 
 export default {
@@ -83,21 +83,19 @@ export default {
             messages: [],
             messagesLoaded: false,
             event_chat_host:{},
-            // socket : io(this.$backBaseUrl, { transports: ["websocket", "polling"] })
-
-
+            socket : io(this.$backBaseUrl, { transports: ["websocket", "polling"] })
 
         };
     },
 
-    // mounted() {
-    //     this.socket.on('MESSAGE', (data) => {
-    //         console.log("reveile message from server", data)
-    //         // this.messages = [...this.messages, data.message];
-    //         this.addNewMessage(data.message)
-    //         // you can also do this.messages.push(data)
-    //     });
-    // },
+    mounted() {
+        this.socket.on('MESSAGE', (data) => {
+            console.log("reveile message from server", data)
+            // this.messages = [...this.messages, data.message];
+            this.addNewMessage(data.message)
+            // you can also do this.messages.push(data)
+        });
+    },
 
 
     watch: {
@@ -196,7 +194,7 @@ export default {
 
             console.log(message_to_send)
 
-            // this.socket.emit('SEND_MESSAGE', message_to_send);
+            this.socket.emit('SEND_MESSAGE', message_to_send);
 
 
 

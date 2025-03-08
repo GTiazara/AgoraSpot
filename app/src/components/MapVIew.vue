@@ -300,8 +300,6 @@ export default defineComponent({
 
                   store.events[event.id]=event
 
-                  console.log(event.properties.participants)
-
                   let eventJson = encodeURIComponent(JSON.stringify({
                         id:event.id,
                         description: event.properties.description,
