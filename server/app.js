@@ -76,7 +76,9 @@ server.on('listening', onListening);
 //
 const io = require('socket.io')(server, {
   cors: {
-    origin: '*',
+    origin: "*", // Allow only your frontend
+    methods: ["GET", "OPTIONS", "PATCH", "DELETE", "POST", "PUT"],
+    allowedHeaders: ["Content-Type", "Authorization"] // Add any other headers you might need
   }});
 io.on('connection', function(socket) {
   console.log(socket.id)
