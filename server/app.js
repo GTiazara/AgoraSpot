@@ -27,9 +27,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({ 
-  // origin: "*", // Allow all origins
-  // methods: ["GET","OPTIONS","PATCH","DELETE","POST","PUT"],
-  // allowedHeaders: ["Content-Type"]
+  origin: "*", // Allow only your frontend
+  methods: ["GET", "OPTIONS", "PATCH", "DELETE", "POST", "PUT"],
+  allowedHeaders: ["Content-Type", "Authorization"] // Add any other headers you might need
 }));
 
 // Define routes
