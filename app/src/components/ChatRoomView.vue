@@ -139,6 +139,7 @@ export default {
         this.eventSource = new EventSource(this.$backBaseUrl + '/stream');
 
         this.eventSource.onmessage = (event) => {
+            console.log(event)
             try {
                 console.log(event)
                 this.addNewMessage(JSON.parse(event.data));
