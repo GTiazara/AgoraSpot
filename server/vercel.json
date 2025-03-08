@@ -6,17 +6,11 @@
             "use": "@vercel/node"
         }
     ],
-   
-    "headers": [
+    "routes": [
         {
-          "source": "/(.*)",
-          "headers": [
-            {
-              "key": "Access-Control-Allow-Origin",
-              "value": "https://agora-spot-app.vercel.app"
-            }
-          ]
+            "src": "/(.*)",
+            "dest": "app.js"
         }
-      ]
+    ]
 
 }
