@@ -1,279 +1,37 @@
 <template>
-    <ion-modal :is-open="isOpen">
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        <ion-header>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-            <ion-toolbar>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-                <div slot="start">Chat Rooms</div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-                <ion-buttons slot="end">
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-                    <ion-button @click="setOpen(false)" class="top-button-cancel-event">
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-                        Close
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-                    </ion-button>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-                </ion-buttons>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-            </ion-toolbar>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        </ion-header>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        <ion-content>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-            <div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-                <vue-advanced-chat height="calc(90vh - 20px)" :current-user-id="currentUserId" :rooms="JSON.stringify(rooms)" :rooms-loaded="true" :messages="JSON.stringify(messages)" :messages-loaded="messagesLoaded" @send-message="sendMessage($event.detail[0])" @fetch-messages="fetchMessages($event.detail[0])"
-    
-                    :show-search="false" :show-add-room="false" :show-audio="false" :show-emojis="false" :show-files="false" />
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-            </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        </ion-content>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    </ion-modal>
+  <ion-modal :is-open="isOpen">
+    <ion-header>
+      <ion-toolbar>
+        <div slot="start">Chat Rooms</div>
+
+        <ion-buttons slot="end">
+          <ion-button @click="setOpen(false)" class="top-button-cancel-event">
+            Close
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div>
+        <vue-advanced-chat
+          height="calc(90vh - 20px)"
+          :current-user-id="currentUserId"
+          :rooms="JSON.stringify(rooms)"
+          :rooms-loaded="true"
+          :messages="JSON.stringify(messages)"
+          :messages-loaded="messagesLoaded"
+          @send-message="sendMessage($event.detail[0])"
+          @fetch-messages="fetchMessages($event.detail[0])"
+          :show-search="false"
+          :show-add-room="false"
+          :show-audio="false"
+          :show-emojis="false"
+          :show-files="false"
+        />
+      </div>
+    </ion-content>
+  </ion-modal>
 </template>
 
 <script lang="js">
@@ -494,8 +252,6 @@ export default {
             }
 
         }
-
-
 
     }
 }
