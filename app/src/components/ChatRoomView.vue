@@ -7,7 +7,23 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
         <ion-header>
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -23,7 +39,23 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
                 <div slot="start">Chat Rooms</div>
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -39,7 +71,23 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
                     <ion-button @click="setOpen(false)" class="top-button-cancel-event">
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -55,7 +103,23 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
                     </ion-button>
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -71,7 +135,23 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
             </ion-toolbar>
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -95,6 +175,22 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
         <ion-content>
     
     
@@ -103,7 +199,23 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
             <div>
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -121,6 +233,14 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
             </div>
     
     
@@ -129,7 +249,23 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
         </ion-content>
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -223,7 +359,7 @@ export default {
         //     // Optionally, you can implement reconnection logic here.
         // };
 
-        
+
     },
 
 
@@ -260,6 +396,10 @@ export default {
                 this.rooms[0]["roomName"] = ` ${eventName}`
                 this.long_pooling = setInterval(this.fetchAllLastMessage, 4000)
             }
+
+            else{
+                this.stopPolling()
+            }
         }
     },
 
@@ -290,6 +430,14 @@ export default {
 
 
         },
+
+        stopPolling() {
+            if (this.pollingInterval) {
+                clearInterval(this.pollingInterval);
+                this.pollingInterval = null;
+            }
+        },
+
 
         fetchMessages({ options = {} }) {
 
