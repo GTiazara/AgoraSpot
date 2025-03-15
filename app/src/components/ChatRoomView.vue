@@ -3,7 +3,15 @@
     
     
     
+    
+    
+    
+    
         <ion-header>
+    
+    
+    
+    
     
     
     
@@ -11,7 +19,15 @@
     
     
     
+    
+    
+    
+    
                 <div slot="start">Chat Rooms</div>
+    
+    
+    
+    
     
     
     
@@ -19,7 +35,15 @@
     
     
     
+    
+    
+    
+    
                     <ion-button @click="setOpen(false)" class="top-button-cancel-event">
+    
+    
+    
+    
     
     
     
@@ -27,7 +51,15 @@
     
     
     
+    
+    
+    
+    
                     </ion-button>
+    
+    
+    
+    
     
     
     
@@ -35,7 +67,15 @@
     
     
     
+    
+    
+    
+    
             </ion-toolbar>
+    
+    
+    
+    
     
     
     
@@ -47,11 +87,27 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
         <ion-content>
     
     
     
+    
+    
+    
+    
             <div>
+    
+    
+    
+    
     
     
     
@@ -61,11 +117,23 @@
     
     
     
+    
+    
+    
+    
             </div>
     
     
     
+    
+    
+    
+    
         </ion-content>
+    
+    
+    
+    
     
     
     
@@ -124,11 +192,12 @@ export default {
             event_chat_host: {},
             // socket : io(this.$backBaseUrl, { transports: ["websocket", "polling"] })
             eventSource: null,
+            long_pooling: null,
 
         };
     },
 
-    mounted() {
+    create() {
         // this.socket.on('MESSAGE', (data) => {
         //     console.log("reveile message from server", data)
         //     // this.messages = [...this.messages, data.message];
@@ -136,23 +205,25 @@ export default {
         //     // you can also do this.messages.push(data)
         // });
 
-        this.eventSource = new EventSource(this.$backBaseUrl + '/stream');
+        // this.eventSource = new EventSource(this.$backBaseUrl + '/stream');
 
-        this.eventSource.onmessage = (event) => {
-            console.log(event)
-            try {
-                console.log(event)
-                this.addNewMessage(JSON.parse(event.data));
-            } catch (e) {
-                // messages.value.push(event.data);
-                console.log(e)
-            }
-        };
+        // this.eventSource.onmessage = (event) => {
+        //     console.log(event)
+        //     try {
+        //         console.log(event)
+        //         this.addNewMessage(JSON.parse(event.data));
+        //     } catch (e) {
+        //         // messages.value.push(event.data);
+        //         console.log(e)
+        //     }
+        // };
 
-        this.eventSource.onerror = (error) => {
-            console.error('SSE error:', error);
-            // Optionally, you can implement reconnection logic here.
-        };
+        // this.eventSource.onerror = (error) => {
+        //     console.error('SSE error:', error);
+        //     // Optionally, you can implement reconnection logic here.
+        // };
+
+        
     },
 
 
@@ -162,10 +233,12 @@ export default {
             this.event_chat_host = store.events[this.targetEvent.event_id]
             console.log("chat targ event", this.event_chat_host)
             let eventName = this.targetEvent["event_descr"]
-            let eventLink = eventName
 
-            if (this.event_chat_host.properties.eventChat && this.event_chat_host.properties.eventChat.length > 0) {
-                this.messages = this.event_chat_host.properties.eventChat
+            if (this.event_chat_host.properties.eventChat && Object.keys(this.event_chat_host.properties.eventChat).length > 0) {
+                console.log("there is messages")
+                console.log("messages", Object.values(this.event_chat_host.properties.eventChat))
+                this.messages = Object.values(this.event_chat_host.properties.eventChat)
+
             } else {
                 console.log('mo messages')
                 this.messages.push({
@@ -185,6 +258,7 @@ export default {
             this.setOpen(new_value)
             if (new_value) {
                 this.rooms[0]["roomName"] = ` ${eventName}`
+                this.long_pooling = setInterval(this.fetchAllLastMessage, 4000)
             }
         }
     },
@@ -196,11 +270,32 @@ export default {
 
         },
 
+        fetchAllLastMessage() {
+
+            fetch(this.$backBaseUrl + '/agoraback/api/get_all_last_message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ eventId: this.targetEvent.event_id, last_message_id_on_screen: this.messages[this.messages.length - 1]._id })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('New message:', data);
+                    if (data.messages.length > 0) {
+                        this.messages.push(...data.messages); // Append new messages
+                        // this.lastMessageId = data.messages[data.messages.length - 1]._id; // Update last message ID
+                    }
+
+                })
+                .catch(err => console.error('Error fetching last message:', err));
+
+
+        },
+
         fetchMessages({ options = {} }) {
 
 
             setTimeout(() => {
-     
+
                 this.messagesLoaded = true
                 // this.addNewMessage(this.messages)
             })
@@ -211,7 +306,7 @@ export default {
             this.messages = [
                 ...this.messages,
                 {
-                    _id: this.messages.length,
+                    _id: this.messages.length + 1,
                     content: message.content,
                     senderId: this.currentUserId,
                     timestamp: new Date().toString().substring(16, 21),
@@ -220,7 +315,7 @@ export default {
             ]
 
             let message_to_send = {
-                event_id: this.targetEvent.event_id,
+                eventId: this.targetEvent.event_id,
                 message: this.messages[this.messages.length - 1]
             }
 
@@ -228,7 +323,7 @@ export default {
 
             // this.socket.emit('SEND_MESSAGE', message_to_send);
 
-            fetch(this.$backBaseUrl + '/send', {
+            fetch(this.$backBaseUrl + '/agoraback/api/send', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(message_to_send)
@@ -242,14 +337,14 @@ export default {
 
         addNewMessage(message) {
             console.log(message)
-            if(message.senderId != this.currentUserId){
+            if (message.senderId != this.currentUserId) {
                 setTimeout(() => {
-                this.messages = [
-                    ...this.messages,message
-                ]
-            }, 2000)
+                    this.messages = [
+                        ...this.messages, message
+                    ]
+                }, 2000)
             }
-            
+
         }
 
 
