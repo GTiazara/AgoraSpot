@@ -86,7 +86,7 @@ export default {
             event_chat_host: {},
             // socket : io(this.$backBaseUrl, { transports: ["websocket", "polling"] })
             eventSource: null,
-            long_pooling: null,
+            pollingInterval: null,
 
         };
     },
@@ -152,7 +152,7 @@ export default {
             this.setOpen(new_value)
             if (new_value) {
                 this.rooms[0]["roomName"] = ` ${eventName}`
-                this.long_pooling = setInterval(this.fetchAllLastMessage, 4000)
+                this.pollingInterval = setInterval(this.fetchAllLastMessage, 4000)
             }
 
             else{
@@ -191,6 +191,7 @@ export default {
 
         stopPolling() {
             if (this.pollingInterval) {
+                console.log("stopp longh pooling", this.pollingInterval)
                 clearInterval(this.pollingInterval);
                 this.pollingInterval = null;
             }
