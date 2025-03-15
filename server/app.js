@@ -7,7 +7,7 @@ const logger = require('morgan');
 const cors = require('cors');
 const http = require('http');
 const debug = require('debug')('myapp:server');
-const SSEChannel = require('sse-channel');
+// const SSEChannel = require('sse-channel');
 
 
 // Import routes
@@ -19,6 +19,8 @@ const joinEventRouter = require('./routes/join_event_api');
 const cleanUpEventRouter = require('./routes/clean_up_events');
 const randomLocationFactRouter = require('./routes/random_location_fact');
 const EventChatRouter = require('./routes/event_chat_api');
+const EventSendMessageRouter = require('./routes/send_chat');
+const EventGetAllLastMessageRouter = require('./routes/get_last_chat_of_event');
 
 // Create the Express app
 const app = express();
@@ -30,9 +32,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({ 
-  origin: "*", // Allow only your frontend
-  methods: ["GET", "OPTIONS", "PATCH", "DELETE", "POST", "PUT"],
-  allowedHeaders: ["Content-Type", "Authorization"] // Add any other headers you might need
+  // origin: "*", // Allow only your frontend
+  // methods: ["GET", "OPTIONS", "PATCH", "DELETE", "POST", "PUT"],
+  // allowedHeaders: ["Content-Type", "Authorization"] // Add any other headers you might need
 }));
 
 // Define routes
@@ -52,32 +54,34 @@ app.use('/agoraback/api/add_participant', joinEventRouter);
 app.use('/agoraback/api/clean_up_event', cleanUpEventRouter);
 app.use('/agoraback/api/random_location_fact_api', randomLocationFactRouter);
 app.use('/agoraback/api/event_chat_api', EventChatRouter);
+app.use('/agoraback/api/send', EventSendMessageRouter);
+app.use('/agoraback/api/get_all_last_message', EventGetAllLastMessageRouter);
 
 // SSE endpoint: add clients to the channel
-app.get('/stream', (req, res) => {
-  channel.addClient(req, res);
-  console.log('Client connected to SSE');
-});
+// app.get('/stream', (req, res) => {
+//   channel.addClient(req, res);
+//   console.log('Client connected to SSE');
+// });
 
 
 // Endpoint to broadcast messages to all connected clients
-app.post('/send', (req, res) => {
-  const { message } = req.body;
-  if (!message) {
-    return res.status(400).json({ error: 'Message is required' });
-  }
+// app.post('/send', (req, res) => {
+//   const { message } = req.body;
+//   if (!message) {
+//     return res.status(400).json({ error: 'Message is required' });
+//   }
 
-  console.log("message", message)
+//   console.log("message", message)
   
-  // Broadcast the message; sse-channel handles the JSON formatting if desired
-  channel.send(JSON.stringify(message));
-  res.json({ success: true });
-});
-// Catch 404 and forward to error handler
-app.use((req, res, next) => {
-  const createError = require('http-errors');
-  next(createError(404));
-});
+//   // Broadcast the message; sse-channel handles the JSON formatting if desired
+//   channel.send(JSON.stringify(message));
+//   res.json({ success: true });
+// });
+// // Catch 404 and forward to error handler
+// app.use((req, res, next) => {
+//   const createError = require('http-errors');
+//   next(createError(404));
+// });
 
 // Error handler
 app.use((err, req, res) => {
@@ -99,7 +103,7 @@ server.on('listening', onListening);
 
 
 // Create an instance of sse-channel
-const channel = new SSEChannel();
+// const channel = new SSEChannel();
 
 
 //
