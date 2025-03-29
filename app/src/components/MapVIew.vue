@@ -195,6 +195,7 @@ export default defineComponent({
                 this.randomFactMarkerClusterLayer = new L.markerClusterGroup({});
                 // Set view to user's location
                 this.map.setView([46.603354, 1.888334], 3)
+                store.map=this.map
                 window.eventsLayerGroup.addTo(this.map);
                 store.randomFactMarkerClusterLayer = this.randomFactMarkerClusterLayer
                 this.map.addLayer(this.popupObjects);
@@ -430,10 +431,20 @@ export default defineComponent({
       line-height: 1.5;
     ">
       <div style="margin-bottom: 10px; display:flex;flex-direction:row;justify-content:space-around; align-items: center">
-        <div><strong>Participants:</strong></div> ${showParticipantsButton}
+        <div style="border-width: 1px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 5px;
+  background: #ccced0;
+  border-color: blue;"><strong>Participants:</strong></div> ${showParticipantsButton}
       </div>
       <div style="margin-bottom: 10px; display:flex;flex-direction:row;justify-content:space-around; align-items: center">
-        <div><strong>Description:</strong></div> ${showDescriptionButton}
+        <div style="border-width: 1px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 5px;
+  background: #ccced0;
+  border-color: blue;"><strong>Description:</strong></div> ${showDescriptionButton}
       </div>
       <div style="margin-bottom: 10px;">
         <strong>Dates:</strong> ${this.formatLocalDate(event.properties.startDate.split("T")[0])} to ${this.formatLocalDate(event.properties.endDate.split("T")[0])}

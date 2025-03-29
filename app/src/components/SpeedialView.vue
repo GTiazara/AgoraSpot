@@ -38,7 +38,7 @@
         />
       </v-btn>
 
-      <v-btn key="2" color="info" icon>
+      <!-- <v-btn key="2" color="info" icon>
         <img
           id="random_fact_btn_img"
           src="/assets/img/placeholder.gif"
@@ -46,7 +46,7 @@
           width="85%"
           style="border-radius: 40px"
         />
-      </v-btn>
+      </v-btn> -->
     </v-speed-dial>
   </v-fab>
 
@@ -115,7 +115,6 @@ export default defineComponent({
                     //     duration: 0.2,
                     // });
                     this.checkAndClickMarker(data.events[0].id)
-
 
                 } else {
                     document.getElementById("random_fact_btn_img").classList.remove('inactive');

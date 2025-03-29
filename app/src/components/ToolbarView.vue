@@ -59,21 +59,16 @@
       </div>
 
       <p>
-        This app aims to encorage people to go out and meet new people or just organise
-        activities with your friends.
-      </p>
-
-      <p>
         This app let you create and joing fleeting event. The event will be delete
         automaticaly when the end date is reached
       </p>
       <p>
-        Don't hesitate to contribute poste your next groupe activity and hopefully peopele
+        Don't hesitate to contribute, post your next group activity and hopefully people
         will join you on your activities like cycling, runnig, hiking or event like party,
         concert, festival,...
       </p>
       <p>
-        I you have any suggestion or feedback, don't heistate to contact the developer.
+        If you have any suggestion or feedback, don't heistate to contact the developer.
       </p>
     </ion-content>
   </ion-modal>

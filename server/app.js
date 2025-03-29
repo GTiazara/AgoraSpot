@@ -9,10 +9,7 @@ const http = require('http');
 const debug = require('debug')('myapp:server');
 // const SSEChannel = require('sse-channel');
 
-
 // Import routes
-// const indexRouter = require('./routes/index');
-// const usersRouter = require('./routes/users');
 const addEventRouter = require('./routes/add_event_api');
 const getEventRouter = require('./routes/get_all_events');
 const joinEventRouter = require('./routes/join_event_api');
@@ -38,7 +35,6 @@ app.use(cors({
 }));
 
 // Define routes
-// app.use('/', getEventRouter);
 
 // Serve Vue static files from 'public/vue-dist'
 // app.use(express.static(path.join(__dirname, 'public/dist')));
@@ -46,7 +42,7 @@ app.use(cors({
 // // Catch all other routes and serve your index.html for the Vue app
 // app.get('*', (req, res) => {
 //   res.sendFile(path.join(__dirname, 'public/dist', 'index.html'));
-// });
+// });xw<
 app.use('/', getEventRouter);
 app.use('/agoraback/api/add_event', addEventRouter);
 app.use('/agoraback/api/get_events', getEventRouter);
@@ -105,8 +101,6 @@ server.on('listening', onListening);
 // Create an instance of sse-channel
 // const channel = new SSEChannel();
 
-
-//
 // const io = require('socket.io')(server, {
 //   cors: {
 //     origin: "*", // Allow only your frontend
