@@ -3,7 +3,7 @@ const router = express.Router();
 const getConnectedClient = require("../db/connect");
 const { GoogleGenerativeAI, DynamicRetrievalMode } = require("@google/generative-ai");
 const { countries } = require('countries-list');
-// const { Mistral } = require('@mistralai/mistralai');
+const { Mistral } = require('@mistralai/mistralai');
 const youtubesearchapi = require("youtube-search-api");
 // const { JsonSchema$inboundSchema } = require("@mistralai/mistralai/models/components");
 
@@ -11,7 +11,7 @@ const config = require("dotenv").config();
 
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || config.parsed.GEMINI_API_KEY;
-// const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
+const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
 router.get("/", async (req, res) => {
     try {
         // Get the database
@@ -57,7 +57,6 @@ router.get("/", async (req, res) => {
             //       },
             //     },
             //   ],
-            
 
         const countryCodes = Object.keys(countries); // Get all country codes
         const randomCode = countryCodes[Math.floor(Math.random() * countryCodes.length)]; // Pick a random code
@@ -69,11 +68,7 @@ router.get("/", async (req, res) => {
         const prompt = `My app generates facts about a location. Generate true fact (funny or serious)that gives people dream to travel to a random city of ${randomCountry} (anywhere, from big to little facts or events, make sure it's unique at each request and from any cities, big or little)
          as geojson type Feature format with properties (fact, address, precise location of the address ). The coordinate of the geojson must be a pecise geocoding ot the address and return only the geosjon.`;
 
-
-        //  const client = new Mistral({apiKey: MISTRAL_API_KEY});
-
-
-
+        const clientMistral = new Mistral({apiKey: MISTRAL_API_KEY});
 
         let result = await model.generateContent(prompt);
         
@@ -83,7 +78,7 @@ router.get("/", async (req, res) => {
         const jsonRegex = /```json([\s\S]*?)```/;
 
         // Extract the JSON content
-        const match = result.response.text().match(jsonRegex);
+        let match = result.response.text().match(jsonRegex);
 
         let jsonObject=null
         if (match) {
@@ -98,7 +93,7 @@ router.get("/", async (req, res) => {
                 console.error("Invalid JSON content:", error);
             }
         } else {
-        console.log("No JSON content found within triple backticks.");
+            console.log("No JSON content found within triple backticks.");
         }
 
         let jsonResult = jsonObject //JSON.parse(result.response.text().replace("```json", "").replace("```", ""))
@@ -121,7 +116,36 @@ router.get("/", async (req, res) => {
             },
         }
 
-        let you_tube_search = await  youtubesearchapi.GetListByKeyword(jsonResult.properties.fact + 'documentaries',true,1)
+        
+        const chatResponse = await clientMistral.chat.complete({
+            model: "mistral-large-latest",
+            messages: [{role: 'user', content: `convert this into a you tube search short sentence that will retrun  the most relevant video and return only the sentence as json as key sentence:  ${jsonResult.properties.fact}`}]
+        });
+
+        console.log("mistral chat:",  chatResponse.choices[0].message.content);
+
+        let youtube_search_json = chatResponse.choices[0].message.content
+
+        // Extract the JSON content
+        youtube_search_json = youtube_search_json.match(jsonRegex);
+        if (youtube_search_json) {
+            youtube_search_json = youtube_search_json[1].trim();
+        console.log("Extracted JSON Content:", youtube_search_json);
+
+        // Parse the JSON content
+            try {
+                youtube_search_json = JSON.parse(youtube_search_json);
+                console.log("Parsed JSON Object:", youtube_search_json);
+                console.log("youtube_search_json.sentence", youtube_search_json.sentence)
+            } catch (error) {
+                console.error("Invalid JSON content:", error);
+            }
+        } else {
+            console.log("No JSON content found within triple backticks.");
+        }
+
+
+        let you_tube_search = await  youtubesearchapi.GetListByKeyword(youtube_search_json.sentence + ': documentaries',true) //,1
         console.log(you_tube_search)
         let you_tube_search_res = you_tube_search
         console.log(you_tube_search_res)
@@ -132,18 +156,10 @@ router.get("/", async (req, res) => {
 
 
 
-        // const chatResponse = await client.chat.complete({
-        //     model: "mistral-large-latest",
-        //     messages: [{role: 'user', content: `get a youtube video link related to this:  ${jsonResult.properties.fact}`}]
-        // });
-
-        // console.log( chatResponse.choices[0].message.content);
 
         jsonResult.properties.eventImage=event_to_add.properties.eventImage
 
-
         console.log(event_to_add);
-
 
         const result_insert = await db.collection("events").insertOne(event_to_add);
 
