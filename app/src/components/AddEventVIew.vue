@@ -233,6 +233,14 @@
 
             </ion-item>
 
+            <ion-alert
+                :is-open="isAddEventAlertOpen"
+                :message="addEventAlertMessage"
+                :buttons="alertButtons"
+                @didDismiss="setOpenAddEventAlert(false)"
+            ></ion-alert>
+
+
 
         </ion-content>
 
@@ -240,7 +248,7 @@
 </template>
 
 <script setup lang="js">
-import { IonDatetime, IonTextarea, IonContent, IonActionSheet, IonHeader, IonModal, IonItem, IonButton, IonButtons, IonToolbar, IonIcon } from '@ionic/vue';
+import { IonDatetime, IonAlert, IonTextarea, IonContent, IonActionSheet, IonHeader, IonModal, IonItem, IonButton, IonButtons, IonToolbar, IonIcon } from '@ionic/vue';
 import { close, add } from 'ionicons/icons';
 import AppTypeahead from './AppTypeahead.vue';
 </script>
@@ -325,7 +333,10 @@ export default {
             ],
 
             eventImage: "",
-            eventInfoSource: ""
+            eventInfoSource: "",
+            isAddEventAlertOpen: false,
+            alertButtons:['Close'],
+            addEventAlertMessage:"",
 
         };
     },
@@ -335,6 +346,9 @@ export default {
     },
 
     methods: {
+        setOpenAddEventAlert(open) {
+            this.isAddEventAlertOpen = open;
+        },
 
         getDescription(event) {
             console.log(event.detail.value)
@@ -353,6 +367,32 @@ export default {
         },
 
         async handleAddEvent() {
+
+            if(this.selectedCategorieEvent.length == 0) {
+                this.setOpenAddEventAlert(true)
+                this.addEventAlertMessage = "Please select at least one tag"   
+                return
+            }
+
+            if (this.eventDescription == "") {
+                this.setOpenAddEventAlert(true)
+                this.addEventAlertMessage = "Please enter a description"
+                return
+            }
+
+            if (this.startDate == "" || this.endDate == "") {
+                this.setOpenAddEventAlert(true)
+                this.addEventAlertMessage = "Please select a date"
+                return
+            }
+
+            if (this.startTime == "" || this.endTime == "") {
+                this.setOpenAddEventAlert(true)
+                this.addEventAlertMessage = "Please select a time start and end time"
+                return
+            }
+
+
             const eventData = {
                 tags: this.selectedCategorieEvent,
                 startDate: this.startDate,
