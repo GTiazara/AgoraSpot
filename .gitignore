@@ -3,5 +3,5 @@
 .vscode
 *.env
 node_modules
-android
+/app/android
 trash
