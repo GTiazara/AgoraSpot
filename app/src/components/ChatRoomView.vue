@@ -92,32 +92,8 @@ export default {
     },
 
     create() {
-        // this.socket.on('MESSAGE', (data) => {
-        //     console.log("reveile message from server", data)
-        //     // this.messages = [...this.messages, data.message];
-        //     this.addNewMessage(data.message)
-        //     // you can also do this.messages.push(data)
-        // });
 
-        // this.eventSource = new EventSource(this.$backBaseUrl + '/stream');
-
-        // this.eventSource.onmessage = (event) => {
-        //     console.log(event)
-        //     try {
-        //         console.log(event)
-        //         this.addNewMessage(JSON.parse(event.data));
-        //     } catch (e) {
-        //         // messages.value.push(event.data);
-        //         console.log(e)
-        //     }
-        // };
-
-        // this.eventSource.onerror = (error) => {
-        //     console.error('SSE error:', error);
-        //     // Optionally, you can implement reconnection logic here.
-        // };
-
-
+        this.fetchAllLastMessage()
     },
 
 
@@ -157,6 +133,8 @@ export default {
 
             else{
                 this.stopPolling()
+                this.messagesLoaded=false
+                
             }
         }
     },
@@ -213,7 +191,7 @@ export default {
             this.messages = [
                 ...this.messages,
                 {
-                    _id: this.messages.length + 1,
+                    _id: this.messages[this.messages.length - 1]["_id"] + 1,
                     content: message.content,
                     senderId: this.currentUserId,
                     timestamp: new Date().toString().substring(16, 21),
