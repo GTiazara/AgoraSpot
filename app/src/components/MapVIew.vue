@@ -431,20 +431,13 @@ export default defineComponent({
       line-height: 1.5;
     ">
       <div style="margin-bottom: 10px; display:flex;flex-direction:row;justify-content:space-around; align-items: center">
-        <div style="border-width: 1px;
-  border-style: solid;
-  border-radius: 5px;
+        <div 
   padding: 5px;
-  background: #ccced0;
-  border-color: blue;"><strong>Participants:</strong></div> ${showParticipantsButton}
+"><strong>Participants:</strong></div> ${showParticipantsButton}
       </div>
       <div style="margin-bottom: 10px; display:flex;flex-direction:row;justify-content:space-around; align-items: center">
-        <div style="border-width: 1px;
-  border-style: solid;
-  border-radius: 5px;
-  padding: 5px;
-  background: #ccced0;
-  border-color: blue;"><strong>Description:</strong></div> ${showDescriptionButton}
+        <div style="
+  padding: 5px;"><strong>Description:</strong></div> ${showDescriptionButton}
       </div>
       <div style="margin-bottom: 10px;">
         <strong>Dates:</strong> ${this.formatLocalDate(event.properties.startDate.split("T")[0])} to ${this.formatLocalDate(event.properties.endDate.split("T")[0])}
