@@ -120,8 +120,6 @@ export default {
                     date: new Date().toISOString(),
                     timestamp: `${new Date().getHours().toString()}:${new Date().getMinutes().toString()}`
                 })
-
-                console.log(this.messages)
             }
 
 

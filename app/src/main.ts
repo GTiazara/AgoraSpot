@@ -59,8 +59,8 @@ const app = createApp(App)
   .use(vuetify)
   .use(VueSweetalert2);
 
-// app.config.globalProperties.$backBaseUrl = "https://agora-spot.vercel.app"
-app.config.globalProperties.$backBaseUrl = "http://localhost:3000"
+app.config.globalProperties.$backBaseUrl = "https://agora-spot.vercel.app"
+// app.config.globalProperties.$backBaseUrl = "http://localhost:3000"
 app.config.globalProperties.$customIconhtml = {
   customImage: "/assets/img/group.gif",
   cutomIcon: {

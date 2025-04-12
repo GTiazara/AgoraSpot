@@ -47,7 +47,8 @@
   >
     <ion-header>
       <ion-toolbar>
-        <ion-title>Info</ion-title>
+        <ion-title>Info: v1.0.0</ion-title>
+
         <ion-buttons slot="end">
           <ion-button @click="setOpenInfoModal(false)">Close</ion-button>
         </ion-buttons>
@@ -55,12 +56,12 @@
     </ion-header>
     <ion-content class="ion-padding" style="overflow: scroll">
       <div style="text-align: center; font-weight: bold">
-        Create or joint events, activities anywhere.
+        Create or joint events, activities anywhere
       </div>
 
       <p>
         This app let you create and joing fleeting event. The event will be delete
-        automaticaly when the end date is reached
+        automaticaly when the end date is reached. You have anonymous chat room for each event.
       </p>
       <p>
         Don't hesitate to contribute, post your next group activity and hopefully people
