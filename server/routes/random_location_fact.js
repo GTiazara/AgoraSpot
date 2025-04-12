@@ -99,7 +99,7 @@ router.get("/", async (req, res) => {
         let jsonResult = jsonObject //JSON.parse(result.response.text().replace("```json", "").replace("```", ""))
 
         let endDate = new Date();
-        endDate.setDate(endDate.getDate() + 7);
+        endDate.setDate(endDate.getDate() + 2); // + day
 
         const event_to_add = {
             geometry: jsonResult.geometry, // Inserting the location as GeoJSON
