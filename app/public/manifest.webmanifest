@@ -88,7 +88,7 @@
   "prefer_related_applications": false,
   "shortcuts": [
     {
-      "name": "TAgoraspot",
+      "name": "Agoraspot",
       "url": "https://agora-spot-app.vercel.app/",
       "description": "App for joining and creating events"
     }
