@@ -8,7 +8,7 @@
   "dir": "auto",
   "theme_color": "#000000",
   "background_color": "#000000",
-  "orientation": "any",
+  "orientation": "natural",
   "icons": [
     {
       "src": "assets/icons/android/android-launchericon-48-48.png",
