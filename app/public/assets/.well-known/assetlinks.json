@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "app.vercel.agora_spot_app.twa",
+            "sha256_cert_fingerprints": [
+                "97:50:44:B5:E7:A6:B3:86:FB:F5:1B:C0:1A:C6:0C:6A:DD:F2:9C:95:E8:83:67:BF:79:15:49:EE:8F:F2:27:C2"
+            ]
+        }
+    }
+]
