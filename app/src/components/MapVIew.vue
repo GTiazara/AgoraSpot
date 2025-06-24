@@ -414,6 +414,12 @@ export default defineComponent({
             🔗 View Source
     </a>
 
+    <div style="margin-bottom: 10px; ">
+        <strong>Dates: ${this.formatLocalDate(event.properties.startDate.split("T")[0])} to ${this.formatLocalDate(event.properties.endDate.split("T")[0])}
+        </strong>
+    </div>
+
+
     <div style="display:flex; flex-direction:column; justify-content: center;">
     ${jointButton}
     ${shareButton}
@@ -430,22 +436,22 @@ export default defineComponent({
       color: #444;
       line-height: 1.5;
     ">
-      <div style="margin-bottom: 10px; display:flex;flex-direction:row;justify-content:space-around; align-items: center">
-        <div 
-  padding: 5px;
-"><strong>Participants:</strong></div> ${showParticipantsButton}
-      </div>
-      <div style="margin-bottom: 10px; display:flex;flex-direction:row;justify-content:space-around; align-items: center">
+
+    <div style="margin-bottom: 10px; display:flex;flex-direction:column;justify-content:space-around; align-items: center">
         <div style="
   padding: 5px;"><strong>Description:</strong></div> ${showDescriptionButton}
       </div>
-      <div style="margin-bottom: 10px;">
-        <strong>Dates:</strong> ${this.formatLocalDate(event.properties.startDate.split("T")[0])} to ${this.formatLocalDate(event.properties.endDate.split("T")[0])}
+
+      <div style="margin-bottom: 10px; display:flex;flex-direction:column;justify-content:space-around; align-items: center">
+        <div
+  padding: 5px;
+"><strong>Participants:</strong></div> ${showParticipantsButton}
       </div>
-      <div style="margin-bottom: 10px;">
+
+      <div style="margin-bottom: 10px; display:flex;flex-direction:column;justify-content:space-around; align-items: center">
         <strong>Time:</strong> ${event.properties.startTime} to ${event.properties.endTime}
       </div>
-      <div style="margin-bottom: 10px;">
+      <div style="margin-bottom: 10px; display:flex;flex-direction:column;justify-content:space-around; align-items: center">
         <strong>Tags:</strong> ${event.properties.tags.join(", ")}
       </div>
 
