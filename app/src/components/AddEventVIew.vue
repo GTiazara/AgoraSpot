@@ -160,11 +160,18 @@
 
                     <v-col align="center">
 
-                        <ion-datetime presentation="date" :multiple="true" :value="selectedDates"
-                            @ionChange="handleDateSelection">
+                        <ion-datetime presentation="date" :prefer-wheel="true" :value="startDate"
+                            @ionChange="handleDateSelectionStart">
 
 
                         </ion-datetime>
+
+                        <ion-datetime presentation="date" :prefer-wheel="true" :value="endDate"
+                            @ionChange="handleDateSelectionEnd">
+
+
+                        </ion-datetime>
+
 
 
 
@@ -197,7 +204,7 @@
                         <ion-datetime presentation="time" locale="en-GB-u-hc-h24"
                             @ionChange="handleTimeEndSelection"><span slot="title">Fin:{{ endTime
 
-                                }}</span></ion-datetime>
+                            }}</span></ion-datetime>
 
                     </v-col>
 
@@ -215,15 +222,16 @@
 
                         <p>Optional : Event image link</p>
 
-                        <ion-textarea class="top-button-select-tags"  rows="2" maxlength="500" minlenght="4" @ionInput="getImage" :auto-grow="true"
+                        <ion-textarea class="top-button-select-tags" rows="2" maxlength="500" minlenght="4"
+                            @ionInput="getImage" :auto-grow="true"
                             placeholder="Enter image link like https://www.example.com/image.jpg">
 
                         </ion-textarea>
 
                         <p>Optional: information source</p>
 
-                        <ion-textarea class="top-button-select-tags"  rows="2" maxlength="500" minlenght="4" @ionInput="getInfoSource" :auto-grow="true"
-                            placeholder="Enter sources of information">
+                        <ion-textarea class="top-button-select-tags" rows="2" maxlength="500" minlenght="4"
+                            @ionInput="getInfoSource" :auto-grow="true" placeholder="Enter sources of information">
 
                         </ion-textarea>
 
@@ -233,12 +241,8 @@
 
             </ion-item>
 
-            <ion-alert
-                :is-open="isAddEventAlertOpen"
-                :message="addEventAlertMessage"
-                :buttons="alertButtons"
-                @didDismiss="setOpenAddEventAlert(false)"
-            ></ion-alert>
+            <ion-alert :is-open="isAddEventAlertOpen" :message="addEventAlertMessage" :buttons="alertButtons"
+                @didDismiss="setOpenAddEventAlert(false)"></ion-alert>
 
 
 
@@ -270,7 +274,7 @@ export default {
         return {
             isOpen: false,
             // isOpenLocationActionSheet: false,
-            selectedDates: [], // Holds the selected dates as a range or individual
+            selectedDates: "",//[], // Holds the selected dates as a range or individual
             startDate: "", // Start date
             endDate: "", // End date
 
@@ -335,8 +339,8 @@ export default {
             eventImage: "",
             eventInfoSource: "",
             isAddEventAlertOpen: false,
-            alertButtons:['Close'],
-            addEventAlertMessage:"",
+            alertButtons: ['Close'],
+            addEventAlertMessage: "",
 
         };
     },
@@ -368,9 +372,9 @@ export default {
 
         async handleAddEvent() {
 
-            if(this.selectedCategorieEvent.length == 0) {
+            if (this.selectedCategorieEvent.length == 0) {
                 this.setOpenAddEventAlert(true)
-                this.addEventAlertMessage = "Please select at least one tag"   
+                this.addEventAlertMessage = "Please select at least one tag"
                 return
             }
 
@@ -460,7 +464,7 @@ export default {
         },
 
 
-        handleDateSelection(event) {
+        handleDateSelection(event,) {
             // Parse the selected dates (start and end) from the event
             console.log(this.selectedDates)
             const dateValue = event.detail.value;
@@ -484,6 +488,52 @@ export default {
 
             }
         },
+
+        handleDateSelection(event,) {
+            // Parse the selected dates (start and end) from the event
+            console.log(this.selectedDates)
+            const dateValue = event.detail.value;
+            if (Array.isArray(dateValue) && dateValue.length === 2) {
+                console.log("change date")
+                this.startDate = dateValue[0]; // First date as start
+                this.endDate = dateValue[1]; // Second date as end
+                this.selectedDates = [dateValue[0], dateValue[1]]
+                console.log(document.getElementsByClassName("datetime-selected-date"))
+                // document.querySelector(".datetime-selected-date").innerHTML = "Updated Content";
+
+            } else if (Array.isArray(dateValue) && dateValue.length > 2) {
+                this.selectedDates = [dateValue[0], dateValue[2]]
+                this.startDate = dateValue[0]; // First date as start
+                this.endDate = dateValue[2]; // Second date as end
+
+            } else if (Array.isArray(dateValue) && dateValue.length == 1) {
+                this.selectedDates = [dateValue[0]]
+                this.startDate = dateValue[0]; // First date as start
+                this.endDate = dateValue[0]; // Second date as end
+
+            }
+        },
+
+        handleDateSelectionStart(event) {
+            // Parse the selected dates (start and end) from the event
+            const dateValue = event.detail.value;
+            console.log(dateValue)
+            if (dateValue) {
+                this.selectedDates = dateValue
+                this.startDate = dateValue; // First date as start
+                this.endDate = dateValue; // Second date as end
+            }
+        },
+
+        handleDateSelectionEnd(event) {
+            // Parse the selected dates (start and end) from the event
+            const dateValue = event.detail.value;
+            if (dateValue) {
+                this.selectedDates = dateValue
+                this.endDate = dateValue; // Second date as end
+            }
+        },
+
 
         handleTimeStartSelection(event) {
             console.log(event.detail)
@@ -569,7 +619,7 @@ export default {
     color: #fff;
     /* padding: 15px 25px; */
     border-radius: 10px;
-    background-color:#d62506;
+    background-color: #d62506;
     /* background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, 0.23) 0%, transparent 86.18%), radial-gradient(66% 87% at 26% 20%, rgba(255, 255, 255, 0.41) 0%, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%); */
     box-shadow: 2px 19px 31px rgba(0, 0, 0, 0.2);
     font-weight: bold;
