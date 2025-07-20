@@ -125,11 +125,13 @@ export default {
 
             this.setOpen(new_value)
             if (new_value) {
+                this.rooms[0]["roomId"] = this.targetEvent.event_id
                 this.rooms[0]["roomName"] = ` ${eventName}`
                 this.pollingInterval = setInterval(this.fetchAllLastMessage, 4000)
             }
 
             else{
+                this.messages = []
                 this.stopPolling()
                 this.messagesLoaded=false
                 
@@ -154,7 +156,7 @@ export default {
                 .then(response => response.json())
                 .then(data => {
                     console.log('New message:', data);
-                    if (data.messages.length > 0) {
+                    if (data.messages && data.messages.length > 0) {
                         this.messages.push(...data.messages); // Append new messages
                         // this.lastMessageId = data.messages[data.messages.length - 1]._id; // Update last message ID
                     }
